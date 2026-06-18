@@ -41,6 +41,10 @@ INTENT_SCENARIO_ACTIONS = {
     "Growth": {"Increase", "Maintain"},
 }
 
+ACTIONABILITY_WEIGHTS = {"scenario_fit": 0.45, "non_conflict": 0.35, "confidence": 0.20}
+USER_ACCEPTANCE_WEIGHTS = {"actionability": 0.40, "trust_alignment": 0.35, "explanation_usefulness": 0.25}
+NON_ATTRIBUTION_EXPLANATION_FACTOR = 0.35
+
 
 @dataclass
 class BaselineResult:
@@ -311,7 +315,8 @@ def expected_calibration_error(confidences: Sequence[float], correct: Sequence[i
     for b in range(bins):
         lo = b / bins
         hi = (b + 1) / bins
-        idx = [i for i, c in enumerate(confidences) if lo <= c < hi or (b == bins - 1 and c == 1.0)]
+        is_last_bin = b == bins - 1
+        idx = [i for i, c in enumerate(confidences) if lo <= c < hi or (is_last_bin and c == 1.0)]
         if not idx:
             continue
         bin_conf = statistics.fmean([confidences[i] for i in idx])
@@ -337,7 +342,7 @@ def explanation_usefulness_score(explanations: Sequence[str], baseline_name: str
     avg = statistics.fmean(richness)
     if "Baseline C" in baseline_name:
         return avg
-    return avg * 0.35
+    return avg * NON_ATTRIBUTION_EXPLANATION_FACTOR
 
 
 def human_metrics(
@@ -351,10 +356,26 @@ def human_metrics(
     correctness = [1 if p == y else 0 for p, y in zip(preds, labels)]
     scenario = scenario_fit_rate(preds, [row["Intent"] for row in rows])
     non_conflict = 1.0 - logical_conflict_rate(rows, preds)
-    actionability = max(0.0, min(1.0, 0.45 * scenario + 0.35 * non_conflict + 0.2 * statistics.fmean(confidences)))
+    actionability = max(
+        0.0,
+        min(
+            1.0,
+            ACTIONABILITY_WEIGHTS["scenario_fit"] * scenario
+            + ACTIONABILITY_WEIGHTS["non_conflict"] * non_conflict
+            + ACTIONABILITY_WEIGHTS["confidence"] * statistics.fmean(confidences),
+        ),
+    )
     trust_alignment = statistics.fmean([1.0 - abs(c - y) for c, y in zip(confidences, correctness)])
     explanation = explanation_usefulness_score(explanations, baseline_name)
-    user_acceptance = max(0.0, min(1.0, 0.4 * actionability + 0.35 * trust_alignment + 0.25 * explanation))
+    user_acceptance = max(
+        0.0,
+        min(
+            1.0,
+            USER_ACCEPTANCE_WEIGHTS["actionability"] * actionability
+            + USER_ACCEPTANCE_WEIGHTS["trust_alignment"] * trust_alignment
+            + USER_ACCEPTANCE_WEIGHTS["explanation_usefulness"] * explanation,
+        ),
+    )
     return {
         "Recommendation Actionability": actionability,
         "Trust Alignment": trust_alignment,
