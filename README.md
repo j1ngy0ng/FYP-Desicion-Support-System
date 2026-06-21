@@ -9,6 +9,12 @@ Run the baseline systems and generate comparison-table-ready metrics:
 python baseline_evaluation.py --dataset Dataset.csv
 ```
 
+Run stress evaluation with a separate conflict-focused dataset (original dataset remains unchanged):
+
+```bash
+python baseline_evaluation.py --dataset Dataset_conflict_stress.csv --output-dir outputs/baseline_evaluation_conflict_stress
+```
+
 Generated outputs:
 
 - `outputs/baseline_evaluation/baseline_predictions.csv`
