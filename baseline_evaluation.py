@@ -434,12 +434,16 @@ def save_metrics(path: Path, baseline_metrics: Dict[str, Dict[str, float]]) -> N
             writer.writerow([baseline_name, *[f"{metrics[m]:.6f}" for m in metric_names]])
 
 
-def save_markdown(path: Path, baseline_metrics: Dict[str, Dict[str, float]]) -> None:
+def save_markdown(
+    path: Path,
+    baseline_metrics: Dict[str, Dict[str, float]],
+    dataset_name: str,
+) -> None:
     metric_names = list(next(iter(baseline_metrics.values())).keys())
     lines = [
         "# Baseline Comparison Metrics",
         "",
-        "This table is generated from `Dataset.csv` using Chapter 3 baseline configurations and metrics.",
+        f"This table is generated from `{dataset_name}` using Chapter 3 baseline configurations and metrics.",
         "",
         "|" + "Baseline|" + "|".join(metric_names) + "|",
         "|" + "---|" + "|".join(["---"] * len(metric_names)) + "|",
@@ -483,7 +487,7 @@ def main() -> None:
 
     save_predictions(output_dir / "baseline_predictions.csv", test_rows, baseline_results, labels)
     save_metrics(output_dir / "baseline_metrics.csv", baseline_metrics)
-    save_markdown(output_dir / "comparison_table.md", baseline_metrics)
+    save_markdown(output_dir / "comparison_table.md", baseline_metrics, dataset_path.name)
 
     print(f"Saved outputs to: {output_dir.resolve()}")
     for name, metrics in baseline_metrics.items():

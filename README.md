@@ -15,6 +15,11 @@ Run stress evaluation with a separate conflict-focused dataset (original dataset
 python baseline_evaluation.py --dataset Dataset_conflict_stress.csv --output-dir outputs/baseline_evaluation_conflict_stress
 ```
 
+The standard holdout can legitimately report a `0.0000` logical conflict rate when none of
+the baseline recommendations violate the configured conflict rules. Use the conflict-stress
+dataset to verify that the metric detects contradictory recommendations; a non-zero value is
+not manufactured for the standard dataset.
+
 Generated outputs:
 
 - `outputs/baseline_evaluation/baseline_predictions.csv`
