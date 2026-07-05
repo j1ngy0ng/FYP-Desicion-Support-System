@@ -1,0 +1,4 @@
+Baseline,Recommendation Accuracy,Scenario-Fit Rate,Logical Conflict Rate,Expected Calibration Error (ECE),Recommendation Latency (ms),Recommendation Actionability,Trust Alignment,Explanation Usefulness,User Acceptance
+Baseline A - Heuristic Scorecard,0.592593,1.000000,0.037037,0.135792,0.003959,0.890031,0.562323,0.000000,0.552825
+Baseline B - Predictive Analytics Only,0.814815,0.962963,0.111111,0.185739,0.010593,0.880578,0.603913,0.000000,0.563601
+Baseline C - Predictive Analytics with Attribution,0.740741,0.925926,0.148148,0.061064,0.015926,0.850750,0.601662,0.805556,0.752271

@@ -45,6 +45,21 @@ ACTIONABILITY_WEIGHTS = {"scenario_fit": 0.45, "non_conflict": 0.35, "confidence
 USER_ACCEPTANCE_WEIGHTS = {"actionability": 0.40, "trust_alignment": 0.35, "explanation_usefulness": 0.25}
 NON_ATTRIBUTION_EXPLANATION_FACTOR = 0.35
 
+# Predefined domain thresholds used by the logical-conflict catalogue. These
+# values are fixed for every evaluated system; they are not fitted to a
+# baseline's predictions.
+LOW_ROI = 0.0
+HIGH_ROI = 2.0
+VERY_HIGH_ROI = 4.0
+LOW_CONVERSION_RATE = 0.08
+HIGH_CONVERSION_RATE = 0.20
+LOW_CTR = 0.03
+HIGH_CTR = 0.10
+LOW_ENGAGEMENT = 5.0
+HIGH_ENGAGEMENT = 20.0
+MIN_DECISION_CLICKS = 500.0
+MIN_DECISION_CONVERSIONS = 50.0
+
 
 @dataclass
 class BaselineResult:
@@ -57,8 +72,8 @@ class BaselineResult:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run baseline systems and compute evaluation metrics.")
-    parser.add_argument("--dataset", default="Dataset.csv", help="Path to Dataset.csv")
-    parser.add_argument("--output-dir", default="outputs/baseline_evaluation", help="Output directory")
+    parser.add_argument("--dataset", default="data/Dataset.csv", help="Dataset path")
+    parser.add_argument("--output-dir", default="outputs/normal", help="Output directory")
     parser.add_argument("--test-size", type=float, default=0.2, help="Holdout test ratio")
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
     parser.add_argument("--ece-bins", type=int, default=10, help="ECE bins")
@@ -289,17 +304,69 @@ def scenario_fit_rate(preds: Sequence[str], intents: Sequence[str]) -> float:
     return hits / max(1, len(preds))
 
 
-def row_has_conflict(row: dict, action: str) -> bool:
+def conflict_reasons(row: dict, action: str) -> List[str]:
+    """Return all predefined logical contradictions for one recommendation."""
+
     roi = row["ROI"]
     conv = row["conversion_rate"]
+    ctr = row["ctr"]
+    engagement = row["Engagement_Score"]
     intent = row["Intent"]
-    conflict_rules = [
-        action == "Increase" and roi < 0,
-        action == "Increase" and conv < 0.08,
-        action == "Reduce" and roi > 2.0 and conv > 0.2,
-        intent == "Growth" and action == "Reduce",
-    ]
-    return any(conflict_rules)
+    clicks = row["Clicks"]
+    conversions = row["Conversions"]
+    reasons = []
+
+    # Intent-policy contradictions.
+    if intent == "Growth" and action == "Reduce":
+        reasons.append("intent:growth_recommended_reduce")
+    if intent == "Survival" and action == "Increase":
+        reasons.append("intent:survival_recommended_increase")
+    if intent == "Retention" and action == "Reduce":
+        reasons.append("intent:retention_recommended_reduce")
+
+    # Recommendations that oppose individual performance signals.
+    if action == "Increase" and roi < LOW_ROI:
+        reasons.append("performance:increase_with_negative_roi")
+    if action == "Increase" and conv < LOW_CONVERSION_RATE:
+        reasons.append("performance:increase_with_low_conversion")
+    if action == "Increase" and ctr < LOW_CTR:
+        reasons.append("performance:increase_with_low_ctr")
+    if action == "Increase" and engagement < LOW_ENGAGEMENT:
+        reasons.append("performance:increase_with_low_engagement")
+
+    strong_signals = sum(
+        [
+            roi > HIGH_ROI,
+            conv > HIGH_CONVERSION_RATE,
+            ctr > HIGH_CTR,
+            engagement > HIGH_ENGAGEMENT,
+        ]
+    )
+    if action == "Reduce" and strong_signals >= 2:
+        reasons.append("performance:reduce_despite_multiple_strong_signals")
+
+    # A neutral recommendation is contradictory only when all core signals are
+    # exceptionally strong; this avoids treating ordinary caution as conflict.
+    if (
+        action == "Maintain"
+        and roi > VERY_HIGH_ROI
+        and conv > HIGH_CONVERSION_RATE
+        and ctr > HIGH_CTR
+        and engagement > HIGH_ENGAGEMENT
+    ):
+        reasons.append("performance:maintain_despite_exceptional_performance")
+
+    # Escalation/reduction without enough response evidence should be investigated.
+    if action in {"Increase", "Reduce"} and (
+        clicks < MIN_DECISION_CLICKS or conversions < MIN_DECISION_CONVERSIONS
+    ):
+        reasons.append("evidence:decisive_action_with_insufficient_sample")
+
+    return reasons
+
+
+def row_has_conflict(row: dict, action: str) -> bool:
+    return bool(conflict_reasons(row, action))
 
 
 def logical_conflict_rate(rows: Sequence[dict], preds: Sequence[str]) -> float:
@@ -414,21 +481,36 @@ def save_predictions(path: Path, rows: Sequence[dict], baseline_results: Sequenc
     ]
     for b in baseline_results:
         prefix = b.name.split(" - ")[0].replace(" ", "_")
-        headers.extend([f"{prefix}_Prediction", f"{prefix}_Confidence"])
+        headers.extend(
+            [
+                f"{prefix}_Prediction",
+                f"{prefix}_Confidence",
+                f"{prefix}_Conflict",
+                f"{prefix}_Conflict_Reasons",
+            ]
+        )
     with path.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f, lineterminator="\n")
         writer.writerow(headers)
         for i, row in enumerate(rows):
             record = [row.get("Campaign_ID", ""), row["Intent"], labels[i], row["Reference_Action"]]
             for b in baseline_results:
-                record.extend([b.predictions[i], f"{b.confidences[i]:.6f}"])
+                reasons = conflict_reasons(row, b.predictions[i])
+                record.extend(
+                    [
+                        b.predictions[i],
+                        f"{b.confidences[i]:.6f}",
+                        int(bool(reasons)),
+                        "; ".join(reasons),
+                    ]
+                )
             writer.writerow(record)
 
 
 def save_metrics(path: Path, baseline_metrics: Dict[str, Dict[str, float]]) -> None:
     metric_names = list(next(iter(baseline_metrics.values())).keys())
     with path.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
+        writer = csv.writer(f, lineterminator="\n")
         writer.writerow(["Baseline", *metric_names])
         for baseline_name, metrics in baseline_metrics.items():
             writer.writerow([baseline_name, *[f"{metrics[m]:.6f}" for m in metric_names]])

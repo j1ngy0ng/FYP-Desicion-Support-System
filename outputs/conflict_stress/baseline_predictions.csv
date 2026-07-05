@@ -1,0 +1,27 @@
+Campaign_ID,Intent,Ground_Truth_Label,Reference_Action,Baseline_A_Prediction,Baseline_A_Confidence,Baseline_A_Conflict,Baseline_A_Conflict_Reasons,Baseline_B_Prediction,Baseline_B_Confidence,Baseline_B_Conflict,Baseline_B_Conflict_Reasons,Baseline_C_Prediction,Baseline_C_Confidence,Baseline_C_Conflict,Baseline_C_Conflict_Reasons
+NY-CMP-4154,Growth,Increase,Increase,Increase,0.999999,0,,Increase,0.790906,0,,Increase,0.764119,0,
+NY-CMP-53625,Growth,Increase,Increase,Increase,0.965550,0,,Increase,0.779578,0,,Increase,0.699778,0,
+NY-CMP-1292,Survival,Investigate,Reduce,Maintain,0.371149,0,,Reduce,0.673379,0,,Reduce,0.652807,0,
+NY-CMP-4263,Retention,Maintain,Maintain,Maintain,0.432972,0,,Maintain,0.492423,0,,Maintain,0.508850,0,
+NY-CMP-29665,Growth,Reduce,Increase,Reduce,0.391063,1,intent:growth_recommended_reduce,Reduce,0.454003,1,intent:growth_recommended_reduce,Maintain,0.529700,0,
+NY-CMP-40286,Growth,Increase,Increase,Reduce,0.368170,1,intent:growth_recommended_reduce; performance:reduce_despite_multiple_strong_signals,Maintain,0.532497,0,,Increase,0.504201,1,performance:increase_with_negative_roi; performance:increase_with_low_conversion
+NY-CMP-28878,Growth,Reduce,Increase,Reduce,0.376248,1,intent:growth_recommended_reduce; evidence:decisive_action_with_insufficient_sample,Reduce,0.490457,1,intent:growth_recommended_reduce; evidence:decisive_action_with_insufficient_sample,Reduce,0.532849,1,intent:growth_recommended_reduce; evidence:decisive_action_with_insufficient_sample
+NY-CMP-32581,Growth,Increase,Increase,Reduce,0.374636,1,intent:growth_recommended_reduce,Maintain,0.580788,0,,Maintain,0.559456,0,
+NY-CMP-46442,Growth,Increase,Increase,Reduce,0.371932,1,intent:growth_recommended_reduce; performance:reduce_despite_multiple_strong_signals,Maintain,0.553485,0,,Maintain,0.603478,0,
+NY-CMP-44156,Retention,Maintain,Maintain,Maintain,0.361745,0,,Maintain,0.491385,0,,Maintain,0.535686,0,
+NY-CMP-8984,Survival,Reduce,Reduce,Maintain,0.431735,0,,Maintain,0.478864,0,,Reduce,0.607733,0,
+NY-CMP-44546,Survival,Reduce,Reduce,Maintain,0.329142,0,,Reduce,0.746197,0,,Reduce,0.728823,0,
+NY-CMP-48852,Growth,Maintain,Maintain,Increase,0.662278,0,,Increase,0.449456,0,,Maintain,0.466449,0,
+NY-CMP-40783,Retention,Maintain,Maintain,Maintain,0.484961,0,,Reduce,0.518825,1,intent:retention_recommended_reduce,Reduce,0.615342,1,intent:retention_recommended_reduce
+NY-CMP-47963,Survival,Reduce,Reduce,Reduce,0.293082,0,,Reduce,0.632844,0,,Reduce,0.612119,0,
+NY-CMP-3528,Retention,Maintain,Maintain,Maintain,0.476947,0,,Maintain,0.599933,0,,Maintain,0.630311,0,
+NY-CMP-46598,Growth,Maintain,Maintain,Increase,0.800321,0,,Increase,0.653452,0,,Increase,0.738190,0,
+NY-CMP-43732,Growth,Increase,Increase,Reduce,0.365427,1,intent:growth_recommended_reduce; performance:reduce_despite_multiple_strong_signals,Increase,0.514019,1,performance:increase_with_negative_roi; performance:increase_with_low_conversion,Increase,0.526527,1,performance:increase_with_negative_roi; performance:increase_with_low_conversion
+NY-CMP-56167,Retention,Maintain,Maintain,Increase,0.483690,0,,Maintain,0.419628,0,,Reduce,0.583108,1,intent:retention_recommended_reduce; performance:reduce_despite_multiple_strong_signals
+NY-CMP-28872,Retention,Maintain,Maintain,Maintain,0.371212,0,,Reduce,0.546198,1,intent:retention_recommended_reduce,Reduce,0.591420,1,intent:retention_recommended_reduce
+NY-CMP-23952,Survival,Reduce,Reduce,Maintain,0.459165,0,,Reduce,0.550926,0,,Maintain,0.472728,0,
+NY-CMP-37144,Survival,Reduce,Reduce,Reduce,0.333215,0,,Reduce,0.815039,0,,Reduce,0.763915,0,
+NY-CMP-38315,Retention,Maintain,Maintain,Maintain,0.430198,0,,Reduce,0.467074,1,intent:retention_recommended_reduce,Maintain,0.436150,0,
+NY-CMP-43383,Retention,Maintain,Maintain,Increase,0.522932,0,,Maintain,0.411644,0,,Reduce,0.523116,1,intent:retention_recommended_reduce; performance:reduce_despite_multiple_strong_signals
+NY-CMP-52434,Survival,Reduce,Reduce,Reduce,0.370490,1,evidence:decisive_action_with_insufficient_sample,Reduce,0.829801,1,evidence:decisive_action_with_insufficient_sample,Reduce,0.909347,1,evidence:decisive_action_with_insufficient_sample
+NY-CMP-18210,Survival,Reduce,Reduce,Maintain,0.398261,0,,Maintain,0.486181,0,,Reduce,0.472619,0,
