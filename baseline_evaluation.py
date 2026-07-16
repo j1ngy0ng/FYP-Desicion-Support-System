@@ -73,6 +73,10 @@ class BaselineResult:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run baseline systems and compute evaluation metrics.")
     parser.add_argument("--dataset", default="data/Dataset.csv", help="Dataset path")
+    parser.add_argument(
+        "--train-dataset",
+        help="Optional training dataset. Use the normal dataset here when testing robustness on stress data.",
+    )
     parser.add_argument("--output-dir", default="outputs/normal", help="Output directory")
     parser.add_argument("--test-size", type=float, default=0.2, help="Holdout test ratio")
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
@@ -130,7 +134,9 @@ def stratified_split(rows: List[dict], test_size: float, seed: int) -> Tuple[Lis
     train, test = [], []
     for group_rows in groups.values():
         rng.shuffle(group_rows)
-        cut = max(1, int(round(len(group_rows) * test_size)))
+        # A singleton class cannot be evaluated meaningfully and must remain
+        # available to the training set instead of being removed from it.
+        cut = 0 if len(group_rows) < 2 else max(1, int(round(len(group_rows) * test_size)))
         test.extend(group_rows[:cut])
         train.extend(group_rows[cut:])
     rng.shuffle(train)
@@ -412,7 +418,7 @@ def explanation_usefulness_score(explanations: Sequence[str], baseline_name: str
     return avg * NON_ATTRIBUTION_EXPLANATION_FACTOR
 
 
-def human_metrics(
+def proxy_metrics(
     rows: Sequence[dict],
     preds: Sequence[str],
     confidences: Sequence[float],
@@ -444,10 +450,10 @@ def human_metrics(
         ),
     )
     return {
-        "Recommendation Actionability": actionability,
-        "Trust Alignment": trust_alignment,
-        "Explanation Usefulness": explanation,
-        "User Acceptance": user_acceptance,
+        "Actionability Proxy": actionability,
+        "Trust Alignment Proxy": trust_alignment,
+        "Explanation Usefulness Proxy": explanation,
+        "User Acceptance Proxy": user_acceptance,
     }
 
 
@@ -468,7 +474,7 @@ def evaluate_baseline(
         "Expected Calibration Error (ECE)": expected_calibration_error(confidences, correctness, bins),
         "Recommendation Latency (ms)": baseline.latency_ms,
     }
-    metrics.update(human_metrics(rows, preds, confidences, labels, baseline.explanations, baseline.name))
+    metrics.update(proxy_metrics(rows, preds, confidences, labels, baseline.explanations, baseline.name))
     return metrics
 
 
@@ -540,7 +546,7 @@ def save_markdown(
             "- Baseline A: heuristic scorecard (manual threshold logic).",
             "- Baseline B: predictive-only centroid classifier.",
             "- Baseline C: predictive + channel attribution adjustment.",
-            "- Human metrics are computed as reproducible proxy scores from model outputs for comparison-table preparation.",
+            "- Proxy metrics are deterministic technical indicators, not results from human participants.",
         ]
     )
     path.write_text("\n".join(lines), encoding="utf-8")
@@ -552,7 +558,11 @@ def main() -> None:
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     rows = load_dataset(dataset_path)
-    train_rows, test_rows = stratified_split(rows, args.test_size, args.seed)
+    if args.train_dataset:
+        train_rows, _ = stratified_split(load_dataset(Path(args.train_dataset)), args.test_size, args.seed)
+        _, test_rows = stratified_split(rows, args.test_size, args.seed)
+    else:
+        train_rows, test_rows = stratified_split(rows, args.test_size, args.seed)
     labels = [row["label"] for row in test_rows]
 
     model = fit_centroid_model(train_rows)

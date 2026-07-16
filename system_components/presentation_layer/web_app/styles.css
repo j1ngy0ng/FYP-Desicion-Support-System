@@ -95,7 +95,7 @@ h3 { margin: 0; font-size: 15px; }
 .bar-label { position: absolute; bottom: -27px; left: 50%; transform: translateX(-50%); color: var(--muted); font-size: 11px; }
 .chart-wrap { padding-bottom: 28px; }
 .donut { width: 180px; height: 180px; border-radius: 50%; background: conic-gradient(var(--green) 0 42%, var(--amber) 42% 72%, var(--blue) 72% 90%, #dfe5e1 90%); position: relative; margin: 12px auto; }
-.donut::after { content: "125\A campaigns"; white-space: pre; position: absolute; inset: 28px; border-radius: 50%; background: var(--card); display: grid; place-items: center; text-align: center; font-weight: 800; font-size: 14px; }
+.donut::after { content: attr(data-label); white-space: pre; position: absolute; inset: 28px; border-radius: 50%; background: var(--card); display: grid; place-items: center; text-align: center; font-weight: 800; font-size: 14px; }
 .legend { display: grid; gap: 9px; }
 .legend-row { display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
 .legend-label { display: flex; align-items: center; gap: 8px; }

@@ -1,14 +1,17 @@
-# MarketSense Web Prototype
+# MarketSense React Application
 
-Dependency-free single-page implementation of the eleven user interfaces listed in
-Chapter 4 of the FYP report.
+React, Vite and TypeScript implementation of the Chapter 4 interfaces. The existing visual
+design is retained while campaigns, recommendations, rules, profiles and evaluations are
+loaded from the FastAPI backend.
 
 ## Run
 
-From the repository root:
+Start the FastAPI backend from the repository root, then run:
 
 ```bash
-python -m http.server 8000 --directory system_components/presentation_layer/web_app
+cd system_components/presentation_layer/web_app
+npx pnpm install
+npx pnpm dev
 ```
 
-Then open `http://127.0.0.1:8000`. The login form contains prototype credentials.
+Open `http://127.0.0.1:5173`. Vite proxies `/api` requests to `http://127.0.0.1:8000`.

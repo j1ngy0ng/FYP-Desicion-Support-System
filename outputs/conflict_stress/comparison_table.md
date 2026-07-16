@@ -2,14 +2,14 @@
 
 This table is generated from `Dataset_conflict_stress.csv` using Chapter 3 baseline configurations and metrics.
 
-|Baseline|Recommendation Accuracy|Scenario-Fit Rate|Logical Conflict Rate|Expected Calibration Error (ECE)|Recommendation Latency (ms)|Recommendation Actionability|Trust Alignment|Explanation Usefulness|User Acceptance|
+|Baseline|Recommendation Accuracy|Scenario-Fit Rate|Logical Conflict Rate|Expected Calibration Error (ECE)|Recommendation Latency (ms)|Actionability Proxy|Trust Alignment Proxy|Explanation Usefulness Proxy|User Acceptance Proxy|
 |---|---|---|---|---|---|---|---|---|---|
-|Baseline A - Heuristic Scorecard|0.5000|0.7692|0.2692|0.1825|0.0045|0.6960|0.5134|0.0000|0.4581|
-|Baseline B - Predictive Analytics Only|0.5769|0.8077|0.2692|0.1828|0.0107|0.7343|0.5415|0.0000|0.4832|
-|Baseline C - Predictive Analytics with Attribution|0.6154|0.8077|0.3077|0.0794|0.0160|0.7255|0.5319|0.7577|0.6658|
+|Baseline A - Heuristic Scorecard|0.5200|0.7600|0.2800|0.2046|0.0075|0.6888|0.5088|0.0000|0.4536|
+|Baseline B - Predictive Analytics Only|0.6400|0.8000|0.1200|0.1999|0.0233|0.7774|0.5576|0.0000|0.5061|
+|Baseline C - Predictive Analytics with Attribution|0.7200|0.8000|0.0800|0.2361|0.0344|0.7927|0.5392|0.7480|0.6928|
 
 ## Notes
 - Baseline A: heuristic scorecard (manual threshold logic).
 - Baseline B: predictive-only centroid classifier.
 - Baseline C: predictive + channel attribution adjustment.
-- Human metrics are computed as reproducible proxy scores from model outputs for comparison-table preparation.
+- Proxy metrics are deterministic technical indicators, not results from human participants.
