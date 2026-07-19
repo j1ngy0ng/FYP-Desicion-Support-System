@@ -1,3 +1,4 @@
+import operator
 from typing import Any
 
 from ..candidate_action_generation import ACTIONS
@@ -21,9 +22,21 @@ DEFAULT_RULES = (
 )
 
 INTENT_RULES = {"growth_safeguard", "retention_safeguard", "survival_safeguard"}
+COMPARISONS = {"lt": operator.lt, "lte": operator.le, "gt": operator.gt, "gte": operator.ge, "eq": operator.eq}
 
 
-def evaluate_rule(code: str, action: str, features: dict[str, float], intent: str, budget: float | None) -> tuple[float, str] | None:
+def evaluate_rule(code: str, action: str, features: dict[str, float], intent: str, budget: float | None, definition: dict[str, Any] | None = None) -> tuple[float, str] | None:
+    if definition:
+        if action != definition.get("action") or definition.get("intent") not in {None, intent}:
+            return None
+        metric = definition.get("metric")
+        actual = budget if metric == "budget" else features.get(metric)
+        comparison = COMPARISONS.get(definition.get("operator"))
+        if actual is None or comparison is None:
+            return None
+        violated = comparison(float(actual), float(definition["threshold"]))
+        return (0.0 if violated else 1.0, f"{metric} is {float(actual):g}")
+
     roi, conversion, ctr, engagement = features["ROI"], features["conversion_rate"], features["ctr"], features["Engagement_Score"]
     strong = sum((roi > 2, conversion > .20, ctr > .10, engagement > 20))
     weak = sum((roi < 0, conversion < .08, ctr < .03, engagement < 5))
@@ -45,17 +58,21 @@ def evaluate_rule(code: str, action: str, features: dict[str, float], intent: st
         "budget_feasibility": (action == "Increase", float(budget or 0) >= features["cost_per_conversion"] * 50, "Budget should support at least 50 additional conversions"),
         "conflicting_evidence": (action != "Investigate" and strong > 0 and weak > 0, False, "Strong and weak signals conflict"),
     }
-    applies, satisfied, detail = checks[code]
+    check = checks.get(code)
+    if not check:
+        return None
+    applies, satisfied, detail = check
     return (1.0 if satisfied else 0.0, detail) if applies else None
 
 
 def apply_rules(scores: dict[str, float], rules: list[dict[str, Any]], features: dict[str, float], intent: str, budget: float | None, penalty: float, investigate_boost: float, without_intent: bool = False) -> list[dict[str, Any]]:
     results = []
     for rule in rules:
-        if not rule.get("active", True) or without_intent and rule["code"] in INTENT_RULES:
+        definition = rule.get("definition") or {}
+        if not rule.get("active", True) or without_intent and (rule["code"] in INTENT_RULES or definition.get("intent")):
             continue
         for action in ACTIONS:
-            result = evaluate_rule(rule["code"], action, features, intent, budget)
+            result = evaluate_rule(rule["code"], action, features, intent, budget, definition or None)
             if result is None:
                 continue
             satisfaction, detail = result

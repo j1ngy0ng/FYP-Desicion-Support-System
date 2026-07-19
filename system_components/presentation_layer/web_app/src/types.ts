@@ -5,7 +5,7 @@ export type Campaign = {
   target_audience: string; duration: number; impressions: number; clicks: number; leads: number;
   conversions: number; revenue: number; acquisition_cost: number; engagement_score: number;
 }
-export type Rule = { id: number; code: string; name: string; category: string; condition: string; weight: number; priority: number; active: boolean }
+export type Rule = { id: number; code: string; name: string; category: string; condition: string; definition?: Record<string, unknown>; weight: number; priority: number; active: boolean }
 export type Explanation = { driver: string; implication: string; action: string; caveat: string; intent: string }
 export type Recommendation = {
   id: string; numeric_id: number; campaign_id: string; campaign: string; intent: string; action: string;

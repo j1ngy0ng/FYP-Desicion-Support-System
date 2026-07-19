@@ -25,6 +25,9 @@ Generated outputs:
 - `outputs/normal/` contains the normal-dataset results.
 - `outputs/conflict_stress/` contains the robustness-test results.
 
+Both runs compare the four Chapter 3 baselines: heuristic scorecard, predictive-only,
+predictive with attribution, and predictive ranking with a post-hoc hard-rule overlay.
+
 Logical Conflict Rate uses the predefined, system-independent catalogue in
 [`docs/CONFLICT_RULES.md`](docs/CONFLICT_RULES.md). Prediction outputs include a conflict flag and
 the exact rule identifiers triggered for each baseline recommendation.

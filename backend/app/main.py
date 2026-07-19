@@ -11,6 +11,7 @@ import secrets
 import statistics
 import time
 from contextlib import asynccontextmanager
+from datetime import date
 from pathlib import Path
 from typing import Annotated, Any, Literal
 
@@ -27,6 +28,7 @@ from baseline_evaluation import (
     baseline_a_predict,
     baseline_b_predict,
     baseline_c_predict,
+    baseline_d_predict,
     build_channel_attribution,
     conflict_reasons,
     expected_calibration_error,
@@ -207,6 +209,18 @@ class RuleInput(BaseModel):
     active: bool
 
 
+class RuleCreateInput(RuleInput):
+    metric: Literal[
+        "ROI", "conversion_rate", "ctr", "Engagement_Score", "Clicks",
+        "Conversions", "Impressions", "Revenue", "Acquisition_Cost",
+        "cost_per_conversion", "budget",
+    ]
+    operator: Literal["lt", "lte", "gt", "gte", "eq"]
+    threshold: float = Field(allow_inf_nan=False)
+    action: Literal["Increase", "Maintain", "Decrease", "Investigate"]
+    intent: Literal["Growth", "Retention", "Survival"] | None = None
+
+
 def campaign_json(campaign: Campaign) -> dict[str, Any]:
     return {
         "id": campaign.id, "name": campaign.name, "type": campaign.campaign_type,
@@ -228,8 +242,35 @@ def engine_case(campaign: Campaign) -> dict[str, Any]:
     }
 
 
+RULE_OPERATOR_LABELS = {"lt": "is below", "lte": "is at most", "gt": "exceeds", "gte": "is at least", "eq": "equals"}
+RULE_METRIC_LABELS = {
+    "ROI": "ROI", "conversion_rate": "conversion rate", "ctr": "CTR",
+    "Engagement_Score": "engagement score", "Clicks": "clicks", "Conversions": "conversions",
+    "Impressions": "impressions", "Revenue": "revenue", "Acquisition_Cost": "acquisition cost",
+    "cost_per_conversion": "cost per conversion", "budget": "budget",
+}
+
+
+def rule_definition(rule: BusinessRule) -> dict[str, Any] | None:
+    try:
+        definition = json.loads(rule.condition)
+        return definition if definition.get("kind") == "threshold" else None
+    except (json.JSONDecodeError, AttributeError):
+        return None
+
+
+def rule_condition(definition: dict[str, Any]) -> str:
+    condition = f"Penalise {definition['action']} when {RULE_METRIC_LABELS[definition['metric']]} {RULE_OPERATOR_LABELS[definition['operator']]} {definition['threshold']:g}"
+    return condition + (f" under {definition['intent']} intent" if definition.get("intent") else "")
+
+
 def rule_json(rule: BusinessRule) -> dict[str, Any]:
-    return {"id": rule.id, "code": rule.code, "name": rule.name, "category": rule.category, "condition": rule.condition, "weight": rule.weight, "priority": rule.priority, "active": rule.active}
+    definition = rule_definition(rule)
+    return {
+        "id": rule.id, "code": rule.code, "name": rule.name, "category": rule.category,
+        "condition": rule_condition(definition) if definition else rule.condition,
+        "definition": definition, "weight": rule.weight, "priority": rule.priority, "active": rule.active,
+    }
 
 
 def get_engine() -> RecommendationEngine:
@@ -324,22 +365,37 @@ def import_campaigns(file: Annotated[UploadFile, File()], user: CurrentUser, db:
     required = {"Campaign_ID", "Campaign_Type", "Channel_Used", "Intent"}
     if not required.issubset(frame.columns):
         raise HTTPException(status.HTTP_400_BAD_REQUEST, f"Missing columns: {', '.join(sorted(required - set(frame.columns)))}")
-    added = 0
+    added = skipped = 0
+    seen: set[str] = set()
     for row in frame.to_dict("records"):
-        if db.get(Campaign, str(row["Campaign_ID"])):
+        campaign_id = str(row["Campaign_ID"]).strip()
+        if not campaign_id or campaign_id in seen or db.get(Campaign, campaign_id):
+            skipped += 1
             continue
-        intent = db.scalar(select(Intent).where(Intent.name == str(row["Intent"]).title()))
+        seen.add(campaign_id)
+        intent = db.scalar(select(Intent).where(Intent.name == str(row["Intent"]).strip().title()))
         if not intent:
+            skipped += 1
             continue
+
+        def value(name: str, default: Any = 0) -> Any:
+            item = row.get(name, default)
+            return default if pd.isna(item) else item
+
+        parsed_date = pd.to_datetime(value("Date", None), errors="coerce")
         db.add(Campaign(
-            id=str(row["Campaign_ID"]), user_id=user.id, intent_id=intent.id, name=str(row["Campaign_ID"]),
-            campaign_type=str(row["Campaign_Type"]), channels=str(row["Channel_Used"]), target_audience=str(row.get("Target_Audience", "General")),
-            duration=int(row.get("Duration", 0)), impressions=int(row.get("Impressions", 0)), clicks=int(row.get("Clicks", 0)),
-            leads=int(row.get("Leads", 0)), conversions=int(row.get("Conversions", 0)), revenue=float(row.get("Revenue", 0)),
-            acquisition_cost=float(row.get("Acquisition_Cost", 0)), roi=float(row.get("ROI", 0)), engagement_score=float(row.get("Engagement_Score", 0)),
+            id=campaign_id, user_id=user.id, intent_id=intent.id, name=campaign_id,
+            campaign_type=str(value("Campaign_Type", "Unknown")), channels=str(value("Channel_Used", "Unknown")),
+            target_audience=str(value("Target_Audience", "General")), duration=int(float(value("Duration"))),
+            impressions=int(float(value("Impressions"))), clicks=int(float(value("Clicks"))),
+            leads=int(float(value("Leads"))), conversions=int(float(value("Conversions"))),
+            revenue=float(value("Revenue")), acquisition_cost=float(value("Acquisition_Cost")),
+            roi=float(value("ROI")), engagement_score=float(value("Engagement_Score")),
+            language=str(value("Language", "English")), customer_segment=str(value("Customer_Segment", "General")),
+            campaign_date=parsed_date.date() if not pd.isna(parsed_date) else date.today(),
         )); added += 1
     db.commit()
-    return {"imported": added}
+    return {"imported": added, "skipped": skipped}
 
 
 @app.get("/api/campaigns/{campaign_id}/analysis")
@@ -426,6 +482,27 @@ def rules(_: CurrentUser, db: Db) -> list[dict[str, Any]]:
     return [rule_json(rule) for rule in db.scalars(select(BusinessRule).order_by(BusinessRule.priority.desc(), BusinessRule.id)).all()]
 
 
+@app.post("/api/rules", status_code=201)
+def create_rule(payload: RuleCreateInput, _: Annotated[User, Depends(require_admin)], db: Db) -> dict[str, Any]:
+    definition = {
+        "kind": "threshold", "metric": payload.metric, "operator": payload.operator,
+        "threshold": payload.threshold, "action": payload.action, "intent": payload.intent,
+    }
+    encoded = json.dumps(definition, sort_keys=True, separators=(",", ":"))
+    code = "custom_" + hashlib.sha256(encoded.encode()).hexdigest()[:16]
+    if db.scalar(select(BusinessRule.id).where(BusinessRule.code == code)):
+        raise HTTPException(status.HTTP_409_CONFLICT, "An equivalent rule already exists")
+    intent = db.scalar(select(Intent).where(Intent.name == payload.intent)) if payload.intent else None
+    category = "Intent" if payload.intent else "Cost" if payload.metric in {"Revenue", "Acquisition_Cost", "cost_per_conversion", "budget"} else "Performance"
+    rule = BusinessRule(
+        code=code, name=payload.name, category=category, condition=encoded,
+        weight=payload.weight, priority=payload.priority, active=payload.active,
+        intent_id=intent.id if intent else None,
+    )
+    db.add(rule); db.commit()
+    return rule_json(rule)
+
+
 @app.patch("/api/rules/{rule_id}")
 def update_rule(rule_id: int, payload: RuleInput, _: Annotated[User, Depends(require_admin)], db: Db) -> dict[str, Any]:
     rule = db.get(BusinessRule, rule_id)
@@ -490,7 +567,10 @@ def evaluation_summary(_: CurrentUser, db: Db, dataset: Literal["normal", "confl
     baseline_train, normal_test = stratified_split(normal_rows, .2, 42)
     evaluation_rows = normal_test if dataset == "normal" else stratified_split(load_dataset(ROOT / "data" / "Dataset_conflict_stress.csv"), .2, 42)[1]
     model = fit_centroid_model(baseline_train); channel_attribution = build_channel_attribution(baseline_train)
-    baseline_results = [baseline_a_predict(evaluation_rows), baseline_b_predict(evaluation_rows, model), baseline_c_predict(evaluation_rows, model, channel_attribution)]
+    baseline_results = [
+        baseline_a_predict(evaluation_rows), baseline_b_predict(evaluation_rows, model),
+        baseline_c_predict(evaluation_rows, model, channel_attribution), baseline_d_predict(evaluation_rows, model),
+    ]
     baseline_rows = []
     labels = [row["label"] for row in evaluation_rows]
     for baseline in baseline_results:

@@ -40,10 +40,24 @@ class ApiTests(unittest.TestCase):
         decided = self.client.patch(f"/api/recommendations/{body['numeric_id']}/decision", headers=self.headers, json={"decision": "Accepted"})
         self.assertEqual(decided.json()["status"], "Accepted")
 
+    def test_campaign_import_is_idempotent(self):
+        csv_data = (
+            "Campaign_ID,Campaign_Type,Channel_Used,Intent,Language,Customer_Segment,Date\n"
+            "IMPORT-1,Email,Email,Growth,English,SME,2026-01-15\n"
+            "IMPORT-1,Email,Email,Growth,English,SME,2026-01-15\n"
+        )
+        files = {"file": ("campaigns.csv", csv_data, "text/csv")}
+        first = self.client.post("/api/campaigns/import", headers=self.headers, files=files)
+        second = self.client.post("/api/campaigns/import", headers=self.headers, files=files)
+        self.assertEqual(first.json(), {"imported": 1, "skipped": 1})
+        self.assertEqual(second.json(), {"imported": 0, "skipped": 2})
+
     def test_evaluation_contains_full_framework_and_ablations(self):
         response = self.client.get("/api/evaluation/summary", headers=self.headers)
         self.assertEqual(response.status_code, 200)
         body = response.json()
+        self.assertEqual(len(body["baselines"]), 4)
+        self.assertTrue(body["baselines"][3]["Baseline"].startswith("Baseline D"))
         self.assertIn("Recommendation Accuracy", body["proposed"])
         self.assertEqual(len(body["ablations"]), 4)
         self.assertTrue(body["protocol"]["identical_holdout"])
@@ -62,6 +76,18 @@ class ApiTests(unittest.TestCase):
             body["proposed"]["Scenario-Fit Rate"],
             body["ablations"]["Without Intent Awareness"]["Scenario-Fit Rate"],
         )
+
+    def test_admin_can_create_rule_without_equivalent_duplicate(self):
+        payload = {
+            "name": "Protect high-cost expansion", "metric": "cost_per_conversion",
+            "operator": "gt", "threshold": 100, "action": "Increase", "intent": None,
+            "weight": .8, "priority": 2, "active": True,
+        }
+        created = self.client.post("/api/rules", headers=self.headers, json=payload)
+        duplicate = self.client.post("/api/rules", headers=self.headers, json=payload)
+        self.assertEqual(created.status_code, 201)
+        self.assertEqual(created.json()["definition"]["metric"], "cost_per_conversion")
+        self.assertEqual(duplicate.status_code, 409)
 
 
 if __name__ == "__main__":

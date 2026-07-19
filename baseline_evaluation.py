@@ -294,6 +294,33 @@ def baseline_c_predict(test_rows: List[dict], model, channel_attr: Dict[str, flo
     return BaselineResult("Baseline C - Predictive Analytics with Attribution", preds, confs, exps, latency)
 
 
+def filter_conflicting_actions(row: dict, probabilities: Dict[str, float]) -> Tuple[str, float, List[str]]:
+    rejected = [action for action in probabilities if conflict_reasons(row, action)]
+    allowed = {action: probability for action, probability in probabilities.items() if action not in rejected}
+    if not allowed:
+        return "Investigate", 1.0, rejected
+    total = sum(allowed.values())
+    adjusted = {action: probability / total for action, probability in allowed.items()}
+    action = max(adjusted, key=adjusted.get)
+    return action, adjusted[action], rejected
+
+
+def baseline_d_predict(test_rows: List[dict], model) -> BaselineResult:
+    labels, centroids, means, stds = model
+    preds, confs, exps = [], [], []
+    start = time.perf_counter()
+    for row in test_rows:
+        probabilities = predict_centroid_proba(row, labels, centroids, means, stds)
+        pred, confidence, rejected = filter_conflicting_actions(row, probabilities)
+        preds.append(pred)
+        confs.append(confidence)
+        exps.append(
+            f"Post-hoc rules filtered {', '.join(rejected) or 'no actions'} after predictive scoring."
+        )
+    latency = (time.perf_counter() - start) * 1000 / max(1, len(test_rows))
+    return BaselineResult("Baseline D - Post-Hoc Rule Overlay", preds, confs, exps, latency)
+
+
 def recommendation_accuracy(preds: Sequence[str], labels: Sequence[str]) -> float:
     if not labels:
         return 0.0
@@ -546,6 +573,7 @@ def save_markdown(
             "- Baseline A: heuristic scorecard (manual threshold logic).",
             "- Baseline B: predictive-only centroid classifier.",
             "- Baseline C: predictive + channel attribution adjustment.",
+            "- Baseline D: predictive ranking followed by hard post-hoc conflict filtering.",
             "- Proxy metrics are deterministic technical indicators, not results from human participants.",
         ]
     )
@@ -571,7 +599,8 @@ def main() -> None:
     baseline_a = baseline_a_predict(test_rows)
     baseline_b = baseline_b_predict(test_rows, model)
     baseline_c = baseline_c_predict(test_rows, model, channel_attr)
-    baseline_results = [baseline_a, baseline_b, baseline_c]
+    baseline_d = baseline_d_predict(test_rows, model)
+    baseline_results = [baseline_a, baseline_b, baseline_c, baseline_d]
 
     baseline_metrics = {
         b.name: evaluate_baseline(b, test_rows, labels, args.ece_bins) for b in baseline_results

@@ -1,6 +1,6 @@
 import unittest
 
-from baseline_evaluation import conflict_reasons, row_has_conflict
+from baseline_evaluation import conflict_reasons, filter_conflicting_actions, row_has_conflict
 
 
 def sample_row(**overrides):
@@ -51,6 +51,15 @@ class ConflictRuleTests(unittest.TestCase):
     def test_low_evidence_conflicts_with_decisive_action(self):
         reasons = conflict_reasons(sample_row(Clicks=499), "Reduce")
         self.assertIn("evidence:decisive_action_with_insufficient_sample", reasons)
+
+    def test_post_hoc_overlay_filters_conflicting_actions_and_renormalises(self):
+        row = sample_row(Intent="Survival")
+        action, confidence, rejected = filter_conflicting_actions(
+            row, {"Increase": 0.7, "Maintain": 0.2, "Reduce": 0.05, "Investigate": 0.05}
+        )
+        self.assertIn("Increase", rejected)
+        self.assertEqual(action, "Maintain")
+        self.assertAlmostEqual(confidence, 2 / 3)
 
 
 if __name__ == "__main__":

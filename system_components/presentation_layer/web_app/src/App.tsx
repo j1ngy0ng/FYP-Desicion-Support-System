@@ -19,11 +19,12 @@ const pct = (value: number | string | undefined) => `${((Number(value) || 0) * 1
 
 function Shell({ route, user, children }: { route: string; user: User; children: ReactNode }) {
   const [open, setOpen] = useState(false)
-  const groups = [...new Set(Object.values(routes).filter(item => !item.hidden).map(item => item.group))]
+  const visibleRoutes = Object.entries(routes).filter(([key, item]) => !item.hidden && (key !== 'rules' || user.role === 'admin'))
+  const groups = [...new Set(visibleRoutes.map(([, item]) => item.group))]
   return <div className="app-shell">
     <aside className={`sidebar ${open ? 'open' : ''}`}>
       <a className="brand" href="#/dashboard"><span className="brand-mark">MS</span><span><strong>MarketSense</strong><small>Decision support</small></span></a>
-      {groups.map(group => <div key={group}><div className="nav-label">{group}</div><nav className="nav">{Object.entries(routes).filter(([, item]) => !item.hidden && item.group === group).map(([key, item]) => <a key={key} href={`#/${key}`} className={route === key ? 'active' : ''}><span className="nav-icon">{item.icon}</span>{item.title.replace(' Management', 's')}</a>)}</nav></div>)}
+      {groups.map(group => <div key={group}><div className="nav-label">{group}</div><nav className="nav">{visibleRoutes.filter(([, item]) => item.group === group).map(([key, item]) => <a key={key} href={`#/${key}`} className={route === key ? 'active' : ''}><span className="nav-icon">{item.icon}</span>{item.title.replace(' Management', 's')}</a>)}</nav></div>)}
       <div className="sidebar-footer"><a href="#/profile" className="mini-user"><span className="avatar">{user.name.split(' ').map(x => x[0]).join('').slice(0, 2)}</span><span><strong>{user.name}</strong><small>{roleLabel(user.role)}</small></span></a></div>
     </aside>
     <div className={`mobile-overlay ${open ? 'open' : ''}`} onClick={() => setOpen(false)} />
@@ -94,9 +95,26 @@ function Profile({ user, setUser, toast }: { user: User; setUser: (u: User) => v
 }
 
 function Rules({ rules, reload, toast }: { rules: Rule[]; reload: () => void; toast: (m: string) => void }) {
+  const [adding, setAdding] = useState(false)
   async function save(rule: Rule, changes: Partial<Rule>) { try { await api(`/api/rules/${rule.id}`, { method: 'PATCH', body: JSON.stringify({ name: changes.name ?? rule.name, weight: changes.weight ?? rule.weight, priority: changes.priority ?? rule.priority, active: changes.active ?? rule.active }) }); await reload(); toast(`${changes.active === false ? 'Rule disabled' : 'Rule saved'}.`) } catch (error) { toast((error as Error).message) } }
   function edit(rule: Rule) { const name = prompt('Rule name', rule.name); if (!name) return; const weight = Number(prompt('Weight from 0 to 1', String(rule.weight))); if (Number.isNaN(weight)) return; save(rule, { name, weight: Math.max(0, Math.min(1, weight)) }) }
-  return <div className="page"><PageHead eyebrow="Administration" title="Rule management" subtitle="Configure weighted soft rules used to detect contradictions and rank candidate actions." /><section className="grid grid-4">{[['Active rules', rules.filter(r => r.active).length, 'All categories'], ['Average weight', rules.length ? (rules.reduce((sum, r) => sum + r.weight, 0) / rules.length).toFixed(2) : 0, 'Configured influence'], ['Rule categories', new Set(rules.map(r => r.category)).size, 'Knowledge coverage'], ['Critical rules', rules.filter(r => r.priority === 3).length, 'High priority']].map(m => <article className="card metric-card" key={m[0]}><div className="metric-label">{m[0]}</div><div className="metric-value">{m[1]}</div><div className="trend">{m[2]}</div></article>)}</section><section className="card" style={{ marginTop: 18 }}><div className="card-head"><div><h2>Business rule catalogue</h2><div className="card-note">Rules are applied consistently to every candidate recommendation.</div></div></div>{rules.map(rule => <div className="rule-row" key={rule.id}><div><div className="campaign-name">{rule.name}</div><div className="card-note">R-{String(rule.id).padStart(2, '0')} · {rule.condition}</div></div><div className="rule-meta"><Badge value={rule.category} /></div><div className="rule-meta"><strong>{rule.weight.toFixed(2)}</strong> weight</div><div className="actions"><button className={`switch ${rule.active ? 'on' : ''}`} onClick={() => save(rule, { active: !rule.active })} aria-label={`Toggle ${rule.name}`} /><button className="btn btn-ghost btn-sm" onClick={() => edit(rule)}>Edit</button></div></div>)}</section></div>
+  async function create(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); const form = new FormData(event.currentTarget)
+    const payload = { name: form.get('name'), metric: form.get('metric'), operator: form.get('operator'), threshold: Number(form.get('threshold')), action: form.get('action'), intent: form.get('intent') || null, weight: Number(form.get('weight')), priority: Number(form.get('priority')), active: true }
+    try { await api('/api/rules', { method: 'POST', body: JSON.stringify(payload) }); await reload(); setAdding(false); toast('Rule added and enabled.') } catch (error) { toast((error as Error).message) }
+  }
+  return <div className="page"><PageHead eyebrow="Administration" title="Rule management" subtitle="Configure weighted soft rules used to detect contradictions and rank candidate actions."><button className="btn btn-primary" onClick={() => setAdding(!adding)}>{adding ? 'Cancel' : '＋ Add rule'}</button></PageHead>
+    {adding && <form className="card" onSubmit={create}><div className="card-head"><div><h2>Add weighted business rule</h2><div className="card-note">Define when one candidate action should receive a symbolic penalty.</div></div></div><div className="form-grid">
+      <Field label="Rule name *"><input name="name" required minLength={2} /></Field>
+      <Field label="Campaign metric *"><select name="metric"><option value="ROI">ROI</option><option value="conversion_rate">Conversion rate (decimal)</option><option value="ctr">CTR (decimal)</option><option value="Engagement_Score">Engagement score</option><option value="Clicks">Clicks</option><option value="Conversions">Conversions</option><option value="Impressions">Impressions</option><option value="Revenue">Revenue</option><option value="Acquisition_Cost">Acquisition cost</option><option value="cost_per_conversion">Cost per conversion</option><option value="budget">Budget</option></select></Field>
+      <Field label="Condition *"><select name="operator"><option value="lt">Below (&lt;)</option><option value="lte">At most (≤)</option><option value="gt">Above (&gt;)</option><option value="gte">At least (≥)</option><option value="eq">Equals (=)</option></select></Field>
+      <Field label="Threshold *"><input name="threshold" type="number" step="any" required /></Field>
+      <Field label="Penalised action *"><select name="action"><option>Increase</option><option>Maintain</option><option>Decrease</option><option>Investigate</option></select></Field>
+      <Field label="Applicable intent"><select name="intent"><option value="">All intents</option><option>Growth</option><option>Retention</option><option>Survival</option></select></Field>
+      <Field label="Weight"><input name="weight" type="number" min="0" max="1" step="0.05" defaultValue="0.75" required /></Field>
+      <Field label="Priority"><select name="priority" defaultValue="2"><option value="1">1 · Low</option><option value="2">2 · Medium</option><option value="3">3 · Critical</option></select></Field>
+    </div><div className="actions"><button type="button" className="btn btn-ghost" onClick={() => setAdding(false)}>Cancel</button><button className="btn btn-primary">Add and enable rule</button></div></form>}
+    <section className="grid grid-4" style={{ marginTop: adding ? 18 : 0 }}>{[['Active rules', rules.filter(r => r.active).length, 'All categories'], ['Average weight', rules.length ? (rules.reduce((sum, r) => sum + r.weight, 0) / rules.length).toFixed(2) : 0, 'Configured influence'], ['Rule categories', new Set(rules.map(r => r.category)).size, 'Knowledge coverage'], ['Critical rules', rules.filter(r => r.priority === 3).length, 'High priority']].map(m => <article className="card metric-card" key={m[0]}><div className="metric-label">{m[0]}</div><div className="metric-value">{m[1]}</div><div className="trend">{m[2]}</div></article>)}</section><section className="card" style={{ marginTop: 18 }}><div className="card-head"><div><h2>Business rule catalogue</h2><div className="card-note">Rules are applied consistently to every candidate recommendation.</div></div></div>{rules.map(rule => <div className="rule-row" key={rule.id}><div><div className="campaign-name">{rule.name}</div><div className="card-note">R-{String(rule.id).padStart(2, '0')} · {rule.condition}</div></div><div className="rule-meta"><Badge value={rule.category} /></div><div className="rule-meta"><strong>{rule.weight.toFixed(2)}</strong> weight</div><div className="actions"><button className={`switch ${rule.active ? 'on' : ''}`} onClick={() => save(rule, { active: !rule.active })} aria-label={`Toggle ${rule.name}`} /><button className="btn btn-ghost btn-sm" onClick={() => edit(rule)}>Edit</button></div></div>)}</section></div>
 }
 
 export default function App() {
@@ -121,7 +139,7 @@ export default function App() {
       history: <History recommendations={recommendations} />,
       evaluation: <EvaluationPage recommendations={recommendations} toast={notify} />,
       profile: <Profile user={user} setUser={setUser} toast={notify} />,
-      rules: <Rules rules={rules} reload={loadRules} toast={notify} />,
+      rules: user.role === 'admin' ? <Rules rules={rules} reload={loadRules} toast={notify} /> : <div className="page"><div className="empty-state"><strong>Administrator access required</strong>Rule management is restricted to administrators.</div></div>,
     }
     return pages[route] || pages.dashboard
   }, [route, user, campaigns, rules, recommendations, current])
