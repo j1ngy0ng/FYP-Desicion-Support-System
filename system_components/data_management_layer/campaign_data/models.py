@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from sqlalchemy import Boolean, Date, DateTime, Float, ForeignKey, Integer, String, Text
+from sqlalchemy import Boolean, Date, DateTime, Float, ForeignKey, Integer, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .database import Base
@@ -101,5 +101,26 @@ class Evaluation(Base):
     trust_alignment: Mapped[float] = mapped_column(Float)
     explanation_usefulness: Mapped[float] = mapped_column(Float)
     user_acceptance: Mapped[float] = mapped_column(Float)
+    comments: Mapped[str] = mapped_column(Text, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class HumanStudyResponse(Base):
+    __tablename__ = "human_study_responses"
+    __table_args__ = (UniqueConstraint("participant_code", "campaign_id", name="uq_study_participant_case"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    participant_code: Mapped[str] = mapped_column(String(40), index=True)
+    campaign_id: Mapped[str] = mapped_column(String(20))
+    condition: Mapped[str] = mapped_column(String(30))
+    recommended_action: Mapped[str] = mapped_column(String(20))
+    confidence: Mapped[float] = mapped_column(Float)
+    correct: Mapped[bool] = mapped_column(Boolean)
+    low_confidence: Mapped[bool] = mapped_column(Boolean)
+    actionability: Mapped[float] = mapped_column(Float)
+    explanation_usefulness: Mapped[float] = mapped_column(Float)
+    reliance: Mapped[float] = mapped_column(Float)
+    user_acceptance: Mapped[float] = mapped_column(Float)
+    decision: Mapped[str] = mapped_column(String(30))
+    consent_confirmed: Mapped[bool] = mapped_column(Boolean)
     comments: Mapped[str] = mapped_column(Text, default="")
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

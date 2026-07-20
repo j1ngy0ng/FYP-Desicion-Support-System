@@ -1,4 +1,4 @@
 from .database import Base, SessionLocal, engine
-from .models import BusinessRule, Campaign, Evaluation, Intent, Recommendation, RecommendationRule, User
+from .models import BusinessRule, Campaign, Evaluation, HumanStudyResponse, Intent, Recommendation, RecommendationRule, User
 
-__all__ = ["Base", "SessionLocal", "engine", "BusinessRule", "Campaign", "Evaluation", "Intent", "Recommendation", "RecommendationRule", "User"]
+__all__ = ["Base", "SessionLocal", "engine", "BusinessRule", "Campaign", "Evaluation", "HumanStudyResponse", "Intent", "Recommendation", "RecommendationRule", "User"]

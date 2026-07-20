@@ -18,8 +18,8 @@ export type MetricRow = Record<string, string | number | Intervals>
 export type Summary = {
   dataset: string; dataset_records: number; target_records: number; configuration: string;
   baselines: MetricRow[]; proposed: Record<string, number>; proposed_ci: Intervals;
-  ablations: Record<string, Record<string, number>>;
-  protocol: { seed: number; test_cases: number; label_source: string; identical_holdout: boolean };
+  ablations: Record<string, Record<string, number>>; ablation_ci: Record<string, Intervals>;
+  protocol: { seed: number; test_cases: number; label_source: string; identical_holdout: boolean; ruleset: string };
   benchmark: { ground_truth_conflict_rate: number };
-  human_evaluation: { responses: number; actionability: number | null };
+  human_evaluation: Record<string, unknown>;
 }

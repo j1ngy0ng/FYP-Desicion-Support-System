@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import base64
+import binascii
 import hashlib
 import hmac
 import io
@@ -21,7 +22,8 @@ from fastapi import Depends, FastAPI, File, HTTPException, Query, UploadFile, st
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, Field
-from sqlalchemy import func, select
+from sqlalchemy import inspect, select, text
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from baseline_evaluation import (
@@ -39,7 +41,7 @@ from baseline_evaluation import (
 
 from .database import Base, SessionLocal, engine
 from .engine import DEFAULT_RULES, RecommendationEngine, prepare_frame
-from .models import BusinessRule, Campaign, Evaluation, Intent, Recommendation, RecommendationRule, User
+from .models import BusinessRule, Campaign, Evaluation, HumanStudyResponse, Intent, Recommendation, RecommendationRule, User
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -75,6 +77,24 @@ def token_user_id(token: str) -> int:
         return int(user_id)
     except (ValueError, TypeError):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or expired session")
+
+
+def make_study_token(participant_code: str, campaign_id: str, condition: str) -> str:
+    payload = f"{participant_code}|{campaign_id}|{condition}"
+    signature = hmac.new(TOKEN_SECRET, payload.encode(), hashlib.sha256).hexdigest()
+    return base64.urlsafe_b64encode(f"{payload}|{signature}".encode()).decode()
+
+
+def study_token_data(token: str) -> tuple[str, str, str]:
+    try:
+        participant_code, campaign_id, condition, signature = base64.urlsafe_b64decode(token.encode()).decode().split("|")
+        payload = f"{participant_code}|{campaign_id}|{condition}"
+        valid = condition in {"full_framework", "without_calibration"} and hmac.compare_digest(signature, hmac.new(TOKEN_SECRET, payload.encode(), hashlib.sha256).hexdigest())
+        if not valid:
+            raise ValueError
+        return participant_code, campaign_id, condition
+    except (ValueError, TypeError, UnicodeDecodeError, binascii.Error):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid study case token")
 
 
 def db_session():
@@ -136,9 +156,17 @@ def seed(db: Session) -> None:
     db.commit()
 
 
+def upgrade_schema() -> None:
+    columns = {column["name"] for column in inspect(engine).get_columns("human_study_responses")}
+    if "consent_confirmed" not in columns:
+        with engine.begin() as connection:
+            connection.execute(text("ALTER TABLE human_study_responses ADD COLUMN consent_confirmed BOOLEAN NOT NULL DEFAULT 0"))
+
+
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     Base.metadata.create_all(engine)
+    upgrade_schema()
     with SessionLocal() as db:
         seed(db)
     yield
@@ -199,6 +227,18 @@ class EvaluationInput(BaseModel):
     trust_alignment: float = Field(ge=1, le=5)
     explanation_usefulness: float = Field(ge=1, le=5)
     user_acceptance: float = Field(ge=1, le=5)
+    comments: str = Field(default="", max_length=1000)
+
+
+class HumanStudyInput(BaseModel):
+    participant_code: str = Field(min_length=3, max_length=40, pattern=r"^[A-Za-z0-9_-]+$")
+    study_token: str
+    actionability: float = Field(ge=1, le=5)
+    explanation_usefulness: float = Field(ge=1, le=5)
+    reliance: float = Field(ge=1, le=5)
+    user_acceptance: float = Field(ge=1, le=5)
+    decision: Literal["Accept without checking", "Verify before accepting", "Reject"]
+    consent: bool
     comments: str = Field(default="", max_length=1000)
 
 
@@ -477,6 +517,105 @@ def evaluate(recommendation_id: int, payload: EvaluationInput, user: CurrentUser
     return {"id": record.id}
 
 
+def frozen_study_rows() -> list[dict[str, Any]]:
+    service = get_engine(); ruleset = service.default_rules
+    candidates = []
+    for row in service.test.to_dict("records"):
+        result = service.recommend(row, ruleset, str(row["Intent"]))
+        risky = result.confidence < .5 or result.action != row["model_label"]
+        candidates.append((row, risky))
+    selected = []
+    for intent in ("Growth", "Retention", "Survival"):
+        group = sorted((item for item in candidates if item[0]["Intent"] == intent), key=lambda item: (not item[1], str(item[0]["Campaign_ID"])))
+        selected.extend(row for row, _ in group[:3])
+    return selected
+
+
+def rating_summary(values: list[float], low: float = 1, high: float = 5) -> dict[str, Any]:
+    if not values:
+        return {"mean": None, "sd": None, "ci95": None}
+    mean = statistics.fmean(values); sd = statistics.stdev(values) if len(values) > 1 else 0.0
+    margin = 1.96 * sd / len(values) ** .5
+    return {"mean": mean, "sd": sd, "ci95": [max(low, mean - margin), min(high, mean + margin)]}
+
+
+def human_study_statistics(rows: list[HumanStudyResponse]) -> dict[str, Any]:
+    trust = [1 - abs((row.reliance - 1) / 4 - float(row.correct)) for row in rows]
+    at_risk = [row for row in rows if not row.correct or row.low_confidence]
+    return {
+        "responses": len(rows), "participants": len({row.participant_code for row in rows}),
+        "actionability": rating_summary([row.actionability for row in rows]),
+        "explanation_usefulness": rating_summary([row.explanation_usefulness for row in rows]),
+        "trust_alignment": rating_summary(trust, 0, 1),
+        "overtrust_rate": statistics.fmean(row.decision == "Accept without checking" for row in at_risk) if at_risk else None,
+        "overtrust_cases": len(at_risk),
+        "user_acceptance": rating_summary([row.user_acceptance for row in rows]),
+    }
+
+
+@app.get("/api/human-study/cases")
+def human_study_cases(
+    participant_code: Annotated[str, Query(min_length=3, max_length=40, pattern=r"^[A-Za-z0-9_-]+$")],
+    _: CurrentUser, db: Db,
+) -> dict[str, Any]:
+    participant_code = participant_code.upper()
+    rows = frozen_study_rows(); rng = random.Random(int(hashlib.sha256(participant_code.encode()).hexdigest()[:16], 16)); rng.shuffle(rows)
+    completed = set(db.scalars(select(HumanStudyResponse.campaign_id).where(HumanStudyResponse.participant_code == participant_code)).all())
+    start = int(hashlib.sha256((participant_code + ":condition").encode()).hexdigest(), 16) % 2
+    cases = []
+    for index, row in enumerate(rows):
+        if row["Campaign_ID"] in completed:
+            continue
+        condition = ("full_framework", "without_calibration")[(index + start) % 2]
+        result = get_engine().recommend(row, get_engine().default_rules, str(row["Intent"]), ablation="full" if condition == "full_framework" else "without_calibration")
+        cases.append({
+            "study_token": make_study_token(participant_code, str(row["Campaign_ID"]), condition),
+            "case_id": row["Campaign_ID"], "campaign_type": row["Campaign_Type"],
+            "channels": row["Channel_Used"], "intent": row["Intent"], "roi": row["ROI"],
+            "conversion_rate": row["conversion_rate"], "engagement_score": row["Engagement_Score"],
+            "action": result.action, "confidence": result.confidence, "confidence_level": result.confidence_level,
+            "explanation": result.explanation,
+        })
+    return {"participant_code": participant_code, "completed": len(completed), "total": len(rows), "cases": cases}
+
+
+@app.post("/api/human-study/responses", status_code=201)
+def submit_human_study(payload: HumanStudyInput, _: CurrentUser, db: Db) -> dict[str, Any]:
+    if not payload.consent:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Participant consent is required")
+    participant_code, campaign_id, condition = study_token_data(payload.study_token)
+    if participant_code != payload.participant_code.upper():
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Participant code does not match this study case")
+    row = next((item for item in frozen_study_rows() if str(item["Campaign_ID"]) == campaign_id), None)
+    if row is None:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "Study case not found")
+    result = get_engine().recommend(row, get_engine().default_rules, str(row["Intent"]), ablation="full" if condition == "full_framework" else "without_calibration")
+    record = HumanStudyResponse(
+        participant_code=participant_code, campaign_id=campaign_id, condition=condition,
+        recommended_action=result.action, confidence=result.confidence,
+        correct=result.action == row["model_label"], low_confidence=result.confidence < .5,
+        actionability=payload.actionability, explanation_usefulness=payload.explanation_usefulness,
+        reliance=payload.reliance, user_acceptance=payload.user_acceptance,
+        decision=payload.decision, consent_confirmed=True, comments=payload.comments,
+    )
+    db.add(record)
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status.HTTP_409_CONFLICT, "This participant already evaluated the study case")
+    return {"id": record.id, "correct": record.correct, "condition": condition}
+
+
+@app.get("/api/human-study/summary")
+def human_study_summary(_: CurrentUser, db: Db) -> dict[str, Any]:
+    rows = list(db.scalars(select(HumanStudyResponse).order_by(HumanStudyResponse.id)).all())
+    return {
+        "overall": human_study_statistics(rows),
+        "conditions": {condition: human_study_statistics([row for row in rows if row.condition == condition]) for condition in ("full_framework", "without_calibration")},
+    }
+
+
 @app.get("/api/rules")
 def rules(_: CurrentUser, db: Db) -> list[dict[str, Any]]:
     return [rule_json(rule) for rule in db.scalars(select(BusinessRule).order_by(BusinessRule.priority.desc(), BusinessRule.id)).all()]
@@ -557,10 +696,6 @@ def framework_evaluation(variant: str, ruleset: list[dict[str, Any]], test_frame
     return metrics, bootstrap_intervals(rows, predictions, confidences, labels)
 
 
-def framework_metrics(variant: str, ruleset: list[dict[str, Any]], test_frame: pd.DataFrame | None = None) -> dict[str, float]:
-    return framework_evaluation(variant, ruleset, test_frame)[0]
-
-
 @app.get("/api/evaluation/summary")
 def evaluation_summary(_: CurrentUser, db: Db, dataset: Literal["normal", "conflict_stress"] = Query("normal")) -> dict[str, Any]:
     normal_rows = load_dataset(DATASET)
@@ -576,7 +711,7 @@ def evaluation_summary(_: CurrentUser, db: Db, dataset: Literal["normal", "confl
     for baseline in baseline_results:
         metrics = decision_metrics(evaluation_rows, baseline.predictions, baseline.confidences, labels, baseline.latency_ms, bool(baseline.explanations and any(baseline.explanations)))
         baseline_rows.append({"Baseline": baseline.name, **metrics, "Confidence Intervals": bootstrap_intervals(evaluation_rows, baseline.predictions, baseline.confidences, labels)})
-    ruleset = [rule_json(rule) for rule in db.scalars(select(BusinessRule)).all()]
+    ruleset = get_engine().default_rules
     if dataset == "normal":
         evaluation_frame = get_engine().test
     else:
@@ -587,19 +722,23 @@ def evaluation_summary(_: CurrentUser, db: Db, dataset: Literal["normal", "confl
     if baseline_ids != proposed_ids:
         raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Evaluation protocol produced inconsistent holdout cases")
     proposed, proposed_ci = framework_evaluation("full", ruleset, evaluation_frame)
-    ablations = {
-        "Without Trust Calibration": framework_metrics("without_calibration", ruleset, evaluation_frame),
-        "Without Intent Awareness": framework_metrics("without_intent", ruleset, evaluation_frame),
-        "Without Soft-Rule Reasoning": framework_metrics("without_rules", ruleset, evaluation_frame),
-        "Backbone Only": framework_metrics("backbone", ruleset, evaluation_frame),
+    variants = {
+        "Without Trust Calibration": "without_calibration",
+        "Without Intent Awareness": "without_intent",
+        "Without Soft-Rule Reasoning": "without_rules",
+        "Backbone Only": "backbone",
     }
+    ablation_results = {name: framework_evaluation(variant, ruleset, evaluation_frame) for name, variant in variants.items()}
+    ablations = {name: result[0] for name, result in ablation_results.items()}
+    ablation_ci = {name: result[1] for name, result in ablation_results.items()}
     ground_truth_conflicts = statistics.fmean(bool(conflict_reasons(row, label)) for row, label in zip(evaluation_rows, labels))
-    human_count, human_actionability = db.execute(select(func.count(Evaluation.id), func.avg(Evaluation.actionability))).one()
+    study_rows = list(db.scalars(select(HumanStudyResponse)).all())
     return {
         "dataset": dataset, "dataset_records": len(get_engine().data), "target_records": 500,
         "configuration": "simplified" if len(get_engine().data) < 500 else "target",
-        "protocol": {"seed": 42, "test_cases": len(evaluation_rows), "label_source": "reviewer consensus, otherwise reference action", "identical_holdout": True},
+        "protocol": {"seed": 42, "test_cases": len(evaluation_rows), "label_source": "reviewer consensus, otherwise reference action", "identical_holdout": True, "ruleset": "frozen default rules"},
         "benchmark": {"ground_truth_conflict_rate": ground_truth_conflicts},
-        "baselines": baseline_rows, "proposed": proposed, "proposed_ci": proposed_ci, "ablations": ablations,
-        "human_evaluation": {"responses": human_count, "actionability": float(human_actionability / 5) if human_actionability is not None else None},
+        "baselines": baseline_rows, "proposed": proposed, "proposed_ci": proposed_ci,
+        "ablations": ablations, "ablation_ci": ablation_ci,
+        "human_evaluation": human_study_statistics(study_rows),
     }
