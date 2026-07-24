@@ -1,7 +1,7 @@
 import numpy as np
 
 
-ACTIONS = ("Increase", "Maintain", "Decrease", "Investigate")
+ACTIONS = ("Increase", "Maintain", "Reduce", "Investigate")
 
 
 def softmax(values: np.ndarray) -> np.ndarray:

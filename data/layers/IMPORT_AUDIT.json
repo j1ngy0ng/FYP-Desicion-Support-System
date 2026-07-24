@@ -1,0 +1,21 @@
+{
+  "source_directory": "C:\\Users\\user\\Downloads\\nykaa_three_layer_dataset(1)\\nykaa_data_layers",
+  "raw_sha256": "4969a1c5961fba85772822467f87e2c3069107017bdc6d685c21b47a0ed22665",
+  "processed_sha256": "7979e95284e034236e684de0e26e00d551ba7ba0dbabe3f2a5a71655e212b1dd",
+  "unverified_gold_sha256": "ac85733d767420780568dba50132c286e47c316e2e2e2e8d354b85cebd9ac15e",
+  "review_workbook_sha256": "a1bddf602ba9abf48ef113b37625f1ba8be05103308576055e3574d0fef3b0f8",
+  "raw_records": 55555,
+  "processed_records": 55555,
+  "candidate_benchmark_records": 125,
+  "raw_fields_preserved_in_processed": true,
+  "candidate_source_fields_match_raw": true,
+  "candidate_output": "data\\benchmark_candidate_125.csv",
+  "gold_promoted_to_audited_benchmark": true,
+  "confirmatory_ready": true,
+  "audited_benchmark_sha256": "3f2320fbd190b24766db4453ab1dc7e7b212803fdfa2ac048c2437012d4d51ee",
+  "audited_benchmark_records": 125,
+  "intent_cohens_kappa": 0.8539008473750853,
+  "action_cohens_kappa": 0.7017497348886532,
+  "human_provenance_attested": true,
+  "confirmatory_blockers": []
+}

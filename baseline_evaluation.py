@@ -10,7 +10,7 @@ import random
 import statistics
 import time
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Sequence, Tuple
 
@@ -38,7 +38,7 @@ ACTION_ALIASES = {
 INTENT_SCENARIO_ACTIONS = {
     "Survival": {"Reduce", "Maintain", "Investigate"},
     "Retention": {"Maintain", "Increase", "Investigate"},
-    "Growth": {"Increase", "Maintain"},
+    "Growth": {"Increase", "Maintain", "Investigate"},
 }
 
 ACTIONABILITY_WEIGHTS = {"scenario_fit": 0.45, "non_conflict": 0.35, "confidence": 0.20}
@@ -68,11 +68,17 @@ class BaselineResult:
     confidences: List[float]
     explanations: List[str]
     latency_ms: float
+    top2_predictions: List[List[str]] = field(default_factory=list)
+    case_latencies_ms: List[float] = field(default_factory=list)
 
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run baseline systems and compute evaluation metrics.")
-    parser.add_argument("--dataset", default="data/Dataset.csv", help="Dataset path")
+    parser.add_argument(
+        "--dataset",
+        default="data/benchmark_audited.csv",
+        help="Completed human-audited benchmark path",
+    )
     parser.add_argument(
         "--train-dataset",
         help="Optional training dataset. Use the normal dataset here when testing robustness on stress data.",
@@ -80,7 +86,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", default="outputs/normal", help="Output directory")
     parser.add_argument("--test-size", type=float, default=0.2, help="Holdout test ratio")
     parser.add_argument("--seed", type=int, default=42, help="Random seed")
-    parser.add_argument("--ece-bins", type=int, default=10, help="ECE bins")
+    parser.add_argument("--ece-bins", type=int, default=5, help="ECE bins")
     return parser.parse_args()
 
 
@@ -100,8 +106,41 @@ def split_channels(channel_value: str) -> List[str]:
 
 
 def load_dataset(path: Path) -> List[dict]:
+    if not path.exists():
+        raise ValueError(
+            f"{path} does not exist. Complete the human annotation protocol first."
+        )
     with path.open(newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
+    forbidden = {
+        "Intent",
+        "Reference_Action",
+        "Justification",
+        "Reviewer_1_Label",
+        "Reviewer_2_Label",
+    }
+    legacy = sorted(forbidden.intersection(rows[0] if rows else {}))
+    if legacy:
+        raise ValueError(
+            "Legacy AI-generated annotation columns are forbidden: "
+            + ", ".join(legacy)
+        )
+    required = {
+        "Reviewer_1_Intent",
+        "Reviewer_1_Action",
+        "Reviewer_2_Intent",
+        "Reviewer_2_Action",
+        "Adjudicated_Intent",
+        "Adjudicated_Action",
+        "Annotation_Status",
+    }
+    missing = sorted(required.difference(rows[0] if rows else {}))
+    if missing:
+        raise ValueError("Audited benchmark is missing columns: " + ", ".join(missing))
+    if len(rows) < 120:
+        raise ValueError("The frozen audited benchmark must contain at least 120 cases.")
+    if any(row["Annotation_Status"].strip() != "Audited" for row in rows):
+        raise ValueError("Every benchmark case must have Annotation_Status=Audited.")
     prepared = []
     for row in rows:
         item = dict(row)
@@ -115,12 +154,18 @@ def load_dataset(path: Path) -> List[dict]:
         item["conversion_rate"] = conversions / clicks if clicks > 0 else 0.0
         item["lead_to_conversion"] = conversions / leads if leads > 0 else 0.0
         item["cost_per_conversion"] = item["Acquisition_Cost"] / conversions if conversions > 0 else item["Acquisition_Cost"]
-        reviewer_1 = canonical_action(item.get("Reviewer_1_Label", ""))
-        reviewer_2 = canonical_action(item.get("Reviewer_2_Label", ""))
-        reference = canonical_action(item.get("Reference_Action", ""))
-        item["label"] = reviewer_1 if reviewer_1 and reviewer_1 == reviewer_2 else reference
+        reviewer_1 = canonical_action(item["Reviewer_1_Action"])
+        reviewer_2 = canonical_action(item["Reviewer_2_Action"])
+        reference = canonical_action(item["Adjudicated_Action"])
+        if reviewer_1 not in ACTION_ALIASES.values() or reviewer_2 not in ACTION_ALIASES.values():
+            raise ValueError("Reviewer actions must use the four-action rubric.")
+        if reference not in ACTION_ALIASES.values():
+            raise ValueError("Adjudicated actions must use the four-action rubric.")
+        item["label"] = reference
         item["Reference_Action"] = reference
-        item["Intent"] = item.get("Intent", "").strip().title()
+        item["Intent"] = item["Adjudicated_Intent"].strip().title()
+        if item["Intent"] not in INTENT_SCENARIO_ACTIONS:
+            raise ValueError("Adjudicated intents must be Survival, Retention or Growth.")
         item["channels"] = split_channels(item.get("Channel_Used", ""))
         prepared.append(item)
     return prepared
@@ -187,9 +232,10 @@ def softmax(logits: Sequence[float]) -> List[float]:
 
 
 def baseline_a_predict(rows: List[dict]) -> BaselineResult:
-    preds, confs, exps = [], [], []
+    preds, confs, exps, top2, case_latencies = [], [], [], [], []
     start = time.perf_counter()
     for row in rows:
+        case_started = time.perf_counter()
         roi = row["ROI"]
         conv = row["conversion_rate"]
         engagement = row["Engagement_Score"]
@@ -204,8 +250,16 @@ def baseline_a_predict(rows: List[dict]) -> BaselineResult:
         preds.append(actions[idx])
         confs.append(probs[idx])
         exps.append("")
+        top2.append([
+            actions[index]
+            for index in sorted(range(len(actions)), key=lambda i: probs[i], reverse=True)[:2]
+        ])
+        case_latencies.append((time.perf_counter() - case_started) * 1000)
     latency = (time.perf_counter() - start) * 1000 / max(1, len(rows))
-    return BaselineResult("Baseline A - Heuristic Scorecard", preds, confs, exps, latency)
+    return BaselineResult(
+        "Baseline A - Heuristic Scorecard", preds, confs, exps, latency,
+        top2, case_latencies,
+    )
 
 
 def fit_centroid_model(train_rows: List[dict]) -> Tuple[List[str], Dict[str, List[float]], List[float], List[float]]:
@@ -256,23 +310,30 @@ def build_channel_attribution(train_rows: List[dict]) -> Dict[str, float]:
 
 def baseline_b_predict(test_rows: List[dict], model) -> BaselineResult:
     labels, centroids, means, stds = model
-    preds, confs, exps = [], [], []
+    preds, confs, exps, top2, case_latencies = [], [], [], [], []
     start = time.perf_counter()
     for row in test_rows:
+        case_started = time.perf_counter()
         probs = predict_centroid_proba(row, labels, centroids, means, stds)
         pred = max(probs, key=probs.get)
         preds.append(pred)
         confs.append(probs[pred])
         exps.append("")
+        top2.append(sorted(probs, key=probs.get, reverse=True)[:2])
+        case_latencies.append((time.perf_counter() - case_started) * 1000)
     latency = (time.perf_counter() - start) * 1000 / max(1, len(test_rows))
-    return BaselineResult("Baseline B - Predictive Analytics Only", preds, confs, exps, latency)
+    return BaselineResult(
+        "Baseline B - Predictive Analytics Only", preds, confs, exps, latency,
+        top2, case_latencies,
+    )
 
 
 def baseline_c_predict(test_rows: List[dict], model, channel_attr: Dict[str, float]) -> BaselineResult:
     labels, centroids, means, stds = model
-    preds, confs, exps = [], [], []
+    preds, confs, exps, top2, case_latencies = [], [], [], [], []
     start = time.perf_counter()
     for row in test_rows:
+        case_started = time.perf_counter()
         probs = predict_centroid_proba(row, labels, centroids, means, stds)
         logits = {label: math.log(max(p, 1e-9)) for label, p in probs.items()}
         ch_values = [channel_attr[ch] for ch in row["channels"] if ch in channel_attr]
@@ -286,12 +347,17 @@ def baseline_c_predict(test_rows: List[dict], model, channel_attr: Dict[str, flo
         pred = max(adj_probs, key=adj_probs.get)
         preds.append(pred)
         confs.append(adj_probs[pred])
+        top2.append(sorted(adj_probs, key=adj_probs.get, reverse=True)[:2])
         exps.append(
             f"Attribution-adjusted recommendation from channels {', '.join(row['channels']) or 'N/A'} "
             f"(strength={attr_strength:.2f})."
         )
+        case_latencies.append((time.perf_counter() - case_started) * 1000)
     latency = (time.perf_counter() - start) * 1000 / max(1, len(test_rows))
-    return BaselineResult("Baseline C - Predictive Analytics with Attribution", preds, confs, exps, latency)
+    return BaselineResult(
+        "Baseline C - Predictive Analytics with Attribution", preds, confs, exps,
+        latency, top2, case_latencies,
+    )
 
 
 def filter_conflicting_actions(row: dict, probabilities: Dict[str, float]) -> Tuple[str, float, List[str]]:
@@ -307,9 +373,10 @@ def filter_conflicting_actions(row: dict, probabilities: Dict[str, float]) -> Tu
 
 def baseline_d_predict(test_rows: List[dict], model) -> BaselineResult:
     labels, centroids, means, stds = model
-    preds, confs, exps = [], [], []
+    preds, confs, exps, top2, case_latencies = [], [], [], [], []
     start = time.perf_counter()
     for row in test_rows:
+        case_started = time.perf_counter()
         probabilities = predict_centroid_proba(row, labels, centroids, means, stds)
         pred, confidence, rejected = filter_conflicting_actions(row, probabilities)
         preds.append(pred)
@@ -317,8 +384,21 @@ def baseline_d_predict(test_rows: List[dict], model) -> BaselineResult:
         exps.append(
             f"Post-hoc rules filtered {', '.join(rejected) or 'no actions'} after predictive scoring."
         )
+        allowed = {
+            action: probability
+            for action, probability in probabilities.items()
+            if action not in rejected
+        }
+        top2.append(
+            sorted(allowed, key=allowed.get, reverse=True)[:2]
+            or ["Investigate"]
+        )
+        case_latencies.append((time.perf_counter() - case_started) * 1000)
     latency = (time.perf_counter() - start) * 1000 / max(1, len(test_rows))
-    return BaselineResult("Baseline D - Post-Hoc Rule Overlay", preds, confs, exps, latency)
+    return BaselineResult(
+        "Baseline D - Post-Hoc Rule Overlay", preds, confs, exps, latency,
+        top2, case_latencies,
+    )
 
 
 def recommendation_accuracy(preds: Sequence[str], labels: Sequence[str]) -> float:
@@ -326,6 +406,51 @@ def recommendation_accuracy(preds: Sequence[str], labels: Sequence[str]) -> floa
         return 0.0
     hits = sum(1 for p, y in zip(preds, labels) if p == y)
     return hits / len(labels)
+
+
+def macro_f1_score(preds: Sequence[str], labels: Sequence[str]) -> float:
+    classes = sorted(set(labels) | set(preds))
+    scores = []
+    for label in classes:
+        true_positive = sum(
+            prediction == label and reference == label
+            for prediction, reference in zip(preds, labels)
+        )
+        false_positive = sum(
+            prediction == label and reference != label
+            for prediction, reference in zip(preds, labels)
+        )
+        false_negative = sum(
+            prediction != label and reference == label
+            for prediction, reference in zip(preds, labels)
+        )
+        denominator = 2 * true_positive + false_positive + false_negative
+        scores.append(0.0 if denominator == 0 else 2 * true_positive / denominator)
+    return statistics.fmean(scores) if scores else 0.0
+
+
+def top2_agreement(
+    top2_predictions: Sequence[Sequence[str]],
+    labels: Sequence[str],
+    fallback_predictions: Sequence[str],
+) -> float:
+    ranked = top2_predictions or [[prediction] for prediction in fallback_predictions]
+    return sum(
+        reference in predictions
+        for predictions, reference in zip(ranked, labels)
+    ) / max(1, len(labels))
+
+
+def percentile(values: Sequence[float], probability: float) -> float:
+    if not values:
+        return 0.0
+    ordered = sorted(values)
+    position = (len(ordered) - 1) * probability
+    lower = math.floor(position)
+    upper = math.ceil(position)
+    if lower == upper:
+        return ordered[lower]
+    return ordered[lower] + (ordered[upper] - ordered[lower]) * (position - lower)
 
 
 def scenario_fit_rate(preds: Sequence[str], intents: Sequence[str]) -> float:
@@ -440,7 +565,7 @@ def explanation_usefulness_score(explanations: Sequence[str], baseline_name: str
             score += 0.35
         richness.append(min(1.0, score))
     avg = statistics.fmean(richness)
-    if "Baseline C" in baseline_name:
+    if "Baseline C" in baseline_name or "Proposed" in baseline_name:
         return avg
     return avg * NON_ATTRIBUTION_EXPLANATION_FACTOR
 
@@ -496,10 +621,20 @@ def evaluate_baseline(
     correctness = [1 if p == y else 0 for p, y in zip(preds, labels)]
     metrics = {
         "Recommendation Accuracy": recommendation_accuracy(preds, labels),
+        "Macro F1": macro_f1_score(preds, labels),
+        "Top-2 Agreement": top2_agreement(
+            baseline.top2_predictions, labels, preds,
+        ),
         "Scenario-Fit Rate": scenario_fit_rate(preds, intents),
         "Logical Conflict Rate": logical_conflict_rate(rows, preds),
         "Expected Calibration Error (ECE)": expected_calibration_error(confidences, correctness, bins),
         "Recommendation Latency (ms)": baseline.latency_ms,
+        "P50 Latency (ms)": percentile(
+            baseline.case_latencies_ms or [baseline.latency_ms], .50,
+        ),
+        "P95 Latency (ms)": percentile(
+            baseline.case_latencies_ms or [baseline.latency_ms], .95,
+        ),
     }
     metrics.update(proxy_metrics(rows, preds, confidences, labels, baseline.explanations, baseline.name))
     return metrics

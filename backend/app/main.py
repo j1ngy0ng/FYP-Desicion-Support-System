@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import base64
 import binascii
+import csv
 import hashlib
 import hmac
 import io
@@ -20,24 +21,12 @@ import numpy as np
 import pandas as pd
 from fastapi import Depends, FastAPI, File, HTTPException, Query, UploadFile, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import Response
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel, Field
 from sqlalchemy import inspect, select, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-
-from baseline_evaluation import (
-    baseline_a_predict,
-    baseline_b_predict,
-    baseline_c_predict,
-    baseline_d_predict,
-    build_channel_attribution,
-    conflict_reasons,
-    expected_calibration_error,
-    fit_centroid_model,
-    load_dataset,
-    stratified_split,
-)
 
 from .database import Base, SessionLocal, engine
 from .engine import DEFAULT_RULES, RecommendationEngine, prepare_frame
@@ -45,10 +34,31 @@ from .models import BusinessRule, Campaign, Evaluation, HumanStudyResponse, Inte
 
 
 ROOT = Path(__file__).resolve().parents[2]
-DATASET = ROOT / "data" / "Dataset.csv"
+RAW_DATASET = ROOT / "data" / "layers" / "01_raw_dataset_55555x16.csv"
+DATASET = ROOT / "data" / "layers" / "02_processed_model_data.csv"
+AUDITED_BENCHMARK = ROOT / "data" / "benchmark_audited.csv"
+CONFIRMATORY_RESULTS = ROOT / "results" / "R002.json"
+BENCHMARK_AUDIT = (
+    ROOT / "data" / "human_annotations" / "completed" / "benchmark_audit.json"
+)
+CONFIRMATORY_PREDICTIONS = (
+    ROOT / "outputs" / "confirmatory_evaluation" / "predictions.csv"
+)
+BENCHMARK_CANDIDATE = ROOT / "data" / "benchmark_candidate_125.csv"
+DECISION_CASES = BENCHMARK_CANDIDATE
+SYNTHETIC_DEVELOPMENT = ROOT / "data" / "Dataset_synthetic_development.csv"
+HUMAN_PROVIDED_DEVELOPMENT = ROOT / "data" / "Dataset_human_provided_development.csv"
 TOKEN_SECRET = os.getenv("TOKEN_SECRET", "change-this-development-secret").encode()
 security = HTTPBearer(auto_error=False)
 recommendation_engine: RecommendationEngine | None = None
+STUDY_CONDITIONS = (
+    "raw_uncalibrated",
+    "calibrated_confidence",
+    "structured_uncalibrated",
+    "terse_calibrated",
+    "structured_calibrated",
+    "full_framework",
+)
 
 
 def password_hash(password: str, salt: bytes | None = None) -> str:
@@ -79,20 +89,50 @@ def token_user_id(token: str) -> int:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or expired session")
 
 
-def make_study_token(participant_code: str, campaign_id: str, condition: str) -> str:
-    payload = f"{participant_code}|{campaign_id}|{condition}"
+def make_study_token(
+    participant_code: str,
+    campaign_id: str,
+    presentation_order: int,
+    counterbalance_group: str,
+) -> str:
+    payload = (
+        f"{participant_code}|{campaign_id}|{presentation_order}|"
+        f"{counterbalance_group}"
+    )
     signature = hmac.new(TOKEN_SECRET, payload.encode(), hashlib.sha256).hexdigest()
     return base64.urlsafe_b64encode(f"{payload}|{signature}".encode()).decode()
 
 
-def study_token_data(token: str) -> tuple[str, str, str]:
+def study_token_data(token: str) -> tuple[str, str, int, str]:
     try:
-        participant_code, campaign_id, condition, signature = base64.urlsafe_b64decode(token.encode()).decode().split("|")
-        payload = f"{participant_code}|{campaign_id}|{condition}"
-        valid = condition in {"full_framework", "without_calibration"} and hmac.compare_digest(signature, hmac.new(TOKEN_SECRET, payload.encode(), hashlib.sha256).hexdigest())
+        (
+            participant_code,
+            campaign_id,
+            presentation_order,
+            counterbalance_group,
+            signature,
+        ) = base64.urlsafe_b64decode(token.encode()).decode().split("|")
+        payload = (
+            f"{participant_code}|{campaign_id}|{presentation_order}|"
+            f"{counterbalance_group}"
+        )
+        valid = (
+            presentation_order.isdigit()
+            and counterbalance_group
+            in {f"CB-{index}" for index in range(1, len(STUDY_CONDITIONS) + 1)}
+            and hmac.compare_digest(
+                signature,
+                hmac.new(TOKEN_SECRET, payload.encode(), hashlib.sha256).hexdigest(),
+            )
+        )
         if not valid:
             raise ValueError
-        return participant_code, campaign_id, condition
+        return (
+            participant_code,
+            campaign_id,
+            int(presentation_order),
+            counterbalance_group,
+        )
     except (ValueError, TypeError, UnicodeDecodeError, binascii.Error):
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Invalid study case token")
 
@@ -158,9 +198,25 @@ def seed(db: Session) -> None:
 
 def upgrade_schema() -> None:
     columns = {column["name"] for column in inspect(engine).get_columns("human_study_responses")}
-    if "consent_confirmed" not in columns:
-        with engine.begin() as connection:
-            connection.execute(text("ALTER TABLE human_study_responses ADD COLUMN consent_confirmed BOOLEAN NOT NULL DEFAULT 0"))
+    additions = {
+        "consent_confirmed": "BOOLEAN NOT NULL DEFAULT 0",
+        "participant_group": "VARCHAR(30) NOT NULL DEFAULT 'Non-practitioner'",
+        "presentation_order": "INTEGER NOT NULL DEFAULT 0",
+        "counterbalance_group": "VARCHAR(20) NOT NULL DEFAULT ''",
+        "specificity": "FLOAT NOT NULL DEFAULT 3",
+        "feasibility": "FLOAT NOT NULL DEFAULT 3",
+        "willingness_to_review": "FLOAT NOT NULL DEFAULT 3",
+        "decision_time_ms": "FLOAT NOT NULL DEFAULT 0",
+    }
+    with engine.begin() as connection:
+        for column, definition in additions.items():
+            if column not in columns:
+                connection.execute(
+                    text(
+                        f"ALTER TABLE human_study_responses "
+                        f"ADD COLUMN {column} {definition}"
+                    )
+                )
 
 
 @asynccontextmanager
@@ -184,7 +240,17 @@ app.add_middleware(
 
 class LoginInput(BaseModel):
     email: str
-    password: str
+    password: str = Field(min_length=8, max_length=128)
+
+
+class RegisterInput(LoginInput):
+    name: str = Field(min_length=2, max_length=100)
+    organisation: str = Field(default="SME Marketing Lab", max_length=100)
+
+
+class ChangePasswordInput(BaseModel):
+    current_password: str = Field(min_length=8, max_length=128)
+    new_password: str = Field(min_length=8, max_length=128)
 
 
 class ProfileInput(BaseModel):
@@ -232,12 +298,22 @@ class EvaluationInput(BaseModel):
 
 class HumanStudyInput(BaseModel):
     participant_code: str = Field(min_length=3, max_length=40, pattern=r"^[A-Za-z0-9_-]+$")
+    participant_group: Literal["Marketing practitioner", "Non-practitioner"]
     study_token: str
     actionability: float = Field(ge=1, le=5)
+    specificity: float = Field(ge=1, le=5)
+    feasibility: float = Field(ge=1, le=5)
     explanation_usefulness: float = Field(ge=1, le=5)
     reliance: float = Field(ge=1, le=5)
+    willingness_to_review: float = Field(ge=1, le=5)
     user_acceptance: float = Field(ge=1, le=5)
-    decision: Literal["Accept without checking", "Verify before accepting", "Reject"]
+    decision: Literal[
+        "Accept without checking",
+        "Verify before accepting",
+        "Modify before accepting",
+        "Reject",
+    ]
+    decision_time_ms: float = Field(ge=0, le=3_600_000)
     consent: bool
     comments: str = Field(default="", max_length=1000)
 
@@ -257,7 +333,7 @@ class RuleCreateInput(RuleInput):
     ]
     operator: Literal["lt", "lte", "gt", "gte", "eq"]
     threshold: float = Field(allow_inf_nan=False)
-    action: Literal["Increase", "Maintain", "Decrease", "Investigate"]
+    action: Literal["Increase", "Maintain", "Reduce", "Investigate"]
     intent: Literal["Growth", "Retention", "Survival"] | None = None
 
 
@@ -316,7 +392,10 @@ def rule_json(rule: BusinessRule) -> dict[str, Any]:
 def get_engine() -> RecommendationEngine:
     global recommendation_engine
     if recommendation_engine is None:
-        recommendation_engine = RecommendationEngine(DATASET)
+        recommendation_engine = RecommendationEngine(
+            DATASET,
+            audited_benchmark=AUDITED_BENCHMARK,
+        )
     return recommendation_engine
 
 
@@ -333,6 +412,32 @@ def login(payload: LoginInput, db: Db) -> dict[str, Any]:
     return {"token": make_token(user.id), "user": {"name": user.name, "email": user.email, "role": user.role, "organisation": user.organisation}}
 
 
+@app.post("/api/auth/register", status_code=201)
+def register(payload: RegisterInput, db: Db) -> dict[str, Any]:
+    user = User(
+        name=payload.name.strip(),
+        email=payload.email.strip().lower(),
+        password_hash=password_hash(payload.password),
+        role="manager",
+        organisation=payload.organisation.strip(),
+    )
+    db.add(user)
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status.HTTP_409_CONFLICT, "An account with this email already exists")
+    return {
+        "token": make_token(user.id),
+        "user": {
+            "name": user.name,
+            "email": user.email,
+            "role": user.role,
+            "organisation": user.organisation,
+        },
+    }
+
+
 @app.get("/api/profile")
 def profile(user: CurrentUser) -> dict[str, Any]:
     return {"name": user.name, "email": user.email, "role": user.role, "organisation": user.organisation, "created_at": user.created_at}
@@ -340,9 +445,29 @@ def profile(user: CurrentUser) -> dict[str, Any]:
 
 @app.patch("/api/profile")
 def update_profile(payload: ProfileInput, user: CurrentUser, db: Db) -> dict[str, Any]:
-    user.name, user.email, user.organisation = payload.name, payload.email, payload.organisation
-    db.commit()
+    user.name = payload.name.strip()
+    user.email = payload.email.strip().lower()
+    user.organisation = payload.organisation.strip()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status.HTTP_409_CONFLICT, "An account with this email already exists")
     return profile(user)
+
+
+@app.patch("/api/profile/password", status_code=204)
+def update_password(
+    payload: ChangePasswordInput,
+    user: CurrentUser,
+    db: Db,
+) -> None:
+    if not password_matches(payload.current_password, user.password_hash):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Current password is incorrect")
+    if payload.current_password == payload.new_password:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Choose a different new password")
+    user.password_hash = password_hash(payload.new_password)
+    db.commit()
 
 
 @app.get("/api/campaigns")
@@ -445,17 +570,25 @@ def analysis(campaign_id: str, user: CurrentUser, db: Db) -> dict[str, Any]:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Campaign not found")
     rules = [rule_json(rule) for rule in db.scalars(select(BusinessRule)).all()]
     result = get_engine().recommend(engine_case(item), rules, item.intent.name)
-    return {"campaign": campaign_json(item), "performance_score": result.performance_score, "attribution": result.attribution, "channel_attribution": result.channel_attribution}
+    return {
+        "campaign": campaign_json(item),
+        "performance_score": result.performance_score,
+        "attribution": result.attribution,
+        "channel_attribution": result.channel_attribution,
+        "calibration_status": result.calibration_status,
+    }
 
 
 def recommendation_json(item: Recommendation) -> dict[str, Any]:
     explanation = json.loads(item.explanation)
+    evidence = json.loads(item.evidence)
     return {
         "id": f"REC-{item.id:04d}", "numeric_id": item.id, "campaign_id": item.campaign_id,
         "campaign": item.campaign.name, "intent": item.intent.name, "action": item.action,
         "confidence": round(item.confidence * 100, 1), "raw_confidence": round(item.raw_confidence * 100, 1),
         "performance_score": round(item.performance_score * 100, 1), "explanation": explanation,
-        "evidence": json.loads(item.evidence), "ranked_actions": json.loads(item.ranked_actions),
+        "evidence": evidence, "ranked_actions": json.loads(item.ranked_actions),
+        "calibration_status": evidence.get("calibration_status", "legacy_unknown"),
         "latency_ms": item.latency_ms, "status": item.decision, "date": item.generated_at.strftime("%d %b %Y"),
     }
 
@@ -471,7 +604,13 @@ def generate(payload: GenerateInput, user: CurrentUser, db: Db) -> dict[str, Any
     record = Recommendation(
         campaign_id=item.id, intent_id=intent.id, action=result.action, confidence=result.confidence,
         raw_confidence=result.raw_confidence, performance_score=result.performance_score,
-        explanation=json.dumps(result.explanation), evidence=json.dumps({"attribution": result.attribution, "channels": result.channel_attribution, "confidence_level": result.confidence_level}),
+        explanation=json.dumps(result.explanation),
+        evidence=json.dumps({
+            "attribution": result.attribution,
+            "channels": result.channel_attribution,
+            "confidence_level": result.confidence_level,
+            "calibration_status": result.calibration_status,
+        }),
         ranked_actions=json.dumps(result.ranked_actions), latency_ms=result.latency_ms,
     )
     db.add(record); db.flush()
@@ -518,16 +657,46 @@ def evaluate(recommendation_id: int, payload: EvaluationInput, user: CurrentUser
 
 
 def frozen_study_rows() -> list[dict[str, Any]]:
-    service = get_engine(); ruleset = service.default_rules
-    candidates = []
-    for row in service.test.to_dict("records"):
-        result = service.recommend(row, ruleset, str(row["Intent"]))
-        risky = result.confidence < .5 or result.action != row["model_label"]
-        candidates.append((row, risky))
-    selected = []
+    if not AUDITED_BENCHMARK.exists():
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            "Human study is locked until data/benchmark_audited.csv exists.",
+        )
+    frame = pd.read_csv(AUDITED_BENCHMARK)
+    required = {
+        "Reviewer_1_Intent", "Reviewer_1_Action",
+        "Reviewer_2_Intent", "Reviewer_2_Action",
+        "Adjudicated_Intent", "Adjudicated_Action", "Annotation_Status",
+    }
+    missing = sorted(required.difference(frame.columns))
+    if missing:
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            "Audited benchmark is missing columns: " + ", ".join(missing),
+        )
+    if len(frame) < 120 or not frame.Annotation_Status.eq("Audited").all():
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            "Human study is locked until at least 120 cases are fully audited.",
+        )
+    intents = {"Growth", "Retention", "Survival"}
+    actions = {"Increase", "Maintain", "Reduce", "Investigate"}
+    if not set(frame.Adjudicated_Intent).issubset(intents) or not set(frame.Adjudicated_Action).issubset(actions):
+        raise HTTPException(status.HTTP_409_CONFLICT, "Audited benchmark contains invalid intent or action values.")
+    frame["Intent"] = frame.Adjudicated_Intent
+    frame["model_label"] = frame.Adjudicated_Action
+    prepared = prepare_frame(DATASET)
+    frame = frame.drop(columns=[column for column in prepared.columns if column in frame.columns and column not in {"Campaign_ID"}]).merge(
+        prepared,
+        on="Campaign_ID",
+        how="inner",
+    )
+    selected: list[dict[str, Any]] = []
     for intent in ("Growth", "Retention", "Survival"):
-        group = sorted((item for item in candidates if item[0]["Intent"] == intent), key=lambda item: (not item[1], str(item[0]["Campaign_ID"])))
-        selected.extend(row for row, _ in group[:3])
+        group = frame[frame.Intent == intent].sort_values("Campaign_ID")
+        selected.extend(group.head(3).to_dict("records"))
+    if len(selected) != 9:
+        raise HTTPException(status.HTTP_409_CONFLICT, "Audited benchmark needs at least three cases per intent.")
     return selected
 
 
@@ -544,13 +713,69 @@ def human_study_statistics(rows: list[HumanStudyResponse]) -> dict[str, Any]:
     at_risk = [row for row in rows if not row.correct or row.low_confidence]
     return {
         "responses": len(rows), "participants": len({row.participant_code for row in rows}),
+        "participant_groups": {
+            str(group): int(count)
+            for group, count in pd.Series(
+                [getattr(row, "participant_group", "Unspecified") for row in rows]
+            ).value_counts().items()
+        } if rows else {},
         "actionability": rating_summary([row.actionability for row in rows]),
+        "specificity": rating_summary(
+            [getattr(row, "specificity", 3) for row in rows]
+        ),
+        "feasibility": rating_summary(
+            [getattr(row, "feasibility", 3) for row in rows]
+        ),
         "explanation_usefulness": rating_summary([row.explanation_usefulness for row in rows]),
         "trust_alignment": rating_summary(trust, 0, 1),
         "overtrust_rate": statistics.fmean(row.decision == "Accept without checking" for row in at_risk) if at_risk else None,
         "overtrust_cases": len(at_risk),
+        "willingness_to_review": rating_summary(
+            [getattr(row, "willingness_to_review", 3) for row in rows]
+        ),
         "user_acceptance": rating_summary([row.user_acceptance for row in rows]),
+        "decision_time_seconds": rating_summary(
+            [getattr(row, "decision_time_ms", 0) / 1000 for row in rows],
+            0,
+            3600,
+        ),
     }
+
+
+def study_assignment(participant_code: str) -> tuple[int, str]:
+    offset = int(
+        hashlib.sha256((participant_code + ":condition").encode()).hexdigest(),
+        16,
+    ) % len(STUDY_CONDITIONS)
+    return offset, f"CB-{offset + 1}"
+
+
+def study_result(row: dict[str, Any], condition: str):
+    ablation = (
+        "full"
+        if condition in {
+            "calibrated_confidence",
+            "terse_calibrated",
+            "structured_calibrated",
+            "full_framework",
+        }
+        else "without_calibration"
+    )
+    result = get_engine().recommend(
+        row,
+        get_engine().default_rules,
+        str(row["Intent"]),
+        ablation=ablation,
+    )
+    presentation = {
+        "raw_uncalibrated": "raw",
+        "calibrated_confidence": "confidence_only",
+        "structured_uncalibrated": "structured",
+        "terse_calibrated": "terse",
+        "structured_calibrated": "structured_no_caveat",
+        "full_framework": "structured",
+    }[condition]
+    return result, presentation
 
 
 @app.get("/api/human-study/cases")
@@ -560,43 +785,127 @@ def human_study_cases(
 ) -> dict[str, Any]:
     participant_code = participant_code.upper()
     rows = frozen_study_rows(); rng = random.Random(int(hashlib.sha256(participant_code.encode()).hexdigest()[:16], 16)); rng.shuffle(rows)
+    existing_response = db.scalar(
+        select(HumanStudyResponse)
+        .where(HumanStudyResponse.participant_code == participant_code)
+        .limit(1)
+    )
     completed = set(db.scalars(select(HumanStudyResponse.campaign_id).where(HumanStudyResponse.participant_code == participant_code)).all())
-    start = int(hashlib.sha256((participant_code + ":condition").encode()).hexdigest(), 16) % 2
+    start, counterbalance_group = study_assignment(participant_code)
     cases = []
     for index, row in enumerate(rows):
         if row["Campaign_ID"] in completed:
             continue
-        condition = ("full_framework", "without_calibration")[(index + start) % 2]
-        result = get_engine().recommend(row, get_engine().default_rules, str(row["Intent"]), ablation="full" if condition == "full_framework" else "without_calibration")
+        presentation_order = index + 1
+        condition = STUDY_CONDITIONS[(index + start) % len(STUDY_CONDITIONS)]
+        result, presentation = study_result(row, condition)
         cases.append({
-            "study_token": make_study_token(participant_code, str(row["Campaign_ID"]), condition),
+            "study_token": make_study_token(
+                participant_code,
+                str(row["Campaign_ID"]),
+                presentation_order,
+                counterbalance_group,
+            ),
             "case_id": row["Campaign_ID"], "campaign_type": row["Campaign_Type"],
             "channels": row["Channel_Used"], "intent": row["Intent"], "roi": row["ROI"],
             "conversion_rate": row["conversion_rate"], "engagement_score": row["Engagement_Score"],
             "action": result.action, "confidence": result.confidence, "confidence_level": result.confidence_level,
-            "explanation": result.explanation,
+            "presentation": presentation,
+            "terse_features": (
+                [
+                    f"{str(item['feature']).replace('_', ' ')} "
+                    f"({float(item['contribution']):.2f})"
+                    for item in result.attribution[:3]
+                ]
+                if presentation == "terse"
+                else None
+            ),
+            "raw_explanation": (
+                f"{result.action}: {result.explanation['driver']} "
+                f"{result.explanation['implication']}"
+                if presentation == "raw"
+                else None
+            ),
+            "explanation": (
+                result.explanation
+                if presentation in {"structured", "structured_no_caveat"}
+                else None
+            ),
         })
-    return {"participant_code": participant_code, "completed": len(completed), "total": len(rows), "cases": cases}
+    return {
+        "participant_code": participant_code,
+        "participant_group": (
+            existing_response.participant_group if existing_response else None
+        ),
+        "completed": len(completed),
+        "total": len(rows),
+        "cases": cases,
+    }
 
 
 @app.post("/api/human-study/responses", status_code=201)
 def submit_human_study(payload: HumanStudyInput, _: CurrentUser, db: Db) -> dict[str, Any]:
     if not payload.consent:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Participant consent is required")
-    participant_code, campaign_id, condition = study_token_data(payload.study_token)
+    (
+        participant_code,
+        campaign_id,
+        presentation_order,
+        counterbalance_group,
+    ) = study_token_data(payload.study_token)
     if participant_code != payload.participant_code.upper():
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Participant code does not match this study case")
-    row = next((item for item in frozen_study_rows() if str(item["Campaign_ID"]) == campaign_id), None)
-    if row is None:
+    existing_response = db.scalar(
+        select(HumanStudyResponse)
+        .where(HumanStudyResponse.participant_code == participant_code)
+        .limit(1)
+    )
+    if (
+        existing_response
+        and existing_response.participant_group != payload.participant_group
+    ):
+        raise HTTPException(
+            status.HTTP_400_BAD_REQUEST,
+            "Participant group must remain unchanged when resuming the study",
+        )
+    rows = frozen_study_rows()
+    rng = random.Random(
+        int(hashlib.sha256(participant_code.encode()).hexdigest()[:16], 16)
+    )
+    rng.shuffle(rows)
+    if not 1 <= presentation_order <= len(rows):
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Study case not found")
-    result = get_engine().recommend(row, get_engine().default_rules, str(row["Intent"]), ablation="full" if condition == "full_framework" else "without_calibration")
+    row = rows[presentation_order - 1]
+    expected_start, expected_group = study_assignment(participant_code)
+    if (
+        str(row["Campaign_ID"]) != campaign_id
+        or counterbalance_group != expected_group
+    ):
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Study assignment does not match this participant")
+    condition = STUDY_CONDITIONS[
+        (presentation_order - 1 + expected_start) % len(STUDY_CONDITIONS)
+    ]
+    result, _ = study_result(row, condition)
     record = HumanStudyResponse(
-        participant_code=participant_code, campaign_id=campaign_id, condition=condition,
+        participant_code=participant_code,
+        participant_group=payload.participant_group,
+        campaign_id=campaign_id,
+        condition=condition,
+        presentation_order=presentation_order,
+        counterbalance_group=counterbalance_group,
         recommended_action=result.action, confidence=result.confidence,
         correct=result.action == row["model_label"], low_confidence=result.confidence < .5,
-        actionability=payload.actionability, explanation_usefulness=payload.explanation_usefulness,
-        reliance=payload.reliance, user_acceptance=payload.user_acceptance,
-        decision=payload.decision, consent_confirmed=True, comments=payload.comments,
+        actionability=payload.actionability,
+        specificity=payload.specificity,
+        feasibility=payload.feasibility,
+        explanation_usefulness=payload.explanation_usefulness,
+        reliance=payload.reliance,
+        willingness_to_review=payload.willingness_to_review,
+        user_acceptance=payload.user_acceptance,
+        decision=payload.decision,
+        decision_time_ms=payload.decision_time_ms,
+        consent_confirmed=True,
+        comments=payload.comments,
     )
     db.add(record)
     try:
@@ -604,7 +913,7 @@ def submit_human_study(payload: HumanStudyInput, _: CurrentUser, db: Db) -> dict
     except IntegrityError:
         db.rollback()
         raise HTTPException(status.HTTP_409_CONFLICT, "This participant already evaluated the study case")
-    return {"id": record.id, "correct": record.correct, "condition": condition}
+    return {"id": record.id, "recorded": True}
 
 
 @app.get("/api/human-study/summary")
@@ -612,8 +921,85 @@ def human_study_summary(_: CurrentUser, db: Db) -> dict[str, Any]:
     rows = list(db.scalars(select(HumanStudyResponse).order_by(HumanStudyResponse.id)).all())
     return {
         "overall": human_study_statistics(rows),
-        "conditions": {condition: human_study_statistics([row for row in rows if row.condition == condition]) for condition in ("full_framework", "without_calibration")},
+        "conditions": {
+            condition: human_study_statistics(
+                [row for row in rows if row.condition == condition]
+            )
+            for condition in STUDY_CONDITIONS
+        },
     }
+
+
+@app.get("/api/human-study/export.csv")
+def export_human_study(
+    _: Annotated[User, Depends(require_admin)],
+    db: Db,
+) -> Response:
+    rows = list(
+        db.scalars(
+            select(HumanStudyResponse).order_by(
+                HumanStudyResponse.participant_code,
+                HumanStudyResponse.presentation_order,
+            )
+        ).all()
+    )
+    fields = [
+        "Participant_Code",
+        "Participant_Group",
+        "Campaign_ID",
+        "Condition",
+        "Presentation_Order",
+        "Counterbalance_Group",
+        "Recommended_Action",
+        "Calibrated_or_Raw_Confidence",
+        "Reference_Agreement",
+        "Low_Confidence",
+        "Actionability",
+        "Specificity",
+        "Feasibility",
+        "Explanation_Usefulness",
+        "Willingness_to_Act",
+        "Willingness_to_Review",
+        "User_Acceptance",
+        "Managerial_Decision",
+        "Decision_Time_Seconds",
+        "Consent_Confirmed",
+    ]
+    output = io.StringIO(newline="")
+    writer = csv.DictWriter(output, fieldnames=fields)
+    writer.writeheader()
+    for row in rows:
+        writer.writerow({
+            "Participant_Code": row.participant_code,
+            "Participant_Group": row.participant_group,
+            "Campaign_ID": row.campaign_id,
+            "Condition": row.condition,
+            "Presentation_Order": row.presentation_order,
+            "Counterbalance_Group": row.counterbalance_group,
+            "Recommended_Action": row.recommended_action,
+            "Calibrated_or_Raw_Confidence": f"{row.confidence:.6f}",
+            "Reference_Agreement": int(row.correct),
+            "Low_Confidence": int(row.low_confidence),
+            "Actionability": row.actionability,
+            "Specificity": row.specificity,
+            "Feasibility": row.feasibility,
+            "Explanation_Usefulness": row.explanation_usefulness,
+            "Willingness_to_Act": row.reliance,
+            "Willingness_to_Review": row.willingness_to_review,
+            "User_Acceptance": row.user_acceptance,
+            "Managerial_Decision": row.decision,
+            "Decision_Time_Seconds": f"{row.decision_time_ms / 1000:.3f}",
+            "Consent_Confirmed": int(row.consent_confirmed),
+        })
+    return Response(
+        content=output.getvalue(),
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": (
+                "attachment; filename=human_study_anonymised_responses.csv"
+            )
+        },
+    )
 
 
 @app.get("/api/rules")
@@ -652,93 +1038,302 @@ def update_rule(rule_id: int, payload: RuleInput, _: Annotated[User, Depends(req
     return rule_json(rule)
 
 
-ALLOWED_ACTIONS = {
-    "Growth": {"Increase", "Maintain"},
-    "Retention": {"Increase", "Maintain", "Investigate"},
-    "Survival": {"Reduce", "Maintain", "Investigate"},
-}
+def run_metric_row(
+    label: str,
+    metrics: dict[str, dict[str, float]],
+    system_name: str,
+) -> dict[str, Any]:
+    return {"System": label, **metrics[system_name]}
 
 
-def decision_metrics(rows: list[dict[str, Any]], predictions: list[str], confidences: list[float], labels: list[str], latency_ms: float = 0, explanations: bool = False) -> dict[str, float]:
-    correct = [int(prediction == label) for prediction, label in zip(predictions, labels)]
-    scenario = [prediction in ALLOWED_ACTIONS[row["Intent"]] for row, prediction in zip(rows, predictions)]
-    conflicts = [bool(conflict_reasons(row, prediction)) for row, prediction in zip(rows, predictions)]
-    scenario_fit = statistics.fmean(scenario); conflict_rate = statistics.fmean(conflicts)
-    return {
-        "Recommendation Accuracy": statistics.fmean(correct),
-        "Scenario-Fit Rate": scenario_fit,
-        "Logical Conflict Rate": conflict_rate,
-        "Expected Calibration Error (ECE)": expected_calibration_error(confidences, correct),
-        "Recommendation Latency (ms)": latency_ms,
-        "Actionability Proxy": .45 * scenario_fit + .35 * (1 - conflict_rate) + .20 * statistics.fmean(confidences),
-        "Explanation Usefulness Proxy": 1.0 if explanations else 0.0,
+def constraint_reversal_rate() -> float | None:
+    if not CONFIRMATORY_PREDICTIONS.exists():
+        return None
+    frame = pd.read_csv(CONFIRMATORY_PREDICTIONS)
+    required = {"Campaign_ID", "Seed", "System", "Prediction"}
+    if not required.issubset(frame.columns):
+        return None
+    full = frame[
+        frame.System.eq("Proposed System - Full Framework")
+    ][["Campaign_ID", "Seed", "Prediction"]].rename(
+        columns={"Prediction": "constrained"}
+    )
+    no_rules = frame[
+        frame.System.eq("Proposed Ablation - Without Rules")
+    ][["Campaign_ID", "Seed", "Prediction"]].rename(
+        columns={"Prediction": "unconstrained"}
+    )
+    paired = full.merge(no_rules, on=["Campaign_ID", "Seed"], how="inner")
+    if paired.empty:
+        return None
+    return float((paired.constrained != paired.unconstrained).mean())
+
+
+def experiment_blocks(
+    metrics: dict[str, dict[str, float]],
+    study_rows: list[HumanStudyResponse],
+) -> tuple[list[dict[str, str]], dict[str, Any]]:
+    participant_count = len({row.participant_code for row in study_rows})
+    response_count = len(study_rows)
+    completed_participants = sum(
+        count >= 9
+        for count in pd.Series(
+            [row.participant_code for row in study_rows]
+        ).value_counts().tolist()
+    ) if study_rows else 0
+    human_complete = completed_participants >= 18
+    human_status = "complete" if human_complete else "pending_participants"
+    human_detail = (
+        f"{completed_participants} complete participants; "
+        f"{response_count} responses recorded"
+    )
+    audit = (
+        json.loads(BENCHMARK_AUDIT.read_text(encoding="utf-8"))
+        if BENCHMARK_AUDIT.exists()
+        else {}
+    )
+    full_name = "Proposed System - Full Framework"
+    without_calibration = "Proposed Ablation - Without Calibration"
+    without_rules = "Proposed Ablation - Without Rules"
+    without_intent = "Proposed Ablation - Without Intent"
+    posthoc = "Baseline D - Post-Hoc Rule Overlay"
+    runs = [
+        {
+            "id": "R001",
+            "name": "Source audit and benchmark freeze",
+            "status": "complete",
+            "detail": (
+                f"{audit.get('cases', 125)} audited cases; action kappa "
+                f"{audit.get('action_kappa', 0):.3f}"
+            ),
+        },
+        {
+            "id": "R002",
+            "name": "Baseline decision-performance comparison",
+            "status": "complete",
+            "detail": "Chronological three-seed technical evaluation complete",
+        },
+        {
+            "id": "R003",
+            "name": "Calibration and appropriate-reliance study",
+            "status": human_status,
+            "detail": (
+                "Technical ECE comparison complete; " + human_detail
+            ),
+        },
+        {
+            "id": "R004",
+            "name": "Logic-constrained consistency experiment",
+            "status": "complete",
+            "detail": "No-logic, post-hoc and weighted-rule comparisons available",
+        },
+        {
+            "id": "R005",
+            "name": "Intent-conditioning experiment",
+            "status": (
+                "complete" if human_complete else "technical_complete_human_pending"
+            ),
+            "detail": "Technical scenario-fit comparison complete; " + human_detail,
+        },
+        {
+            "id": "R006",
+            "name": "Explanation-template experiment",
+            "status": human_status,
+            "detail": human_detail,
+        },
+    ]
+    condition_stats = {
+        condition: human_study_statistics(
+            [row for row in study_rows if row.condition == condition]
+        )
+        for condition in STUDY_CONDITIONS
     }
-
-
-def bootstrap_intervals(rows: list[dict[str, Any]], predictions: list[str], confidences: list[float], labels: list[str], samples: int = 1000) -> dict[str, list[float]]:
-    rng = random.Random(42); count = len(rows)
-    values: dict[str, list[float]] = {key: [] for key in ("Recommendation Accuracy", "Scenario-Fit Rate", "Logical Conflict Rate", "Expected Calibration Error (ECE)", "Actionability Proxy")}
-    for _ in range(samples):
-        indices = [rng.randrange(count) for _ in range(count)]
-        metrics = decision_metrics([rows[i] for i in indices], [predictions[i] for i in indices], [confidences[i] for i in indices], [labels[i] for i in indices])
-        for key in values:
-            values[key].append(metrics[key])
-    return {key: [float(np.quantile(result, .025)), float(np.quantile(result, .975))] for key, result in values.items()}
-
-
-def framework_evaluation(variant: str, ruleset: list[dict[str, Any]], test_frame: pd.DataFrame | None = None) -> tuple[dict[str, float], dict[str, list[float]]]:
-    service = get_engine(); frame = test_frame if test_frame is not None else service.test
-    rows = frame.to_dict("records"); results = [service.recommend(row, ruleset, str(row["Intent"]), ablation=variant) for row in rows]
-    predictions = ["Reduce" if result.action == "Decrease" else result.action for result in results]
-    labels = ["Reduce" if label == "Decrease" else label for label in frame.model_label]
-    confidences = [result.confidence for result in results]
-    metrics = decision_metrics(rows, predictions, confidences, labels, statistics.fmean(result.latency_ms for result in results), variant != "backbone")
-    return metrics, bootstrap_intervals(rows, predictions, confidences, labels)
+    blocks = {
+        "R001": {
+            "source_records": 55555,
+            "benchmark_cases": audit.get("cases", 125),
+            "intent_kappa": audit.get("intent_kappa"),
+            "action_kappa": audit.get("action_kappa"),
+            "provenance_complete": audit.get("provenance_complete", False),
+        },
+        "R003": {
+            "systems": [
+                run_metric_row(
+                    "Uncalibrated recommendation",
+                    metrics,
+                    without_calibration,
+                ),
+                run_metric_row(
+                    "Calibrated full framework",
+                    metrics,
+                    full_name,
+                ),
+            ],
+            "participant_status": human_status,
+            "completed_participants": completed_participants,
+            "target_participants": 18,
+            "conditions": {
+                condition: condition_stats[condition]
+                for condition in (
+                    "raw_uncalibrated",
+                    "calibrated_confidence",
+                    "structured_uncalibrated",
+                    "full_framework",
+                )
+            },
+        },
+        "R004": {
+            "systems": [
+                run_metric_row("No logic layer", metrics, without_rules),
+                run_metric_row("Post-hoc hard-rule filter", metrics, posthoc),
+                run_metric_row("Weighted soft-rule layer", metrics, full_name),
+            ],
+            "reversal_rate": constraint_reversal_rate(),
+            "active_rule_count": len(DEFAULT_RULES),
+        },
+        "R005": {
+            "systems": [
+                run_metric_row("Global policy", metrics, without_intent),
+                run_metric_row(
+                    "Intent-conditioned without calibration",
+                    metrics,
+                    without_calibration,
+                ),
+                run_metric_row("Full proposed system", metrics, full_name),
+            ],
+            "participant_status": human_status,
+        },
+        "R006": {
+            "participant_status": human_status,
+            "completed_participants": completed_participants,
+            "target_participants": 18,
+            "conditions": {
+                condition: condition_stats[condition]
+                for condition in (
+                    "terse_calibrated",
+                    "structured_calibrated",
+                    "full_framework",
+                )
+            },
+        },
+        "participant_count": participant_count,
+    }
+    return runs, blocks
 
 
 @app.get("/api/evaluation/summary")
-def evaluation_summary(_: CurrentUser, db: Db, dataset: Literal["normal", "conflict_stress"] = Query("normal")) -> dict[str, Any]:
-    normal_rows = load_dataset(DATASET)
-    baseline_train, normal_test = stratified_split(normal_rows, .2, 42)
-    evaluation_rows = normal_test if dataset == "normal" else stratified_split(load_dataset(ROOT / "data" / "Dataset_conflict_stress.csv"), .2, 42)[1]
-    model = fit_centroid_model(baseline_train); channel_attribution = build_channel_attribution(baseline_train)
-    baseline_results = [
-        baseline_a_predict(evaluation_rows), baseline_b_predict(evaluation_rows, model),
-        baseline_c_predict(evaluation_rows, model, channel_attribution), baseline_d_predict(evaluation_rows, model),
-    ]
-    baseline_rows = []
-    labels = [row["label"] for row in evaluation_rows]
-    for baseline in baseline_results:
-        metrics = decision_metrics(evaluation_rows, baseline.predictions, baseline.confidences, labels, baseline.latency_ms, bool(baseline.explanations and any(baseline.explanations)))
-        baseline_rows.append({"Baseline": baseline.name, **metrics, "Confidence Intervals": bootstrap_intervals(evaluation_rows, baseline.predictions, baseline.confidences, labels)})
-    ruleset = get_engine().default_rules
-    if dataset == "normal":
-        evaluation_frame = get_engine().test
-    else:
-        stress_frame = prepare_frame(ROOT / "data" / "Dataset_conflict_stress.csv")
-        _, stress_test = stratified_split(stress_frame.to_dict("records"), .2, 42)
-        evaluation_frame = pd.DataFrame(stress_test)
-    baseline_ids = {row["Campaign_ID"] for row in evaluation_rows}; proposed_ids = set(evaluation_frame.Campaign_ID)
-    if baseline_ids != proposed_ids:
-        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Evaluation protocol produced inconsistent holdout cases")
-    proposed, proposed_ci = framework_evaluation("full", ruleset, evaluation_frame)
-    variants = {
-        "Without Trust Calibration": "without_calibration",
-        "Without Intent Awareness": "without_intent",
-        "Without Soft-Rule Reasoning": "without_rules",
-        "Backbone Only": "backbone",
-    }
-    ablation_results = {name: framework_evaluation(variant, ruleset, evaluation_frame) for name, variant in variants.items()}
-    ablations = {name: result[0] for name, result in ablation_results.items()}
-    ablation_ci = {name: result[1] for name, result in ablation_results.items()}
-    ground_truth_conflicts = statistics.fmean(bool(conflict_reasons(row, label)) for row, label in zip(evaluation_rows, labels))
+def evaluation_summary(_: CurrentUser, db: Db) -> dict[str, Any]:
+    audited_exists = AUDITED_BENCHMARK.exists()
     study_rows = list(db.scalars(select(HumanStudyResponse)).all())
+    if audited_exists and CONFIRMATORY_RESULTS.exists():
+        result = json.loads(CONFIRMATORY_RESULTS.read_text(encoding="utf-8"))
+        metrics = result["metrics"]
+        intervals = result["confidence_intervals_95"]
+        proposed_name = "Proposed System - Full Framework"
+        baseline_names = [name for name in metrics if name.startswith("Baseline")]
+        ablation_names = [name for name in metrics if name.startswith("Proposed Ablation")]
+        runs, blocks = experiment_blocks(metrics, study_rows)
+        return {
+            "status": "confirmatory_technical_complete",
+            "message": (
+                "The frozen 125-case human-audited benchmark has been evaluated on "
+                "a chronological held-out test partition. Technical metrics and "
+                "bootstrap intervals are available; participant-based reliance "
+                "metrics remain pending the blinded human study."
+            ),
+            "dataset": "audited_benchmark",
+            "source_records": 55555,
+            "processed_records": len(pd.read_csv(DATASET)) if DATASET.exists() else 0,
+            "candidate_benchmark_records": len(pd.read_csv(AUDITED_BENCHMARK)),
+            "candidate_benchmark_status": "frozen_human_audited",
+            "dataset_records": len(pd.read_csv(AUDITED_BENCHMARK)),
+            "target_records": 125,
+            "configuration": result["metadata"]["split"],
+            "synthetic_development_records": (
+                len(pd.read_csv(SYNTHETIC_DEVELOPMENT))
+                if SYNTHETIC_DEVELOPMENT.exists()
+                else 0
+            ),
+            "human_provided_development_records": (
+                len(pd.read_csv(HUMAN_PROVIDED_DEVELOPMENT))
+                if HUMAN_PROVIDED_DEVELOPMENT.exists()
+                else 0
+            ),
+            "development_annotation_status": get_engine().annotation_status,
+            "decision_cases": len(pd.read_csv(AUDITED_BENCHMARK)),
+            "audited_benchmark_present": True,
+            "calibration_status": get_engine().calibration_status,
+            "baselines": [
+                {
+                    "Baseline": name,
+                    **metrics[name],
+                    "Confidence Intervals": intervals[name],
+                }
+                for name in baseline_names
+            ],
+            "proposed": metrics[proposed_name],
+            "proposed_ci": intervals[proposed_name],
+            "ablations": {name: metrics[name] for name in ablation_names},
+            "ablation_ci": {name: intervals[name] for name in ablation_names},
+            "protocol": {
+                "seed": ", ".join(map(str, result["metadata"]["seeds"])),
+                "test_cases": result["metadata"]["test_records"],
+                "label_source": "frozen human-adjudicated benchmark",
+                "identical_holdout": True,
+                "ruleset": "predeclared shared conflict catalogue",
+            },
+            "benchmark": {
+                "ground_truth_conflict_rate": result["metadata"].get(
+                    "ground_truth_conflict_rate", 0.0
+                )
+            },
+            "evaluation_metadata": result["metadata"],
+            "human_evaluation": human_study_statistics(study_rows),
+            "runs": runs,
+            "experiment_blocks": blocks,
+        }
     return {
-        "dataset": dataset, "dataset_records": len(get_engine().data), "target_records": 500,
-        "configuration": "simplified" if len(get_engine().data) < 500 else "target",
-        "protocol": {"seed": 42, "test_cases": len(evaluation_rows), "label_source": "reviewer consensus, otherwise reference action", "identical_holdout": True, "ruleset": "frozen default rules"},
-        "benchmark": {"ground_truth_conflict_rate": ground_truth_conflicts},
-        "baselines": baseline_rows, "proposed": proposed, "proposed_ci": proposed_ci,
-        "ablations": ablations, "ablation_ci": ablation_ci,
+        "status": "pending_human_annotations",
+        "message": (
+            "The raw and processed data layers are active. The supplied 125 cases "
+            "remain benchmark candidates because their intent/action schema and review "
+            "provenance do not satisfy the locked protocol. Confirmatory evaluation and "
+            "calibration remain locked until independent plan-aligned review, "
+            "adjudication and data/benchmark_audited.csv are complete."
+        ),
+        "dataset": "audited_benchmark",
+        "source_records": 55555,
+        "processed_records": (
+            len(pd.read_csv(DATASET))
+            if DATASET.exists()
+            else 0
+        ),
+        "candidate_benchmark_records": (
+            len(pd.read_csv(BENCHMARK_CANDIDATE))
+            if BENCHMARK_CANDIDATE.exists()
+            else 0
+        ),
+        "candidate_benchmark_status": "requires_independent_reannotation",
+        "synthetic_development_records": (
+            len(pd.read_csv(SYNTHETIC_DEVELOPMENT))
+            if SYNTHETIC_DEVELOPMENT.exists()
+            else 0
+        ),
+        "human_provided_development_records": (
+            len(pd.read_csv(HUMAN_PROVIDED_DEVELOPMENT))
+            if HUMAN_PROVIDED_DEVELOPMENT.exists()
+            else 0
+        ),
+        "development_annotation_status": get_engine().annotation_status,
+        "decision_cases": len(pd.read_csv(DECISION_CASES)),
+        "audited_benchmark_present": audited_exists,
+        "calibration_status": get_engine().calibration_status,
+        "baselines": [],
+        "proposed": {},
+        "proposed_ci": {},
+        "ablations": {},
+        "ablation_ci": {},
         "human_evaluation": human_study_statistics(study_rows),
+        "runs": [],
+        "experiment_blocks": {},
     }

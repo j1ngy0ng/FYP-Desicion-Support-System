@@ -1,0 +1,33 @@
+{
+  "source_file": "data/raw/nykaa_campaign_data.csv",
+  "source_sha256": "4969a1c5961fba85772822467f87e2c3069107017bdc6d685c21b47a0ed22665",
+  "records": 55555,
+  "columns": 16,
+  "campaign_ids_unique": 55555,
+  "atomic_channels": [
+    "Email",
+    "Facebook",
+    "Google",
+    "Instagram",
+    "WhatsApp",
+    "YouTube"
+  ],
+  "date_min": "2024-07-01",
+  "date_max": "2025-06-24",
+  "monthly_periods": 12,
+  "downstream_outcomes": [
+    "Conversions",
+    "Revenue",
+    "Acquisition_Cost",
+    "ROI"
+  ],
+  "decision_cases_selected": 125,
+  "synthetic_annotation_columns_removed": [
+    "Intent",
+    "Reference_Action",
+    "Justification",
+    "Reviewer_1_Label",
+    "Reviewer_2_Label"
+  ],
+  "human_annotations_complete": false
+}

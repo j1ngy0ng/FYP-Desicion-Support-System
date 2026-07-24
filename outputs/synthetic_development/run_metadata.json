@@ -1,0 +1,12 @@
+{
+  "evaluation_type": "synthetic_development_non_confirmatory",
+  "dataset": "data\\Dataset_synthetic_development.csv",
+  "training_dataset": "data\\raw\\nykaa_campaign_data.csv",
+  "records": 55555,
+  "training_records": 38888,
+  "validation_records": 8333,
+  "test_records": 8334,
+  "annotation_source": "Synthetic rule-based development annotation; not independent human review",
+  "calibration_status": "pending_human_annotations",
+  "confirmatory_use_allowed": false
+}

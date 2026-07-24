@@ -1,0 +1,42 @@
+{
+  "source_workbook": "C:/Users/user/Desktop/FYP Prototype/FYP-Desicion-Support-System/outputs/adjudication_corrections_2026-07-23/Adjudication_Corrections_Still_Required.xlsx",
+  "cases": 125,
+  "source_fields_match_candidate": true,
+  "unique_campaign_ids": 125,
+  "allowed_intents": [
+    "Survival",
+    "Retention",
+    "Growth"
+  ],
+  "allowed_actions": [
+    "Increase",
+    "Maintain",
+    "Reduce",
+    "Investigate"
+  ],
+  "all_statuses_audited": true,
+  "adjudication_complete": true,
+  "provenance_complete": true,
+  "validation_issue_counts": {
+    "duplicate_ids": 0,
+    "reviewer_intents": 0,
+    "reviewer_actions": 0,
+    "adjudicated_intents": 0,
+    "adjudicated_actions": 0,
+    "status": 0,
+    "agreement_flag": 0,
+    "disagreement_notes": 0,
+    "agreed_label_mismatch": 0
+  },
+  "provenance_problems": [],
+  "intent_observed_agreement": 0.904,
+  "intent_kappa": 0.8539008473750853,
+  "action_observed_agreement": 0.784,
+  "action_kappa": 0.7017497348886532,
+  "agreement_counts": {
+    "Action Disagreement": 19,
+    "Both Disagree": 8,
+    "Full Agreement": 94,
+    "Intent Disagreement": 4
+  }
+}

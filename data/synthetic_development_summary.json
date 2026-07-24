@@ -1,0 +1,25 @@
+{
+  "records": 55555,
+  "source": "data/raw/nykaa_campaign_data.csv",
+  "output": "data/Dataset_synthetic_development.csv",
+  "annotation_source": "Synthetic rule-based development annotation; not independent human review",
+  "thresholds": {
+    "acquisition_cost_p75": 428.58,
+    "engagement_p25": 8.36,
+    "engagement_median": 13.6,
+    "conversion_rate_median": 0.204749,
+    "cpc_p75": 1.033365
+  },
+  "intent_distribution": {
+    "Growth": 10737,
+    "Survival": 24736,
+    "Retention": 20082
+  },
+  "action_distribution": {
+    "Increase": 13802,
+    "Maintain": 25223,
+    "Decrease": 7616,
+    "Investigate": 8914
+  },
+  "confirmatory_use_allowed": false
+}

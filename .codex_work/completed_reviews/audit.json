@@ -1,0 +1,46 @@
+{
+  "reviewer_1_file": "C:/Users/user/Downloads/Reviewer_1_Completed.xlsx",
+  "reviewer_2_file": "C:/Users/user/Downloads/Reviewer_2_Completed.xlsx",
+  "allowed_intents": [
+    "Survival",
+    "Retention",
+    "Growth"
+  ],
+  "allowed_actions": [
+    "Increase",
+    "Maintain",
+    "Reduce",
+    "Investigate"
+  ],
+  "reviewer_1_blank_full_notes": [],
+  "reviewer_2_blank_full_notes": [],
+  "reviewer_1_declares_ai_assistance": false,
+  "user_confirmed_human_completion": true,
+  "confirmatory_eligible": "pending_reviewer_attestation_and_adjudication",
+  "provenance_note": "The user confirms both current files were completed by humans. Reviewer attestation remains required as a reproducible audit record before the benchmark is frozen.",
+  "pilot": {
+    "cases": 25,
+    "intent_observed_agreement": 0.88,
+    "intent_kappa": 0.8210023866348449,
+    "action_observed_agreement": 0.76,
+    "action_kappa": 0.6774193548387097,
+    "agreement_counts": {
+      "Full Agreement": 19,
+      "Both Disagree": 3,
+      "Action Disagreement": 3
+    }
+  },
+  "full": {
+    "cases": 125,
+    "intent_observed_agreement": 0.904,
+    "intent_kappa": 0.8539008473750853,
+    "action_observed_agreement": 0.784,
+    "action_kappa": 0.7017497348886532,
+    "agreement_counts": {
+      "Action Disagreement": 19,
+      "Both Disagree": 8,
+      "Full Agreement": 94,
+      "Intent Disagreement": 4
+    }
+  }
+}

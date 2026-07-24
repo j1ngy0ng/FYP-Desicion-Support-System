@@ -1,0 +1,45 @@
+{
+  "evaluation_type": "confirmatory_technical_evaluation",
+  "dataset": "data\\benchmark_audited.csv",
+  "training_dataset": "data\\layers\\02_processed_model_data.csv",
+  "split": "chronological_70_15_15",
+  "records": 125,
+  "training_records": 87,
+  "validation_records": 19,
+  "test_records": 19,
+  "test_date_start": "2025-04-24",
+  "test_date_end": "2025-06-18",
+  "seeds": [
+    42,
+    52,
+    62
+  ],
+  "ece_bins": 5,
+  "bootstrap_samples": 2000,
+  "calibration_fit_partition": "validation_only",
+  "temperatures": {
+    "42": 0.5,
+    "52": 0.5,
+    "62": 0.5
+  },
+  "calibration_statuses": {
+    "42": "calibrated",
+    "52": "calibrated",
+    "62": "calibrated"
+  },
+  "confirmatory_technical_use_allowed": true,
+  "human_participant_metrics_complete": false,
+  "claim_status": "meets_initial_technical_success_criterion",
+  "ground_truth_conflict_rate": 0.10526315789473684,
+  "test_action_distribution": {
+    "Maintain": 7,
+    "Reduce": 5,
+    "Investigate": 4,
+    "Increase": 3
+  },
+  "test_intent_distribution": {
+    "Retention": 9,
+    "Survival": 5,
+    "Growth": 5
+  }
+}

@@ -1,0 +1,10 @@
+System,Recommendation Accuracy,Scenario-Fit Rate,Logical Conflict Rate,Expected Calibration Error (ECE),Recommendation Latency (ms),Actionability Proxy,Trust Alignment Proxy,Explanation Usefulness Proxy,User Acceptance Proxy
+Baseline A - Heuristic Scorecard,0.114111,0.958003,0.062035,0.423031,0.005785,0.864979,0.435003,0.000000,0.498243
+Baseline B - Predictive Analytics Only,0.849772,0.942165,0.119390,0.047288,0.016031,0.892684,0.752628,0.000000,0.620493
+Baseline C - Predictive Analytics with Attribution,0.847732,0.946004,0.112791,0.047550,0.029682,0.896487,0.750611,0.768053,0.813322
+Baseline D - Post-Hoc Rule Overlay,0.871250,1.000000,0.000000,0.066817,0.022835,0.981956,0.823030,0.057810,0.695296
+Proposed System - Full Framework,0.908687,1.000000,0.022438,0.468811,4.976242,0.880122,0.458547,1.000000,0.762540
+Proposed Ablation - Without Intent,0.839693,1.000000,0.009119,0.441306,4.893860,0.877147,0.442491,1.000000,0.755730
+Proposed Ablation - Without Rules,0.955244,1.000000,0.067915,0.556350,4.717649,0.856009,0.412982,1.000000,0.736947
+Proposed Ablation - Without Calibration,0.908687,1.000000,0.022438,0.468811,4.655303,0.880122,0.458547,1.000000,0.762540
+Proposed Ablation - Predictive Backbone,0.922846,1.000000,0.049196,0.546796,4.220170,0.857991,0.402801,1.000000,0.734177

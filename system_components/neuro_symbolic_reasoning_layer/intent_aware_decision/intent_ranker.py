@@ -1,13 +1,13 @@
 INTENT_ADJUSTMENTS = {
-    "Growth": {"Increase": 1, "Maintain": .2, "Decrease": -1, "Investigate": -.1},
-    "Retention": {"Increase": .2, "Maintain": 1, "Decrease": -.5, "Investigate": .1},
-    "Survival": {"Increase": -1, "Maintain": .4, "Decrease": 1, "Investigate": .3},
+    "Growth": {"Increase": 1, "Maintain": .2, "Reduce": -1, "Investigate": -.1},
+    "Retention": {"Increase": .2, "Maintain": 1, "Reduce": -.5, "Investigate": .1},
+    "Survival": {"Increase": -1, "Maintain": .4, "Reduce": 1, "Investigate": .3},
 }
 
 ALLOWED_ACTIONS = {
-    "Growth": {"Increase", "Maintain"},
+    "Growth": {"Increase", "Maintain", "Investigate"},
     "Retention": {"Increase", "Maintain", "Investigate"},
-    "Survival": {"Decrease", "Maintain", "Investigate"},
+    "Survival": {"Reduce", "Maintain", "Investigate"},
 }
 
 

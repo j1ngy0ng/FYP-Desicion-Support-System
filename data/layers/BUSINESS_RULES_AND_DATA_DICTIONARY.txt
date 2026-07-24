@@ -1,0 +1,52 @@
+NYKAA CAMPAIGN DATA — THREE-LAYER DESIGN
+
+1. RAW DATASET
+- File: 01_raw_dataset_55555x16.csv
+- 55,555 rows and original 16 columns.
+- Exact source copy. No reviewer labels or calculated columns are added.
+
+2. PROCESSED MODEL DATA
+- File: 02_processed_model_data.csv
+- Retains all original fields and adds non-destructive calculated fields.
+- CTR = Clicks / Impressions.
+- Click_to_Lead_Rate = Leads / Clicks.
+- Lead_to_Conversion_Rate = Conversions / Leads.
+- Overall_Conversion_Rate = Conversions / Impressions.
+- Estimated_Total_Acquisition_Cost = Acquisition_Cost × Conversions. This is explicitly a proxy because the source does not define whether Acquisition_Cost is total or per acquisition.
+- ROAS_Proxy = Revenue / Estimated_Total_Acquisition_Cost.
+- Calculated_ROI_Proxy = (Revenue - Estimated_Total_Acquisition_Cost) / Estimated_Total_Acquisition_Cost.
+- Performance_Score is a weighted quartile-normalized score: 30% source ROI, 25% overall conversion, 20% CTR, 15% lead-to-conversion, 10% engagement.
+- Raw source fields are never overwritten.
+
+3. GOLD BENCHMARK
+- File: 03_gold_benchmark_125.csv
+- 125 rows sampled across 5 campaign types and 5 action outcomes: Scale, Optimize, Monitor, Test, Pause.
+- Contains original campaign attributes plus two reviewer label sets, adjudicated labels, and status.
+
+INTENT RULES
+- Email normally indicates Retention/Re-engagement; exceptionally strong conversion can make Sales Conversion the dominant intent.
+- Paid Ads normally indicate Traffic Generation or Sales Conversion depending on downstream conversion strength.
+- SEO normally indicates Brand Awareness or Traffic Generation; very strong post-click progression can indicate Lead Generation.
+- Social Media and Influencer normally indicate Brand Awareness or Traffic Generation; strong conversion plus ROI can indicate Sales Conversion.
+
+ACTION RULES
+- Scale Budget: ROI and overall conversion are top-quartile, with at least median engagement.
+- Pause and Review: ROI and overall conversion are both bottom-quartile.
+- Refresh Creative/Targeting: CTR is bottom-quartile but downstream lead quality is acceptable.
+- Optimize Landing Page: CTR is acceptable but click-to-lead is bottom-quartile.
+- Improve Offer/Checkout: lead generation is acceptable but lead-to-conversion is bottom-quartile.
+- Maintain and Monitor: ROI and conversion are above median but below scaling criteria.
+- Run Controlled Test: mixed results without a single dominant bottleneck.
+
+REVIEW PROCESS
+- Reviewers use the same evidence but can differ on adjacent, defensible interpretations.
+- Disagreements are deterministic and limited; no random impossible labels are inserted.
+- Annotation_Status is Agreed only when both reviewers match the final adjudicated intent and action; otherwise it is Adjudicated.
+
+POPULATION THRESHOLDS
+CTR Q25=0.052592, median=0.085081, Q75=0.117980
+Click-to-lead Q25=0.298900, median=0.399475, Q75=0.500397
+Lead-to-conversion Q25=0.424085, median=0.551409, Q75=0.675132
+Overall conversion Q25=0.009654, median=0.016210, Q75=0.025179
+ROI Q25=0.0400, median=1.2400, Q75=3.6300
+Engagement Q25=8.3600, median=13.6000, Q75=18.8550

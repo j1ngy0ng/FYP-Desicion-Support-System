@@ -4,8 +4,6 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
-from baseline_evaluation import canonical_action
-
 
 FEATURES = (
     "Duration", "Impressions", "Clicks", "Leads", "Conversions", "Revenue",
@@ -14,15 +12,21 @@ FEATURES = (
 )
 
 
-def benchmark_label(row: pd.Series) -> str:
-    reviewer_1 = canonical_action(str(row.get("Reviewer_1_Label", "")))
-    reviewer_2 = canonical_action(str(row.get("Reviewer_2_Label", "")))
-    reference = canonical_action(str(row.get("Reference_Action", "")))
-    return (reviewer_1 if reviewer_1 and reviewer_1 == reviewer_2 else reference).replace("Reduce", "Decrease")
-
-
 def prepare_frame(path: Path) -> pd.DataFrame:
     data = pd.read_csv(path).drop_duplicates().copy()
+    forbidden = {
+        "Intent",
+        "Reference_Action",
+        "Justification",
+        "Reviewer_1_Label",
+        "Reviewer_2_Label",
+    }
+    present = sorted(forbidden.intersection(data.columns))
+    if present:
+        raise ValueError(
+            "AI-generated annotation columns are forbidden in the active campaign dataset: "
+            + ", ".join(present)
+        )
     derived = {"ctr", "conversion_rate", "lead_to_conversion", "cost_per_conversion"}
     for field in (field for field in FEATURES if field not in derived):
         data[field] = pd.to_numeric(data[field], errors="coerce").fillna(data[field].median())
@@ -30,9 +34,16 @@ def prepare_frame(path: Path) -> pd.DataFrame:
     data["conversion_rate"] = np.where(data.Clicks > 0, data.Conversions / data.Clicks, 0)
     data["lead_to_conversion"] = np.where(data.Leads > 0, data.Conversions / data.Leads, 0)
     data["cost_per_conversion"] = np.where(data.Conversions > 0, data.Acquisition_Cost / data.Conversions, data.Acquisition_Cost)
-    data["model_label"] = data.apply(benchmark_label, axis=1)
-    data["label"] = data.model_label
-    data["Intent"] = data.Intent.astype(str).str.title()
+    date_values = data["Date"].astype(str).str.strip().str.replace("/", "-", regex=False)
+    day_first = date_values.str.match(r"^\d{1,2}-\d{1,2}-\d{4}$")
+    year_first = date_values.str.match(r"^\d{4}-\d{1,2}-\d{1,2}$")
+    if day_first.all():
+        data["Date"] = pd.to_datetime(date_values, errors="raise", format="%d-%m-%Y")
+    elif year_first.all():
+        data["Date"] = pd.to_datetime(date_values, errors="raise", format="%Y-%m-%d")
+    else:
+        raise ValueError("Date must consistently use D-M-YYYY or YYYY-M-D format.")
+    data = data.sort_values(["Date", "Campaign_ID"]).reset_index(drop=True)
     return data
 
 

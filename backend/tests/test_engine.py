@@ -1,7 +1,6 @@
 import unittest
 from pathlib import Path
 
-from baseline_evaluation import load_dataset, stratified_split
 from backend.app.engine import DEFAULT_RULES, RecommendationEngine, case_features
 from system_components.neuro_symbolic_reasoning_layer.engine import RecommendationEngine as ComponentEngine
 
@@ -9,7 +8,7 @@ from system_components.neuro_symbolic_reasoning_layer.engine import Recommendati
 class RecommendationEngineTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.engine = RecommendationEngine(Path("data/Dataset.csv"))
+        cls.engine = RecommendationEngine(Path("data/layers/02_processed_model_data.csv"))
         cls.rules = [
             {"id": index, "code": rule[0], "name": rule[1], "weight": rule[4], "priority": rule[5], "active": True}
             for index, rule in enumerate(DEFAULT_RULES, 1)
@@ -17,8 +16,8 @@ class RecommendationEngineTests(unittest.TestCase):
 
     def test_complete_recommendation_package(self):
         case = self.engine.test.iloc[0].to_dict()
-        result = self.engine.recommend(case, self.rules, case["Intent"])
-        self.assertIn(result.action, {"Increase", "Maintain", "Decrease", "Investigate"})
+        result = self.engine.recommend(case, self.rules, "Growth")
+        self.assertIn(result.action, {"Increase", "Maintain", "Reduce", "Investigate"})
         self.assertAlmostEqual(sum(item["score"] for item in result.ranked_actions), 1, places=3)
         self.assertEqual(set(result.explanation), {"driver", "implication", "action", "caveat", "intent"})
         self.assertTrue(result.attribution)
@@ -32,17 +31,21 @@ class RecommendationEngineTests(unittest.TestCase):
         safeguard = [item for item in result.rule_results if item["code"] == "survival_safeguard"]
         self.assertTrue(safeguard and safeguard[0]["triggered"])
 
-    def test_engine_and_baselines_use_identical_holdout(self):
-        _, baseline_test = stratified_split(load_dataset(Path("data/Dataset.csv")), .2, 42)
-        self.assertEqual(
-            {row["Campaign_ID"] for row in baseline_test},
-            set(self.engine.test.Campaign_ID),
-        )
+    def test_chronological_holdout_is_used(self):
+        self.assertLessEqual(self.engine.train.Date.max(), self.engine.validation.Date.min())
+        self.assertLessEqual(self.engine.validation.Date.max(), self.engine.test.Date.min())
+
+    def test_active_dataset_contains_no_generated_annotations(self):
+        forbidden = {
+            "Intent", "Reference_Action", "Justification",
+            "Reviewer_1_Label", "Reviewer_2_Label",
+        }
+        self.assertFalse(forbidden.intersection(self.engine.data.columns))
 
     def test_missing_budget_does_not_trigger_budget_rule(self):
         case = self.engine.test.iloc[0].to_dict()
         score = self.engine._rule_score(
-            "budget_feasibility", "Increase", case_features(case), case["Intent"], None
+            "budget_feasibility", "Increase", case_features(case), "Growth", None
         )
         self.assertIsNone(score)
 
@@ -54,7 +57,7 @@ class RecommendationEngineTests(unittest.TestCase):
             "priority": 2, "active": True,
             "definition": {"kind": "threshold", "metric": "ROI", "operator": "gt", "threshold": 2, "action": "Increase", "intent": None},
         }
-        result = self.engine.recommend(case, [custom_rule], case["Intent"])
+        result = self.engine.recommend(case, [custom_rule], "Growth")
         matches = [item for item in result.rule_results if item["code"] == "custom_test"]
         self.assertEqual(len(matches), 1)
         self.assertTrue(matches[0]["triggered"])
