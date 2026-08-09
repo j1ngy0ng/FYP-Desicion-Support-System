@@ -1,7 +1,10 @@
 import unittest
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
-from backend.app.engine import DEFAULT_RULES, RecommendationEngine, case_features
+import pandas as pd
+
+from backend.app.engine import DEFAULT_RULES, RecommendationEngine, case_features, prepare_frame
 from system_components.neuro_symbolic_reasoning_layer.engine import RecommendationEngine as ComponentEngine
 
 
@@ -34,6 +37,24 @@ class RecommendationEngineTests(unittest.TestCase):
     def test_chronological_holdout_is_used(self):
         self.assertLessEqual(self.engine.train.Date.max(), self.engine.validation.Date.min())
         self.assertLessEqual(self.engine.validation.Date.max(), self.engine.test.Date.min())
+
+    def test_missing_values_use_training_partition_median_only(self):
+        rows = []
+        for index, roi in enumerate([1, 3, None, None], 1):
+            rows.append({
+                "Campaign_ID": f"C{index}", "Date": f"2026-01-0{index}",
+                "Duration": 1, "Impressions": 100, "Clicks": 10, "Leads": 5,
+                "Conversions": 2, "Revenue": 20, "Acquisition_Cost": 5,
+                "ROI": roi, "Engagement_Score": 4,
+            })
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / "missing.csv"
+            pd.DataFrame(rows).to_csv(path, index=False)
+            frame = prepare_frame(path, imputation_fit_fraction=.50)
+        self.assertEqual(frame.attrs["imputation_fit_rows"], 2)
+        self.assertEqual(frame.attrs["imputation_medians"]["ROI"], 2)
+        self.assertEqual(frame.iloc[2]["ROI"], 2)
+        self.assertEqual(frame.iloc[3]["ROI"], 2)
 
     def test_active_dataset_contains_no_generated_annotations(self):
         forbidden = {

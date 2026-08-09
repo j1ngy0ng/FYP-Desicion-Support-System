@@ -111,6 +111,9 @@ input:focus, select:focus, textarea:focus { border-color: var(--green); box-shad
 label { display: block; margin-bottom: 7px; font-size: 13px; font-weight: 750; }
 .field { margin-bottom: 16px; }
 .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 18px; }
+.channel-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.channel-option { display: flex; align-items: center; gap: 8px; min-height: 42px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+.channel-option input { width: auto; margin: 0; }
 .full { grid-column: 1 / -1; }
 .hint { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; }
 

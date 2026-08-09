@@ -12,7 +12,10 @@ FEATURES = (
 )
 
 
-def prepare_frame(path: Path) -> pd.DataFrame:
+def prepare_frame(path: Path, *, imputation_fit_fraction: float = .70) -> pd.DataFrame:
+    """Prepare a chronological frame using training-only numeric medians."""
+    if not 0 < imputation_fit_fraction <= 1:
+        raise ValueError("imputation_fit_fraction must be in the interval (0, 1].")
     data = pd.read_csv(path).drop_duplicates().copy()
     forbidden = {
         "Intent",
@@ -27,13 +30,6 @@ def prepare_frame(path: Path) -> pd.DataFrame:
             "AI-generated annotation columns are forbidden in the active campaign dataset: "
             + ", ".join(present)
         )
-    derived = {"ctr", "conversion_rate", "lead_to_conversion", "cost_per_conversion"}
-    for field in (field for field in FEATURES if field not in derived):
-        data[field] = pd.to_numeric(data[field], errors="coerce").fillna(data[field].median())
-    data["ctr"] = np.where(data.Impressions > 0, data.Clicks / data.Impressions, 0)
-    data["conversion_rate"] = np.where(data.Clicks > 0, data.Conversions / data.Clicks, 0)
-    data["lead_to_conversion"] = np.where(data.Leads > 0, data.Conversions / data.Leads, 0)
-    data["cost_per_conversion"] = np.where(data.Conversions > 0, data.Acquisition_Cost / data.Conversions, data.Acquisition_Cost)
     date_values = data["Date"].astype(str).str.strip().str.replace("/", "-", regex=False)
     day_first = date_values.str.match(r"^\d{1,2}-\d{1,2}-\d{4}$")
     year_first = date_values.str.match(r"^\d{4}-\d{1,2}-\d{1,2}$")
@@ -44,6 +40,25 @@ def prepare_frame(path: Path) -> pd.DataFrame:
     else:
         raise ValueError("Date must consistently use D-M-YYYY or YYYY-M-D format.")
     data = data.sort_values(["Date", "Campaign_ID"]).reset_index(drop=True)
+
+    derived = {"ctr", "conversion_rate", "lead_to_conversion", "cost_per_conversion"}
+    numeric_fields = [field for field in FEATURES if field not in derived]
+    for field in numeric_fields:
+        data[field] = pd.to_numeric(data[field], errors="coerce")
+    fit_end = max(1, int(len(data) * imputation_fit_fraction))
+    medians = data.iloc[:fit_end][numeric_fields].median()
+    missing_medians = medians[medians.isna()].index.tolist()
+    if missing_medians:
+        raise ValueError(
+            "Training partition has no numeric values for: " + ", ".join(missing_medians)
+        )
+    data[numeric_fields] = data[numeric_fields].fillna(medians)
+    data["ctr"] = np.where(data.Impressions > 0, data.Clicks / data.Impressions, 0)
+    data["conversion_rate"] = np.where(data.Clicks > 0, data.Conversions / data.Clicks, 0)
+    data["lead_to_conversion"] = np.where(data.Leads > 0, data.Conversions / data.Leads, 0)
+    data["cost_per_conversion"] = np.where(data.Conversions > 0, data.Acquisition_Cost / data.Conversions, data.Acquisition_Cost)
+    data.attrs["imputation_fit_rows"] = fit_end
+    data.attrs["imputation_medians"] = medians.to_dict()
     return data
 
 

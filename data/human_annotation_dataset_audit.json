@@ -3,7 +3,7 @@
   "input_sha256": "4fd02e4cd6559b58a855e52b84df428f2efac35831ad61d49fdb1ae8a490622b",
   "preserved_source_copy": "data\\human_annotations\\source\\Dataset_development_human_annotated_v2.csv",
   "canonical_output": "data\\Dataset_human_provided_development.csv",
-  "canonical_output_sha256": "f4e839699b2418dea6edd0101548b545deeeccd99e0bba772c707fd28a0ea633",
+  "canonical_output_sha256": "cbc84425083c4c17739c7d3e824547bb2ef28d8a7091675812065e9e44103cc7",
   "authentic_source": "data\\raw\\nykaa_campaign_data.csv",
   "records": 55555,
   "unique_campaign_ids": 55555,
@@ -14,12 +14,12 @@
     "Survival": 31798
   },
   "action_distribution": {
-    "Decrease": 25941,
+    "Reduce": 25941,
     "Investigate": 29614
   },
   "distinct_notes": 2337,
   "most_repeated_note_count": 25941,
-  "most_repeated_note": "Low profitability or high acquisition cost reduces efficiency. Decrease spending to align with the survival objective.",
+  "most_repeated_note": "Low profitability or high acquisition cost reduces efficiency. Reduce spending to align with the survival objective.",
   "annotation_source": "User-provided as human annotation; reviewer independence and adjudication not documented",
   "annotation_status": "DevelopmentOnly",
   "confirmatory_ready": false,

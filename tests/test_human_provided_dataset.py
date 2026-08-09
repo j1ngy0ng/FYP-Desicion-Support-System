@@ -36,7 +36,7 @@ class HumanProvidedDatasetTests(unittest.TestCase):
             self.assertIn(row["Reviewer_Intent"], {"Growth", "Retention", "Survival"})
             self.assertIn(
                 row["Reviewer_Action"],
-                {"Increase", "Maintain", "Decrease", "Investigate"},
+                {"Increase", "Maintain", "Reduce", "Investigate"},
             )
             self.assertTrue(row["Reviewer_Notes"].strip())
             self.assertEqual(row["Annotation_Status"], "DevelopmentOnly")
@@ -45,7 +45,7 @@ class HumanProvidedDatasetTests(unittest.TestCase):
         self.assertFalse(self.audit["confirmatory_ready"])
         self.assertEqual(
             self.audit["action_distribution"],
-            {"Decrease": 25941, "Investigate": 29614},
+            {"Reduce": 25941, "Investigate": 29614},
         )
         self.assertIn(
             "Action-class coverage is incomplete; missing: Increase, Maintain",

@@ -1,0 +1,22 @@
+{
+  "configuration_id": "rule-catalogue-v1",
+  "normalisation": "JSON array in listed order with keys sorted and compact separators",
+  "sha256": "430e62fdf0e84ed8a7dd22e2ca221a2cc75d68c2457b8627ee83ef7d8c7c3214",
+  "rule_count": 14,
+  "rules": [
+    {"code":"negative_roi","name":"Negative ROI protection","category":"Performance","condition":"Penalise Increase when ROI is negative","weight":0.95,"priority":3},
+    {"code":"low_conversion","name":"Low conversion protection","category":"Performance","condition":"Penalise Increase when conversion rate is below 8%","weight":0.8,"priority":2},
+    {"code":"low_ctr","name":"Low CTR protection","category":"Performance","condition":"Penalise Increase when CTR is below 3%","weight":0.75,"priority":2},
+    {"code":"low_engagement","name":"Low engagement protection","category":"Performance","condition":"Penalise Increase when engagement is below 5","weight":0.7,"priority":2},
+    {"code":"evidence_sufficiency","name":"Evidence sufficiency","category":"Evidence","condition":"Penalise decisive action below 500 clicks or 50 conversions","weight":0.85,"priority":3},
+    {"code":"strong_signal","name":"Strong signal protection","category":"Performance","condition":"Penalise Reduce when at least two performance signals are strong","weight":0.85,"priority":2},
+    {"code":"exceptional_performance","name":"Exceptional performance","category":"Performance","condition":"Penalise Maintain when all core signals are exceptional","weight":0.7,"priority":1},
+    {"code":"growth_safeguard","name":"Growth intent safeguard","category":"Intent","condition":"Penalise Reduce under Growth intent","weight":0.9,"priority":3},
+    {"code":"survival_safeguard","name":"Survival intent safeguard","category":"Intent","condition":"Penalise Increase under Survival intent","weight":0.9,"priority":3},
+    {"code":"retention_safeguard","name":"Retention intent safeguard","category":"Intent","condition":"Penalise Reduce under Retention intent","weight":0.75,"priority":2},
+    {"code":"high_cpa","name":"Acquisition cost protection","category":"Cost","condition":"Penalise Increase when acquisition cost exceeds revenue per conversion","weight":0.8,"priority":2},
+    {"code":"channel_saturation","name":"Channel saturation","category":"Channel","condition":"Penalise Increase when exposure is high but CTR is weak","weight":0.7,"priority":2},
+    {"code":"budget_feasibility","name":"Budget feasibility","category":"Budget","condition":"Penalise Increase when budget cannot support 50 additional acquisitions","weight":0.8,"priority":2},
+    {"code":"conflicting_evidence","name":"Conflicting evidence","category":"Risk","condition":"Favour Investigate when strong and weak signals conflict","weight":0.75,"priority":2}
+  ]
+}

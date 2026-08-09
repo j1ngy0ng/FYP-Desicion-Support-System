@@ -101,7 +101,7 @@ def choose_action(
             reason = "Growth evidence is positive but not strong enough for controlled expansion."
     elif intent == "Survival":
         if values["roi"] < 0 or len(weak_names) >= 2:
-            action = "Decrease"
+            action = "Reduce"
             reason = "Survival intent prioritises cost protection because of " + ", ".join(weak_names[:3]) + "."
         else:
             action = "Maintain"

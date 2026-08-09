@@ -23,7 +23,7 @@ from fastapi import Depends, FastAPI, File, HTTPException, Query, UploadFile, st
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from sqlalchemy import inspect, select, text
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -34,6 +34,8 @@ from .models import BusinessRule, Campaign, Evaluation, HumanStudyResponse, Inte
 
 
 ROOT = Path(__file__).resolve().parents[2]
+CHANNELS = ("Email", "Facebook", "Google", "Instagram", "WhatsApp", "YouTube")
+CHANNEL_NAMES = {channel.casefold(): channel for channel in CHANNELS}
 RAW_DATASET = ROOT / "data" / "layers" / "01_raw_dataset_55555x16.csv"
 DATASET = ROOT / "data" / "layers" / "02_processed_model_data.csv"
 AUDITED_BENCHMARK = ROOT / "data" / "benchmark_audited.csv"
@@ -276,6 +278,25 @@ class CampaignInput(BaseModel):
     engagement_score: float = Field(default=0, ge=0)
     budget: float = Field(default=0, ge=0)
     status: Literal["Active", "Review", "Completed"] = "Review"
+
+    @field_validator("channels", mode="before")
+    @classmethod
+    def validate_channels(cls, value: Any) -> str:
+        return normalize_channels(value)
+
+
+def normalize_channels(value: Any) -> str:
+    names = [name.strip() for name in str(value).split(",") if name.strip()]
+    unsupported = sorted({name for name in names if name.casefold() not in CHANNEL_NAMES})
+    if unsupported:
+        raise ValueError(
+            f"Unsupported channel(s): {', '.join(unsupported)}. "
+            f"Choose from: {', '.join(CHANNELS)}."
+        )
+    normalized = {CHANNEL_NAMES[name.casefold()] for name in names}
+    if not normalized:
+        raise ValueError("Select at least one channel.")
+    return ", ".join(channel for channel in CHANNELS if channel in normalized)
 
 
 class GenerateInput(BaseModel):
@@ -548,9 +569,16 @@ def import_campaigns(file: Annotated[UploadFile, File()], user: CurrentUser, db:
             return default if pd.isna(item) else item
 
         parsed_date = pd.to_datetime(value("Date", None), errors="coerce")
+        try:
+            channels = normalize_channels(value("Channel_Used", ""))
+        except ValueError as error:
+            raise HTTPException(
+                status.HTTP_400_BAD_REQUEST,
+                f"Campaign {campaign_id}: {error}",
+            ) from error
         db.add(Campaign(
             id=campaign_id, user_id=user.id, intent_id=intent.id, name=campaign_id,
-            campaign_type=str(value("Campaign_Type", "Unknown")), channels=str(value("Channel_Used", "Unknown")),
+            campaign_type=str(value("Campaign_Type", "Unknown")), channels=channels,
             target_audience=str(value("Target_Audience", "General")), duration=int(float(value("Duration"))),
             impressions=int(float(value("Impressions"))), clicks=int(float(value("Clicks"))),
             leads=int(float(value("Leads"))), conversions=int(float(value("Conversions"))),

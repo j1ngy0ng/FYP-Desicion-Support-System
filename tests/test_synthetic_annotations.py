@@ -27,7 +27,7 @@ class SyntheticDevelopmentDatasetTests(unittest.TestCase):
             all(
                 row["Reviewer_Intent"] in {"Survival", "Retention", "Growth"}
                 and row["Reviewer_Action"]
-                in {"Increase", "Maintain", "Decrease", "Investigate"}
+                in {"Increase", "Maintain", "Reduce", "Investigate"}
                 and row["Reviewer_Notes"].strip()
                 for row in self.rows
             )
@@ -35,9 +35,9 @@ class SyntheticDevelopmentDatasetTests(unittest.TestCase):
 
     def test_synthetic_actions_respect_intent_compatibility(self):
         forbidden = {
-            ("Growth", "Decrease"),
+            ("Growth", "Reduce"),
             ("Survival", "Increase"),
-            ("Retention", "Decrease"),
+            ("Retention", "Reduce"),
         }
         self.assertFalse(
             any(

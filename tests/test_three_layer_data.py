@@ -37,6 +37,10 @@ class ThreeLayerDataTests(unittest.TestCase):
         self.assertEqual(len(self.raw), 55555)
         self.assertEqual(len(self.processed), 55555)
         self.assertEqual(len({row["Campaign_ID"] for row in self.raw}), 55555)
+        self.assertEqual(len(self.raw[0]), 16)
+        self.assertEqual(len(self.processed[0]), 31)
+        self.assertEqual(self.audit["raw_duplicate_campaign_ids"], 0)
+        self.assertEqual(self.audit["processed_duplicate_campaign_ids"], 0)
         for raw, processed in zip(self.raw, self.processed):
             self.assertEqual(
                 [raw[field] for field in RAW_FIELDS],
@@ -46,6 +50,8 @@ class ThreeLayerDataTests(unittest.TestCase):
     def test_candidate_benchmark_is_authentic_and_blank(self):
         self.assertEqual(len(self.candidate), 125)
         self.assertEqual(len({row["Campaign_ID"] for row in self.candidate}), 125)
+        self.assertEqual(len(self.candidate[0]), 26)
+        self.assertEqual(self.audit["candidate_duplicate_campaign_ids"], 0)
         raw_by_id = {row["Campaign_ID"]: row for row in self.raw}
         for row in self.candidate:
             self.assertEqual(

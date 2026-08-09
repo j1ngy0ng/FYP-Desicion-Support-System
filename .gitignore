@@ -9,3 +9,16 @@ dist/
 *.tsbuildinfo
 vite.config.js
 vite.config.d.ts
+
+# Generated report, rendering and QA workspaces
+.ch4_*/
+.equation_audit_*/
+.formal_pseudocode_render_*/
+.key_algorithms_render_*/
+.moderated_ch4_work_*/
+.preprocessing_review_*/
+.preprocessing_rewrite_render_*/
+qa/
+qa_*/
+tmp_*
+docs/_*/

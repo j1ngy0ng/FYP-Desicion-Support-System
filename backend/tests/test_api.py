@@ -112,12 +112,13 @@ class ApiTests(unittest.TestCase):
     def test_campaign_create_update_delete_flow(self):
         payload = {
             "name": "Temporary Campaign", "campaign_type": "Email",
-            "intent": "Growth", "channels": "Email", "duration": 14,
+            "intent": "Growth", "channels": " google, EMAIL, Google ", "duration": 14,
         }
         created = self.client.post(
             "/api/campaigns", headers=self.headers, json=payload
         )
         self.assertEqual(created.status_code, 201)
+        self.assertEqual(created.json()["channel"], "Email, Google")
         campaign_id = created.json()["id"]
         payload["name"] = "Updated Temporary Campaign"
         updated = self.client.put(
@@ -132,6 +133,20 @@ class ApiTests(unittest.TestCase):
         )
         self.assertEqual(deleted.status_code, 204)
         self.assertEqual(missing.status_code, 404)
+
+    def test_campaign_rejects_unsupported_channel(self):
+        response = self.client.post(
+            "/api/campaigns",
+            headers=self.headers,
+            json={
+                "name": "Invalid Channel Campaign",
+                "campaign_type": "Paid Ads",
+                "intent": "Growth",
+                "channels": "Google Ads",
+            },
+        )
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("Unsupported channel", response.text)
 
     def test_evaluation_contains_full_framework_and_ablations(self):
         response = self.client.get("/api/evaluation/summary", headers=self.headers)

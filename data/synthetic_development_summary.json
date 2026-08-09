@@ -18,7 +18,7 @@
   "action_distribution": {
     "Increase": 13802,
     "Maintain": 25223,
-    "Decrease": 7616,
+    "Reduce": 7616,
     "Investigate": 8914
   },
   "confirmatory_use_allowed": false

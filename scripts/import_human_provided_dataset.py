@@ -27,7 +27,7 @@ NUMERIC_FIELDS = {
     "Engagement_Score",
 }
 INTENTS = {"Survival", "Retention", "Growth"}
-ACTIONS = {"Increase", "Maintain", "Decrease", "Investigate"}
+ACTIONS = {"Increase", "Maintain", "Reduce", "Investigate"}
 ANNOTATION_SOURCE = (
     "User-provided as human annotation; reviewer independence and adjudication not documented"
 )
@@ -129,8 +129,9 @@ def main() -> None:
                     f"Source value mismatch for {supplied['Campaign_ID']} field {field}."
                 )
         intent = supplied["Reviewer_Intent"].strip().title()
-        action = supplied["Reviewer_Action"].strip().title()
-        notes = supplied["Reviewer_Notes"].strip()
+        supplied_action = supplied["Reviewer_Action"].strip().title()
+        action = "Reduce" if supplied_action == "Decrease" else supplied_action
+        notes = supplied["Reviewer_Notes"].strip().replace("Decrease", "Reduce").replace("decrease", "reduce")
         if intent not in INTENTS:
             raise ValueError(f"Unsupported reviewer intent: {intent}")
         if action not in ACTIONS:

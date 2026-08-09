@@ -1,0 +1,38 @@
+{
+  "captured_at": "2026-08-01",
+  "host": {
+    "operating_system": "Microsoft Windows 11 Home Single Language 64-bit",
+    "os_version": "10.0.26200",
+    "processor": "12th Gen Intel(R) Core(TM) i5-1235U",
+    "cores": 10,
+    "logical_processors": 12,
+    "usable_ram_gb": 23.7
+  },
+  "executed_runtime": {
+    "python": "3.11.9",
+    "fastapi": "0.139.0",
+    "uvicorn": "0.51.0",
+    "sqlalchemy": "2.0.46",
+    "pymysql": "1.1.2",
+    "pytorch": "2.7.1+cu118",
+    "pandas": "2.1.4",
+    "scikit_learn": "1.7.2",
+    "numpy": "1.26.4",
+    "node_js": "24.18.0",
+    "pnpm": "11.16.0",
+    "git": "2.51.2.windows.1",
+    "visual_studio_code": "1.130.0"
+  },
+  "locked_frontend": {
+    "react": "19.2.7",
+    "react_dom": "19.2.7",
+    "typescript": "7.0.2",
+    "vite": "8.1.4",
+    "vite_react_plugin": "6.0.3"
+  },
+  "configured_service": {
+    "mysql_image": "mysql:8.4",
+    "status": "configured in docker-compose.yml; Docker CLI unavailable during this capture"
+  },
+  "external_inference_services": []
+}
