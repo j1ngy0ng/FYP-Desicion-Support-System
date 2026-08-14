@@ -1,7 +1,17 @@
 {
+  "run_id": "R002-20260814T223229+0800",
+  "timestamp": "2026-08-14T22:32:29+08:00",
+  "source_commit": "c0163610ece50fffb937f117e3649e136c6bf8dc",
+  "source_tags": [
+    "fyp-code-freeze-v1"
+  ],
   "evaluation_type": "confirmatory_technical_evaluation",
   "dataset": "data\\benchmark_audited.csv",
+  "dataset_sha256": "3f2320fbd190b24766db4453ab1dc7e7b212803fdfa2ac048c2437012d4d51ee",
   "training_dataset": "data\\layers\\02_processed_model_data.csv",
+  "training_dataset_sha256": "7979e95284e034236e684de0e26e00d551ba7ba0dbabe3f2a5a71655e212b1dd",
+  "rule_catalogue_version": "rule-catalogue-v1",
+  "rule_catalogue_sha256": "c048d442c121c7b4820dbd0271b8133b9b75d0b9ccb436b5c1d6317c8fdd2f7a",
   "split": "chronological_70_15_15",
   "records": 125,
   "training_records": 87,
@@ -26,6 +36,19 @@
     "42": "calibrated",
     "52": "calibrated",
     "62": "calibrated"
+  },
+  "action_evidence_statuses": {
+    "42": "audited_actionnet",
+    "52": "audited_actionnet",
+    "62": "audited_actionnet"
+  },
+  "software_environment": {
+    "operating_system": "Windows-10-10.0.26200-SP0",
+    "python": "3.11.9",
+    "torch": "2.7.1+cu118",
+    "numpy": "1.26.4",
+    "pandas": "2.1.4",
+    "scikit_learn": "1.7.2"
   },
   "confirmatory_technical_use_allowed": true,
   "human_participant_metrics_complete": false,
