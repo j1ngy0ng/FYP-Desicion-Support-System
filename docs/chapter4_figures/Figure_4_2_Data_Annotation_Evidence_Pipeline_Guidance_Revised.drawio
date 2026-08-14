@@ -1,0 +1,123 @@
+<mxfile host="app.diagrams.net" agent="Codex">
+  <diagram id="Figure_4_2_Data_Annotation_Evidence_Pipeline_Guidance_Revised" name="Figure 4 2 Data Annotation Evidence Pipeline Guidance Revised">
+    <mxGraphModel dx="2943" dy="1606" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="campaign_zone" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#F5F7FA;strokeColor=#2F75B5;strokeWidth=3;fontStyle=1" value="CAMPAIGN DATA ROUTE" vertex="1">
+          <mxGeometry height="305" width="1120" x="45" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="benchmark_zone" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#F5F7FA;strokeColor=#D97706;strokeWidth=3;fontStyle=1" value="AUDITED DECISION BENCHMARK ROUTE" vertex="1">
+          <mxGeometry height="305" width="1120" x="1235" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="raw" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#E8F2FC;strokeColor=#2F75B5;strokeWidth=2;" value="&lt;b&gt;Raw campaign source&lt;/b&gt;&lt;br&gt;Versioned operational records" vertex="1">
+          <mxGeometry height="150" width="265" x="90" y="145" as="geometry" />
+        </mxCell>
+        <mxCell id="prep" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#E8F2FC;strokeColor=#2F75B5;strokeWidth=2;" value="&lt;b&gt;Implemented validation and preprocessing&lt;/b&gt;&lt;br&gt;Schema/date checks; training-only medians; four deterministic ratios" vertex="1">
+          <mxGeometry height="190" width="360" x="430" y="125" as="geometry" />
+        </mxCell>
+        <mxCell id="frame" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#E8F2FC;strokeColor=#2F75B5;strokeWidth=2;" value="&lt;b&gt;13-feature frame&lt;/b&gt;&lt;br&gt;Ordered by Date and Campaign_ID" vertex="1">
+          <mxGeometry height="150" width="255" x="865" y="145" as="geometry" />
+        </mxCell>
+        <mxCell id="candidate" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#FFF1DE;strokeColor=#D97706;strokeWidth=2;" value="&lt;b&gt;Candidate cases&lt;/b&gt;&lt;br&gt;Independent review set" vertex="1">
+          <mxGeometry height="150" width="255" x="1280" y="145" as="geometry" />
+        </mxCell>
+        <mxCell id="annotation" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#FFF1DE;strokeColor=#D97706;strokeWidth=2;" value="&lt;b&gt;Independent annotation&lt;/b&gt;&lt;br&gt;Intent and audited operational reference action" vertex="1">
+          <mxGeometry height="150" width="290" x="1610" y="145" as="geometry" />
+        </mxCell>
+        <mxCell id="freeze" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#FFF1DE;strokeColor=#D97706;strokeWidth=2;" value="&lt;b&gt;Adjudication and freeze&lt;/b&gt;&lt;br&gt;Audited labels plus immutable benchmark manifest" vertex="1">
+          <mxGeometry height="190" width="340" x="1975" y="125" as="geometry" />
+        </mxCell>
+        <mxCell id="partition" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#F2ECFF;strokeColor=#7551B2;strokeWidth=2;" value="&lt;b&gt;Chronological partition and evidence lock&lt;/b&gt;&lt;br&gt;Campaign: 38,888 / 8,333 / 8,334; benchmark: 87 / 19 / 19" vertex="1">
+          <mxGeometry height="150" width="1020" x="690" y="405" as="geometry" />
+        </mxCell>
+        <mxCell id="train" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#E8F2FC;strokeColor=#2F75B5;strokeWidth=2;" value="&lt;b&gt;Training-only fitting&lt;/b&gt;&lt;br&gt;Medians, both scalers, ROI clipping and target statistics, model parameters, and channel evidence" vertex="1">
+          <mxGeometry height="230" width="600" x="90" y="650" as="geometry" />
+        </mxCell>
+        <mxCell id="valid" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#F2ECFF;strokeColor=#7551B2;strokeWidth=2;" value="&lt;b&gt;Validation-only confidence calibration&lt;/b&gt;&lt;br&gt;Fit temperature from locked final-score vectors and audited validation actions; no model or preprocessing refit" vertex="1">
+          <mxGeometry height="230" width="600" x="900" y="650" as="geometry" />
+        </mxCell>
+        <mxCell id="test" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#E9F6EC;strokeColor=#3D8B5A;strokeWidth=2;" value="&lt;b&gt;Untouched held-out evaluation&lt;/b&gt;&lt;br&gt;No model selection, rule revision, threshold selection, explanation-template revision or calibration" vertex="1">
+          <mxGeometry height="230" width="600" x="1710" y="650" as="geometry" />
+        </mxCell>
+        <mxCell id="runtime" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#F5F7FA;strokeColor=#738291;strokeWidth=2;" value="&lt;b&gt;Runtime interface&lt;/b&gt;&lt;br&gt;API-validated case → same 13 features; CampaignNet uses 11 inputs; ActionNet uses 13 + 3 intent one-hot" vertex="1">
+          <mxGeometry height="185" width="600" x="90" y="980" as="geometry" />
+        </mxCell>
+        <mxCell id="state" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#FFF7D6;strokeColor=#B88900;strokeWidth=2;" value="&lt;b&gt;Frozen in-memory state&lt;/b&gt;&lt;br&gt;Training medians, scalers, model weights, statistics, channel evidence and validation-fitted temperature" vertex="1">
+          <mxGeometry height="185" width="600" x="900" y="980" as="geometry" />
+        </mxCell>
+        <mxCell id="evidence" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#E9F6EC;strokeColor=#3D8B5A;strokeWidth=2;" value="&lt;b&gt;Model and evaluation evidence&lt;/b&gt;&lt;br&gt;Ranked actions, calibrated model confidence, local predictive attribution evidence and rule traces" vertex="1">
+          <mxGeometry height="185" width="600" x="1710" y="980" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="raw" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#2F75B5;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;" target="prep" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="prep" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#2F75B5;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;" target="frame" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="candidate" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#D97706;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;" target="annotation" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="annotation" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#D97706;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;" target="freeze" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="frame" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#2F75B5;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;" target="partition" value="Frozen campaign evidence">
+          <mxGeometry relative="1" x="0.6922" y="-130" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="992.47" y="340" />
+              <mxPoint x="940.11" y="340" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="freeze" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#D97706;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;" target="partition" value="Frozen audited labels">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2145" y="380" />
+              <mxPoint x="1200" y="380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="partition" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#7551B2;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;" target="train" value="Earliest 70%">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1060" y="602.5" />
+              <mxPoint x="390" y="602.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="partition" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#7551B2;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;" target="valid" value="Next 15%">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="partition" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#7551B2;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;" target="test" value="Latest 15%">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1360" y="602.5" />
+              <mxPoint x="2010" y="602.5" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="train" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#2F75B5;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=8 6;" target="runtime" value="Reuse branch-specific scalers">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="train" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#738291;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=8 6;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" target="state" value="Freeze fitted state">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="750" y="765" />
+              <mxPoint x="750" y="920" />
+              <mxPoint x="1050" y="920" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="valid" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#B88900;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=8 6;" target="state" value="Freeze T*">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" edge="1" parent="1" source="state" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#3D8B5A;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=8 6;" target="evidence" value="No held-out feedback">
+          <mxGeometry relative="1" x="0.0476" y="23" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

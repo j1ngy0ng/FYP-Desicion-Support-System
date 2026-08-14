@@ -51,6 +51,7 @@ DECISION_CASES = BENCHMARK_CANDIDATE
 SYNTHETIC_DEVELOPMENT = ROOT / "data" / "Dataset_synthetic_development.csv"
 HUMAN_PROVIDED_DEVELOPMENT = ROOT / "data" / "Dataset_human_provided_development.csv"
 TOKEN_SECRET = os.getenv("TOKEN_SECRET", "change-this-development-secret").encode()
+ETHICS_APPROVAL_REFERENCE = os.getenv("ETHICS_APPROVAL_REFERENCE", "").strip()
 security = HTTPBearer(auto_error=False)
 recommendation_engine: RecommendationEngine | None = None
 STUDY_CONDITIONS = (
@@ -276,7 +277,7 @@ class CampaignInput(BaseModel):
     acquisition_cost: float = Field(default=0, ge=0)
     roi: float = 0
     engagement_score: float = Field(default=0, ge=0)
-    budget: float = Field(default=0, ge=0)
+    budget: float | None = Field(default=None, ge=0)
     status: Literal["Active", "Review", "Completed"] = "Review"
 
     @field_validator("channels", mode="before")
@@ -584,6 +585,7 @@ def import_campaigns(file: Annotated[UploadFile, File()], user: CurrentUser, db:
             leads=int(float(value("Leads"))), conversions=int(float(value("Conversions"))),
             revenue=float(value("Revenue")), acquisition_cost=float(value("Acquisition_Cost")),
             roi=float(value("ROI")), engagement_score=float(value("Engagement_Score")),
+            budget=(None if value("Budget", None) is None else float(value("Budget", None))),
             language=str(value("Language", "English")), customer_segment=str(value("Customer_Segment", "General")),
             campaign_date=parsed_date.date() if not pd.isna(parsed_date) else date.today(),
         )); added += 1
@@ -604,6 +606,7 @@ def analysis(campaign_id: str, user: CurrentUser, db: Db) -> dict[str, Any]:
         "attribution": result.attribution,
         "channel_attribution": result.channel_attribution,
         "calibration_status": result.calibration_status,
+        "action_evidence_status": result.action_evidence_status,
     }
 
 
@@ -617,6 +620,7 @@ def recommendation_json(item: Recommendation) -> dict[str, Any]:
         "performance_score": round(item.performance_score * 100, 1), "explanation": explanation,
         "evidence": evidence, "ranked_actions": json.loads(item.ranked_actions),
         "calibration_status": evidence.get("calibration_status", "legacy_unknown"),
+        "action_evidence_status": evidence.get("action_evidence_status", "legacy_unknown"),
         "latency_ms": item.latency_ms, "status": item.decision, "date": item.generated_at.strftime("%d %b %Y"),
     }
 
@@ -638,6 +642,7 @@ def generate(payload: GenerateInput, user: CurrentUser, db: Db) -> dict[str, Any
             "channels": result.channel_attribution,
             "confidence_level": result.confidence_level,
             "calibration_status": result.calibration_status,
+            "action_evidence_status": result.action_evidence_status,
         }),
         ranked_actions=json.dumps(result.ranked_actions), latency_ms=result.latency_ms,
     )
@@ -685,6 +690,11 @@ def evaluate(recommendation_id: int, payload: EvaluationInput, user: CurrentUser
 
 
 def frozen_study_rows() -> list[dict[str, Any]]:
+    if not ETHICS_APPROVAL_REFERENCE:
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            "Human study is locked until an ethics approval or exemption reference is configured.",
+        )
     if not AUDITED_BENCHMARK.exists():
         raise HTTPException(
             status.HTTP_409_CONFLICT,

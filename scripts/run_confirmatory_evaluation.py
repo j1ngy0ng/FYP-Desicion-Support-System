@@ -5,12 +5,17 @@ from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
 import json
+import platform
 import random
 import statistics
+import subprocess
+import sys
 import time
 from collections import Counter
 from datetime import datetime
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Sequence
 
@@ -263,8 +268,35 @@ def write_csv(path: Path, rows: list[list[object]]) -> None:
         csv.writer(handle, lineterminator="\n").writerows(rows)
 
 
+def sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def git_output(*args: str) -> str:
+    result = subprocess.run(
+        ["git", *args], capture_output=True, text=True, check=False,
+    )
+    return result.stdout.strip() if result.returncode == 0 else "unavailable"
+
+
+def package_version(name: str) -> str:
+    try:
+        return version(name)
+    except PackageNotFoundError:
+        return "not-installed"
+
+
 def main() -> None:
     args = parse_args()
+    timestamp = datetime.now().astimezone()
+    run_id = f"R002-{timestamp.strftime('%Y%m%dT%H%M%S%z')}"
+    source_commit = git_output("rev-parse", "HEAD")
+    source_tags = git_output("tag", "--points-at", "HEAD").splitlines()
+    rule_catalogue = Path("data/rule_catalogue_v1.json")
     rows = load_rows(args.dataset)
     train_rows, validation_rows, test_rows = split_rows(rows)
     labels = [row["label"] for row in test_rows]
@@ -281,6 +313,7 @@ def main() -> None:
     }
     temperatures = {}
     calibration_statuses = {}
+    action_evidence_statuses = {}
     for seed in SEEDS:
         engine = RecommendationEngine(
             args.training_dataset,
@@ -289,6 +322,10 @@ def main() -> None:
         )
         temperatures[str(seed)] = engine.temperature
         calibration_statuses[str(seed)] = engine.calibration_status
+        action_evidence_statuses[str(seed)] = {
+            "audited_human_benchmark": "audited_actionnet",
+            "user_provided_development": "development_actionnet",
+        }.get(engine.annotation_status, "campaignnet_only_fallback")
         for name, variant in VARIANTS.items():
             results_by_system.setdefault(name, []).append(
                 proposed_predict(engine, test_rows, name, variant)
@@ -325,7 +362,7 @@ def main() -> None:
     prediction_rows: list[list[object]] = [[
         "Campaign_ID", "Date", "Intent", "Reference_Action", "System", "Seed",
         "Prediction", "Confidence", "Top_2", "Conflict", "Conflict_Reasons",
-        "Latency_ms",
+        "Latency_ms", "Action_Evidence_Status", "Run_ID", "Source_Commit",
     ]]
     for name, results in results_by_system.items():
         for result_index, result in enumerate(results):
@@ -345,6 +382,13 @@ def main() -> None:
                     int(bool(reasons)),
                     "; ".join(reasons),
                     f"{result.case_latencies_ms[index]:.6f}",
+                    (
+                        "not_applicable"
+                        if seed == "deterministic"
+                        else action_evidence_statuses[str(seed)]
+                    ),
+                    run_id,
+                    source_commit,
                 ])
     write_csv(args.output_dir / "predictions.csv", prediction_rows)
     (args.output_dir / "confidence_intervals.json").write_text(
@@ -360,9 +404,17 @@ def main() -> None:
         else "exploratory_due_to_macro_f1_gate"
     )
     metadata = {
+        "run_id": run_id,
+        "timestamp": timestamp.isoformat(timespec="seconds"),
+        "source_commit": source_commit,
+        "source_tags": source_tags,
         "evaluation_type": "confirmatory_technical_evaluation",
         "dataset": str(args.dataset),
+        "dataset_sha256": sha256(args.dataset),
         "training_dataset": str(args.training_dataset),
+        "training_dataset_sha256": sha256(args.training_dataset),
+        "rule_catalogue_version": "rule-catalogue-v1",
+        "rule_catalogue_sha256": sha256(rule_catalogue),
         "split": "chronological_70_15_15",
         "records": len(rows),
         "training_records": len(train_rows),
@@ -376,6 +428,15 @@ def main() -> None:
         "calibration_fit_partition": "validation_only",
         "temperatures": temperatures,
         "calibration_statuses": calibration_statuses,
+        "action_evidence_statuses": action_evidence_statuses,
+        "software_environment": {
+            "operating_system": platform.platform(),
+            "python": sys.version.split()[0],
+            "torch": torch.__version__,
+            "numpy": package_version("numpy"),
+            "pandas": package_version("pandas"),
+            "scikit_learn": package_version("scikit-learn"),
+        },
         "confirmatory_technical_use_allowed": True,
         "human_participant_metrics_complete": False,
         "claim_status": claim_status,

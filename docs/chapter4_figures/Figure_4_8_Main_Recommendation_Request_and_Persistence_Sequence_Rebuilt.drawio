@@ -1,0 +1,70 @@
+<mxfile host="app.diagrams.net" agent="Codex">
+  <diagram id="Figure_4_8_Main_Recommendation_Request_and_Persistence_Sequence_Rebuilt" name="Figure 4 8 Main Recommendation Request and Persistence Sequence Rebuilt">
+    <mxGraphModel dx="909" dy="1084" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="manager" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=22;fillColor=#F5F7FA;strokeColor=#738291;strokeWidth=2;" value="&lt;b&gt;SME Manager&lt;/b&gt;&lt;br&gt;" vertex="1">
+          <mxGeometry height="90" width="250" x="55" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="react" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=22;fillColor=#F5F7FA;strokeColor=#738291;strokeWidth=2;" value="&lt;b&gt;React UI&lt;/b&gt;&lt;br&gt;" vertex="1">
+          <mxGeometry height="90" width="250" x="395" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="api" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=22;fillColor=#F5F7FA;strokeColor=#738291;strokeWidth=2;" value="&lt;b&gt;FastAPI&lt;/b&gt;&lt;br&gt;" vertex="1">
+          <mxGeometry height="90" width="250" x="735" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="db" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=22;fillColor=#F5F7FA;strokeColor=#738291;strokeWidth=2;" value="&lt;b&gt;SQLAlchemy DB&lt;/b&gt;&lt;br&gt;" vertex="1">
+          <mxGeometry height="90" width="250" x="1075" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="engine" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=22;fillColor=#F5F7FA;strokeColor=#738291;strokeWidth=2;" value="&lt;b&gt;RecommendationEngine&lt;/b&gt;&lt;br&gt;" vertex="1">
+          <mxGeometry height="90" width="250" x="1415" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="components" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=22;fillColor=#F5F7FA;strokeColor=#738291;strokeWidth=2;" value="&lt;b&gt;Model / Rule / Calibration / Explanation&lt;/b&gt;&lt;br&gt;" vertex="1">
+          <mxGeometry height="90" width="250" x="1865" y="55" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="manager" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#3D8B5A;fontFamily=Arial;fontSize=18;labelBackgroundColor=#FFFFFF;" target="react" value="Select campaign, intent and risk">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="react" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#2F75B5;fontFamily=Arial;fontSize=18;labelBackgroundColor=#FFFFFF;" target="api" value="POST /api/recommendations">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#2F75B5;fontFamily=Arial;fontSize=18;labelBackgroundColor=#FFFFFF;" target="api" value="Authenticate and validate">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#738291;fontFamily=Arial;fontSize=18;labelBackgroundColor=#FFFFFF;" target="db" value="Load owned campaign and active rules">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="db" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#738291;fontFamily=Arial;fontSize=18;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=8 6;" target="api" value="Campaign + rules">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#7551B2;fontFamily=Arial;fontSize=18;labelBackgroundColor=#FFFFFF;" target="engine" value="recommend(case, rules, intent, risk)">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="engine" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#2F75B5;fontFamily=Arial;fontSize=18;labelBackgroundColor=#FFFFFF;" target="components" value="features → evidence → rules → intent/risk">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="components" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#2F75B5;fontFamily=Arial;fontSize=18;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=8 6;" target="engine" value="scores, attribution and rule traces">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="engine" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#B88900;fontFamily=Arial;fontSize=18;labelBackgroundColor=#FFFFFF;" target="components" value="temperature-scale, rank and explain">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="components" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#B88900;fontFamily=Arial;fontSize=18;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=8 6;" target="engine" value="EngineResult">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="engine" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#7551B2;fontFamily=Arial;fontSize=18;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=8 6;" target="api" value="Recommendation package">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#738291;fontFamily=Arial;fontSize=18;labelBackgroundColor=#FFFFFF;" target="db" value="INSERT Recommendation + RecommendationRule">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" edge="1" parent="1" source="db" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#738291;fontFamily=Arial;fontSize=18;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=8 6;" target="api" value="Commit and identifiers">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" edge="1" parent="1" source="api" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#2F75B5;fontFamily=Arial;fontSize=18;labelBackgroundColor=#FFFFFF;" target="react" value="201 persisted package">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

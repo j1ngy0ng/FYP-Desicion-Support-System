@@ -11,7 +11,10 @@ from system_components.neuro_symbolic_reasoning_layer.engine import Recommendati
 class RecommendationEngineTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.engine = RecommendationEngine(Path("data/layers/02_processed_model_data.csv"))
+        cls.engine = RecommendationEngine(
+            Path("data/layers/02_processed_model_data.csv"),
+            audited_benchmark=Path("data/benchmark_audited.csv"),
+        )
         cls.rules = [
             {"id": index, "code": rule[0], "name": rule[1], "weight": rule[4], "priority": rule[5], "active": True}
             for index, rule in enumerate(DEFAULT_RULES, 1)
@@ -24,6 +27,7 @@ class RecommendationEngineTests(unittest.TestCase):
         self.assertAlmostEqual(sum(item["score"] for item in result.ranked_actions), 1, places=3)
         self.assertEqual(set(result.explanation), {"driver", "implication", "action", "caveat", "intent"})
         self.assertTrue(result.attribution)
+        self.assertEqual(result.action_evidence_status, "audited_actionnet")
 
     def test_backend_uses_architecture_component(self):
         self.assertIs(RecommendationEngine, ComponentEngine)
@@ -69,6 +73,36 @@ class RecommendationEngineTests(unittest.TestCase):
             "budget_feasibility", "Increase", case_features(case), "Growth", None
         )
         self.assertIsNone(score)
+
+    def test_explicit_zero_and_positive_budget_are_evaluated(self):
+        case = self.engine.test.iloc[0].to_dict()
+        features = case_features(case)
+        zero = self.engine._rule_score(
+            "budget_feasibility", "Increase", features, "Growth", 0
+        )
+        positive = self.engine._rule_score(
+            "budget_feasibility", "Increase", features, "Growth", 1_000_000_000
+        )
+        self.assertEqual(zero[0], 0.0)
+        self.assertEqual(positive[0], 1.0)
+
+    def test_actionnet_fallback_is_explicit(self):
+        with TemporaryDirectory() as directory:
+            dataset = Path(directory) / "campaigns.csv"
+            self.engine.data.to_csv(dataset, index=False)
+            fallback_engine = ComponentEngine(dataset)
+            result = fallback_engine.recommend(
+                fallback_engine.test.iloc[0].to_dict(), self.rules, "Growth"
+            )
+        self.assertEqual(result.action_evidence_status, "campaignnet_only_fallback")
+        self.assertIn("CampaignNet evidence only", result.explanation["caveat"])
+
+    def test_audited_actionnet_status_is_explicit(self):
+        result = self.engine.recommend(
+            self.engine.test.iloc[0].to_dict(), self.rules, "Growth"
+        )
+        self.assertEqual(result.action_evidence_status, "audited_actionnet")
+        self.assertNotIn("CampaignNet evidence only", result.explanation["caveat"])
 
     def test_custom_threshold_rule_is_executed(self):
         case = self.engine.test.iloc[0].to_dict()

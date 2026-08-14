@@ -8,8 +8,10 @@ handle, database_path = tempfile.mkstemp(suffix=".db")
 os.close(handle)
 os.environ["DATABASE_URL"] = f"sqlite:///{database_path.replace(chr(92), '/')}"
 os.environ["TOKEN_SECRET"] = "test-secret"
+os.environ["ETHICS_APPROVAL_REFERENCE"] = "TEST-APPROVAL-NOT-FOR-RESEARCH"
 
 from fastapi.testclient import TestClient
+from unittest.mock import patch
 
 from backend.app.main import app, human_study_statistics
 
@@ -39,6 +41,8 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(generated.status_code, 201)
         body = generated.json()
         self.assertIn(body["action"], {"Increase", "Maintain", "Reduce", "Investigate"})
+        self.assertEqual(body["action_evidence_status"], "audited_actionnet")
+        self.assertEqual(body["evidence"]["action_evidence_status"], "audited_actionnet")
         details = self.client.get(
             f"/api/recommendations/{body['numeric_id']}", headers=self.headers
         )
@@ -70,6 +74,10 @@ class ApiTests(unittest.TestCase):
         second = self.client.post("/api/campaigns/import", headers=self.headers, files=files)
         self.assertEqual(first.json(), {"imported": 1, "skipped": 1})
         self.assertEqual(second.json(), {"imported": 0, "skipped": 2})
+        imported = self.client.get(
+            "/api/campaigns/IMPORT-1", headers=self.headers
+        )
+        self.assertIsNone(imported.json()["budget"])
 
     def test_manager_registration_profile_and_password_flow(self):
         payload = {
@@ -89,6 +97,34 @@ class ApiTests(unittest.TestCase):
             "/api/human-study/export.csv", headers=manager_headers
         )
         self.assertEqual(forbidden_export.status_code, 403)
+        rule = self.client.get("/api/rules", headers=manager_headers).json()[0]
+        forbidden_create = self.client.post(
+            "/api/rules",
+            headers=manager_headers,
+            json={
+                "name": "Manager must not create this rule",
+                "metric": "ROI",
+                "operator": "lt",
+                "threshold": 0,
+                "action": "Increase",
+                "intent": None,
+                "weight": .8,
+                "priority": 2,
+                "active": True,
+            },
+        )
+        forbidden_update = self.client.patch(
+            f"/api/rules/{rule['id']}",
+            headers=manager_headers,
+            json={
+                "name": rule["name"],
+                "weight": rule["weight"],
+                "priority": rule["priority"],
+                "active": rule["active"],
+            },
+        )
+        self.assertEqual(forbidden_create.status_code, 403)
+        self.assertEqual(forbidden_update.status_code, 403)
         changed = self.client.patch(
             "/api/profile/password",
             headers=manager_headers,
@@ -119,6 +155,7 @@ class ApiTests(unittest.TestCase):
         )
         self.assertEqual(created.status_code, 201)
         self.assertEqual(created.json()["channel"], "Email, Google")
+        self.assertIsNone(created.json()["budget"])
         campaign_id = created.json()["id"]
         payload["name"] = "Updated Temporary Campaign"
         updated = self.client.put(
@@ -133,6 +170,25 @@ class ApiTests(unittest.TestCase):
         )
         self.assertEqual(deleted.status_code, 204)
         self.assertEqual(missing.status_code, 404)
+
+    def test_budget_null_zero_and_positive_are_distinct(self):
+        base = {
+            "name": "Budget Semantics", "campaign_type": "Email",
+            "intent": "Growth", "channels": "Email", "duration": 14,
+        }
+        omitted = self.client.post(
+            "/api/campaigns", headers=self.headers, json=base
+        )
+        explicit_zero = self.client.post(
+            "/api/campaigns", headers=self.headers, json={**base, "budget": 0}
+        )
+        positive = self.client.post(
+            "/api/campaigns", headers=self.headers, json={**base, "budget": 5000}
+        )
+        self.assertEqual(omitted.status_code, 201)
+        self.assertIsNone(omitted.json()["budget"])
+        self.assertEqual(explicit_zero.json()["budget"], 0)
+        self.assertEqual(positive.json()["budget"], 5000)
 
     def test_campaign_rejects_unsupported_channel(self):
         response = self.client.post(
@@ -180,17 +236,50 @@ class ApiTests(unittest.TestCase):
             3,
         )
 
-    def test_admin_can_create_rule_without_equivalent_duplicate(self):
+    def test_seeded_admin_can_login_create_and_update_rule(self):
+        login = self.client.post(
+            "/api/auth/login",
+            json={"email": "jingyong@example.com", "password": "prototype"},
+        )
+        self.assertEqual(login.status_code, 200)
+        self.assertEqual(login.json()["user"]["role"], "admin")
+        admin_headers = {
+            "Authorization": f"Bearer {login.json()['token']}"
+        }
         payload = {
             "name": "Protect high-cost expansion", "metric": "cost_per_conversion",
             "operator": "gt", "threshold": 100, "action": "Increase", "intent": None,
             "weight": .8, "priority": 2, "active": True,
         }
-        created = self.client.post("/api/rules", headers=self.headers, json=payload)
-        duplicate = self.client.post("/api/rules", headers=self.headers, json=payload)
+        created = self.client.post("/api/rules", headers=admin_headers, json=payload)
+        duplicate = self.client.post("/api/rules", headers=admin_headers, json=payload)
         self.assertEqual(created.status_code, 201)
         self.assertEqual(created.json()["definition"]["metric"], "cost_per_conversion")
         self.assertEqual(duplicate.status_code, 409)
+        updated = self.client.patch(
+            f"/api/rules/{created.json()['id']}",
+            headers=admin_headers,
+            json={
+                "name": "Protect costly expansion",
+                "weight": .9,
+                "priority": 3,
+                "active": False,
+            },
+        )
+        self.assertEqual(updated.status_code, 200)
+        self.assertEqual(updated.json()["name"], "Protect costly expansion")
+        self.assertEqual(updated.json()["weight"], .9)
+        self.assertEqual(updated.json()["priority"], 3)
+        self.assertFalse(updated.json()["active"])
+
+    def test_human_study_is_locked_without_ethics_reference(self):
+        with patch("backend.app.main.ETHICS_APPROVAL_REFERENCE", ""):
+            response = self.client.get(
+                "/api/human-study/cases?participant_code=LOCKED-TEST",
+                headers=self.headers,
+            )
+        self.assertEqual(response.status_code, 409)
+        self.assertIn("ethics approval or exemption", response.text)
 
     def test_blinded_human_study_flow_and_duplicate_prevention(self):
         participant = "TEST-PARTICIPANT"

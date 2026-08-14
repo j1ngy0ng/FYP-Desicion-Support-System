@@ -1,24 +1,19 @@
-CHAPTER 4 DRAW.IO SOURCE PACKAGE
+CHAPTER 4 EDITABLE FIGURE PACKAGE
 
-Open any .drawio file at https://app.diagrams.net or in the Draw.io desktop application.
-Technical figures contain an 'Editable Figure 4.x' page made from editable Draw.io shapes and connectors.
-They also contain a 'Report Reference Figure 4.x' page with the exact image used in the final report.
-Figures 4.9-4.12 are implemented web-interface screenshots, so their files contain portable embedded image objects rather than reconstructed UI widgets.
+Open .drawio files in diagrams.net or Draw.io Desktop. The PNG files are the corresponding report exports.
 
-FILES
-Figure 4.1: Overall Implemented System Architecture and Data Boundaries -> Figure_4_1_Overall_Implemented_System_Architecture.drawio
-Figure 4.2: Implemented Data, Annotation and Evidence Pipeline -> Figure_4_2_Implemented_Data_Annotation_and_Evidence_Pipeline.drawio
-Figure 4.3: Internal Architecture of the Proposed Intent-Aware Neuro-Symbolic Recommendation Method -> Figure_4_3_Internal_Architecture_of_Proposed_Method.drawio
-Figure 4.4: Implemented Application Entity Relationship Diagram -> Figure_4_4_Implemented_Application_ERD.drawio
-Figure 4.5: Implemented Model and Service Class Diagram -> Figure_4_5_Implemented_Model_and_Service_Class_Diagram.drawio
-Figure 4.6: Implemented Manager Use Cases -> Figure_4_6_Implemented_Manager_Use_Cases.drawio
-Figure 4.7: Implemented End-to-End Activity Workflow -> Figure_4_7_Implemented_End_to_End_Activity_Workflow.drawio
-Figure 4.8: Main Recommendation Interaction Sequence -> Figure_4_8_Main_Recommendation_Interaction_Sequence.drawio
-Figure 4.9: Campaign Analysis Interface -> Figure_4_9_Campaign_Analysis_Interface.drawio
-Figure 4.10: Recommendation Request Interface -> Figure_4_10_Recommendation_Request_Interface.drawio
-Figure 4.11: Recommendation Evidence Interface -> Figure_4_11_Recommendation_Evidence_Interface.drawio
-Figure 4.12: Rule Management Interface -> Figure_4_12_Rule_Management_Interface.drawio
-Figure 4.13: Predictive Analytics Algorithm Workflow -> Figure_4_13_Predictive_Analytics_Algorithm_Workflow.drawio
-Figure 4.14: Neuro-Symbolic Reasoning Algorithm Workflow -> Figure_4_14_Neuro_Symbolic_Reasoning_Algorithm_Workflow.drawio
-Figure 4.15: Confidence Calibration Algorithm Workflow -> Figure_4_15_Confidence_Calibration_Algorithm_Workflow.drawio
-Figure 4.16: Explanation Generation Algorithm Workflow -> Figure_4_16_Explanation_Generation_Algorithm_Workflow.drawio
+FINAL REVISED TECHNICAL FIGURES
+Figure 4.1 -> Figure_4_1_Overall_Architecture_Final_Corrected.drawio / .png
+Figure 4.2 -> Figure_4_2_Data_Annotation_Evidence_Pipeline_Guidance_Revised.drawio / .png
+Figure 4.3 -> Figure_4_3_Internal_Method_Architecture_Guidance_Revised.drawio / .png
+Figure 4.4 -> Figure_4_4_Implemented_Application_ERD_Crow_Foot_Final.drawio / .png
+Figure 4.5 -> Figure_4_5_Implemented_Model_and_Service_Class_Diagram_Rebuilt.drawio / .png
+Figure 4.6 -> Figure_4_6_Implemented_Use_Cases_Rebuilt.drawio / .png
+Figure 4.7 -> Figure_4_7_Implemented_Recommendation_Activity_Workflow_Rebuilt.drawio / .png
+Figure 4.8 -> Figure_4_8_Main_Recommendation_Request_and_Persistence_Sequence_Rebuilt.drawio / .png
+
+IMPLEMENTED INTERFACE AND ALGORITHM SOURCES
+Figures 4.9-4.16 retain their existing .drawio sources. Figure 4.10 also has the corrected confidence-calibration PNG export used for report verification.
+
+Superseded duplicate exports were archived outside the repository at:
+C:\Users\user\Desktop\FYP Repository Archive\strict-review-20260814\redundant_figure_variants

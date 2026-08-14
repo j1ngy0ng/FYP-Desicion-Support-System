@@ -6,6 +6,8 @@ node_modules/
 dist/
 *.db
 .codex-report-render/
+.codex_tmp/
+tools/
 *.tsbuildinfo
 vite.config.js
 vite.config.d.ts

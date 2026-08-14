@@ -1,0 +1,85 @@
+<mxfile host="app.diagrams.net" agent="Codex">
+  <diagram id="Figure_4_1_Overall_Architecture_Final_Corrected" name="Figure 4.1 Final Corrected">
+    <mxGraphModel dx="1093" dy="1324" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="prototypeBoundary" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#486581;strokeWidth=2;fontFamily=Arial;fontSize=16;fontStyle=1;fontColor=light-dark(#000000, #b1c8df);align=left;verticalAlign=top;spacingTop=14;spacingLeft=18;" value="IMPLEMENTED LOCAL PROTOTYPE" vertex="1">
+          <mxGeometry height="735" width="1305" x="235" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="user" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);fillColor=#E9F6EC;strokeColor=#3D8B5A;strokeWidth=2;" value="&lt;b&gt;SME Manager / Administrator&lt;/b&gt;&lt;br&gt;&lt;font&gt;Provides decision context and reviews output&lt;/font&gt;" vertex="1">
+          <mxGeometry height="145" width="185" x="25" y="295" as="geometry" />
+        </mxCell>
+        <mxCell id="react" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);fillColor=#E8F2FC;strokeColor=#2F75B5;strokeWidth=2;" value="&lt;b&gt;React Web Interface&lt;/b&gt;&lt;br&gt;&lt;font&gt;Campaign input, recommendation display and feedback capture&lt;/font&gt;" vertex="1">
+          <mxGeometry height="135" width="210" x="280" y="300" as="geometry" />
+        </mxCell>
+        <mxCell id="fastapi" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);fillColor=#E8F2FC;strokeColor=#2F75B5;strokeWidth=2;" value="&lt;b&gt;FastAPI Service Layer&lt;/b&gt;&lt;br&gt;&lt;font&gt;Authentication, validation, routing and persistence orchestration&lt;/font&gt;" vertex="1">
+          <mxGeometry height="155" width="235" x="545" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="engine" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);fillColor=#F0EAFE;strokeColor=#7551B2;strokeWidth=3;" value="&lt;b&gt;Neuro-Symbolic Recommendation Engine&lt;/b&gt;&lt;br&gt;&lt;font&gt;Evidence → soft rules → intent/risk adjustment → calibrated recommendation&lt;/font&gt;" vertex="1">
+          <mxGeometry height="230" width="345" x="830" y="252.5" as="geometry" />
+        </mxCell>
+        <mxCell id="output" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);fillColor=#FFF7D6;strokeColor=#B88900;strokeWidth=2;" value="&lt;b&gt;Recommendation Package&lt;/b&gt;&lt;br&gt;&lt;font&gt;Returned through FastAPI/React with action, confidence, alternatives, explanation and rule traces&lt;/font&gt;" vertex="1">
+          <mxGeometry height="155" width="245" x="1215" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="review" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);fillColor=#E9F6EC;strokeColor=#3D8B5A;strokeWidth=2;" value="&lt;b&gt;Human Review&lt;/b&gt;&lt;br&gt;&lt;font&gt;Accepted | Rejected | Deferred | Modified&lt;br&gt;Final decision remains human&lt;/font&gt;" vertex="1">
+          <mxGeometry height="175" width="195" x="1580" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="mysql" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);fillColor=#F5F7FA;strokeColor=#9AA5B1;strokeWidth=2;" value="&lt;b&gt;MySQL Operational Store&lt;/b&gt;&lt;br&gt;&lt;font&gt;Campaigns, users, active rules, recommendations and review/audit records&lt;/font&gt;" vertex="1">
+          <mxGeometry height="145" width="315" x="500" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="research" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);fillColor=#F5F7FA;strokeColor=#9AA5B1;strokeWidth=2;" value="&lt;b&gt;Versioned Research Artefacts&lt;/b&gt;&lt;br&gt;&lt;font&gt;Processed campaign data and audited benchmark loaded at engine initialisation&lt;/font&gt;" vertex="1">
+          <mxGeometry height="145" width="345" x="830" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="externalLabel" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFFFFF;strokeWidth=1;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);fontStyle=0;align=center;verticalAlign=middle;spacing=8;" value="HUMAN &amp;amp; INTERFACE" vertex="1">
+          <mxGeometry height="30" width="185" x="25" y="245" as="geometry" />
+        </mxCell>
+        <mxCell id="humanLabel" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#FFFFFF;strokeWidth=1;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);fontStyle=0;align=center;verticalAlign=middle;spacing=8;" value="HUMAN-DECISION BOUNDARY" vertex="1">
+          <mxGeometry height="35" width="215" x="1570" y="225" as="geometry" />
+        </mxCell>
+        <mxCell id="noAuto" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;fillColor=#FFF0F0;strokeColor=#B64A4A;strokeWidth=1;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);fontStyle=1;align=center;verticalAlign=middle;spacing=8;" value="Decision support only: no marketing action is executed automatically." vertex="1">
+          <mxGeometry height="105" width="210" x="1570" y="475" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="user" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#2F75B5;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);labelBackgroundColor=#FFFFFF;" target="react" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="react" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#2F75B5;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);labelBackgroundColor=#FFFFFF;startArrow=block;startFill=1;" target="fastapi" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="fastapi" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#7551B2;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);labelBackgroundColor=#FFFFFF;startArrow=block;startFill=1;" target="engine" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="engine" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#7551B2;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);labelBackgroundColor=#FFFFFF;" target="output" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="output" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#3D8B5A;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);labelBackgroundColor=#FFFFFF;" target="review" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="fastapi" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#9AA5B1;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);labelBackgroundColor=#FFFFFF;startArrow=block;startFill=1;" target="mysql" value="Read / write records">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="660" y="520" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="research" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#9AA5B1;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=8 6;entryX=0.5;entryY=1;entryDx=0;entryDy=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;" target="engine" value="Load versioned data">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1002.5" y="510" />
+              <mxPoint x="1002.5" y="510" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="review" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#3D8B5A;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=8 6;" target="react" value="Decision / feedback recorded">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1515" y="410" />
+              <mxPoint x="1515" y="790" />
+              <mxPoint x="385" y="790" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

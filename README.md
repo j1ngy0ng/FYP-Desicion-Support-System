@@ -1,5 +1,5 @@
 # FYP-Desicion-Support-System
-Intent-Aware Logic-Constrained Neuro-Symbolic Decision Support System with Trust Calibration for SME Multi-Channel Marketing
+Intent-Aware Logic-Constrained Neuro-Symbolic Decision Support System with Confidence Calibration and Reliance Support for SME Multi-Channel Marketing
 
 ## Research data and evaluation gate
 
@@ -65,7 +65,7 @@ web application:
 - FastAPI REST API with signed sessions and role-protected rule management.
 - MySQL persistence through SQLAlchemy for users, campaigns, intents, rules,
   recommendations, activated rules and evaluations.
-- PyTorch ROI regression and feature/channel attribution trained from the
+- PyTorch ROI regression, local predictive sensitivity and training-derived channel evidence trained from the
   validated processed model-data layer. Unverified reviewer labels are not
   active model inputs.
 - Four bounded actions: Increase, Maintain, Reduce and Investigate.
@@ -138,7 +138,7 @@ The Evaluation screen now provides an explicit R001-R006 run register:
   reliance claims on participant responses.
 - R004 compares no-logic, post-hoc filtering and weighted soft-rule reasoning.
 - R005 compares global, intent-conditioned and full-framework policies.
-- R006 compares a terse feature list, a structured driver-effect-action
+- R006 compares a terse feature list, a structured Driver-Implication-Action
   explanation and the same explanation with a confidence caveat.
 
 The participant interface counterbalances six presentation conditions across

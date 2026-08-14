@@ -43,6 +43,7 @@ class EngineResult:
     explanation: dict[str, str]
     latency_ms: float
     calibration_status: str
+    action_evidence_status: str
 
 
 class RecommendationEngine:
@@ -204,12 +205,24 @@ class RecommendationEngine:
             activated,
             result_calibration_status,
         )
+        action_evidence_status = {
+            "audited_human_benchmark": "audited_actionnet",
+            "user_provided_development": "development_actionnet",
+        }.get(self.annotation_status, "campaignnet_only_fallback")
+        if action_evidence_status == "campaignnet_only_fallback":
+            fallback = (
+                "Supervised ActionNet evidence was unavailable; the recommendation "
+                "used CampaignNet evidence only."
+            )
+            existing = explanation.get("caveat", "").strip()
+            explanation["caveat"] = f"{existing} {fallback}".strip()
         return EngineResult(
             selected, confidence, float(raw_probabilities[ACTIONS.index(selected)]), performance,
             "High" if confidence >= .75 else "Medium" if confidence >= .50 else "Low",
             ranked, attribution, channels, rule_results, explanation,
             (time.perf_counter() - started) * 1000,
             result_calibration_status,
+            action_evidence_status,
         )
 
 

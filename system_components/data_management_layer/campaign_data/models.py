@@ -45,7 +45,7 @@ class Campaign(Base):
     customer_segment: Mapped[str] = mapped_column(String(100), default="General")
     language: Mapped[str] = mapped_column(String(50), default="English")
     campaign_date: Mapped[date] = mapped_column(Date, default=date.today)
-    budget: Mapped[float] = mapped_column(Float, default=0)
+    budget: Mapped[float | None] = mapped_column(Float, nullable=True)
     status: Mapped[str] = mapped_column(String(20), default="Review")
     intent: Mapped[Intent] = relationship()
 

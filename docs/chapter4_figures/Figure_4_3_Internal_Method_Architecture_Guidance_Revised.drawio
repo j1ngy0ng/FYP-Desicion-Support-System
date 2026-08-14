@@ -1,0 +1,140 @@
+<mxfile host="app.diagrams.net" agent="Codex">
+  <diagram id="Figure_4_3_Internal_Method_Architecture_Guidance_Revised" name="Figure 4 3 Internal Method Architecture Guidance Revised">
+    <mxGraphModel dx="710" dy="388" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="inputs" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#F5F7FA;strokeColor=#738291;strokeWidth=2;" value="&lt;b&gt;Validated decision context&lt;/b&gt;&lt;br&gt;13 campaign features; selected intent; risk tolerance; active rule-catalogue-v1" vertex="1">
+          <mxGeometry height="160" width="500" x="35" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="learned_zone" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#F5F7FA;strokeColor=#2F75B5;strokeWidth=3;fontStyle=1" value="LEARNED EVIDENCE BRANCHES" vertex="1">
+          <mxGeometry height="435" width="1020" x="40" y="285" as="geometry" />
+        </mxCell>
+        <mxCell id="campaign" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#E8F2FC;strokeColor=#2F75B5;strokeWidth=2;" value="&lt;b&gt;CampaignNet ROI branch&lt;/b&gt;&lt;br&gt;11-feature input → ROI evidence and local predictive sensitivity / attribution evidence" vertex="1">
+          <mxGeometry height="210" width="400" x="85" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="action" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#E8F2FC;strokeColor=#2F75B5;strokeWidth=2;" value="&lt;b&gt;ActionNet action branch&lt;/b&gt;&lt;br&gt;13 campaign features + three-element intent one-hot input → four-class evidence" vertex="1">
+          <mxGeometry height="210" width="410" x="605" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="channel" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#F5F7FA;strokeColor=#738291;strokeWidth=2;" value="&lt;b&gt;Training-derived channel evidence&lt;/b&gt;&lt;br&gt;Neutral 0.5 for an unseen channel" vertex="1">
+          <mxGeometry height="70" width="435" x="350" y="630" as="geometry" />
+        </mxCell>
+        <mxCell id="candidate" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#F2ECFF;strokeColor=#7551B2;strokeWidth=2;" value="&lt;b&gt;Bounded action set&lt;/b&gt;&lt;br&gt;Increase | Maintain | Reduce | Investigate" vertex="1">
+          <mxGeometry height="140" width="660" x="1110" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="rules" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#FFF1DE;strokeColor=#D97706;strokeWidth=2;" value="&lt;b&gt;Frozen weighted soft rules&lt;/b&gt;&lt;br&gt;14 predefined safeguards; weights and priorities are not learned" vertex="1">
+          <mxGeometry height="160" width="500" x="1820" y="180" as="geometry" />
+        </mxCell>
+        <mxCell id="construction" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#F2ECFF;strokeColor=#7551B2;strokeWidth=2;" value="&lt;b&gt;Implemented score construction&lt;/b&gt;&lt;br&gt;0.25 ROI evidence + 0.75 ActionNet evidence; smoothing; channel adjustment; weighted rule penalties" vertex="1">
+          <mxGeometry height="195" width="720" x="1080" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="boost" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#FFF1DE;strokeColor=#D97706;strokeWidth=2;" value="&lt;b&gt;Distinct Investigate fallback boost&lt;/b&gt;&lt;br&gt;Each violated non-Investigate action adds a smaller weighted contribution to Investigate" vertex="1">
+          <mxGeometry height="200" width="480" x="1830" y="400" as="geometry" />
+        </mxCell>
+        <mxCell id="intent_risk" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#E9F6EC;strokeColor=#3D8B5A;strokeWidth=2;" value="&lt;b&gt;Intent and risk score adjustment&lt;/b&gt;&lt;br&gt;Apply selected-intent vector, then Balanced / Conservative / Aggressive risk offset" vertex="1">
+          <mxGeometry height="165" width="680" x="1100" y="725" as="geometry" />
+        </mxCell>
+        <mxCell id="final" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#F2ECFF;strokeColor=#7551B2;strokeWidth=2;" value="&lt;b&gt;Final action-score vector&lt;/b&gt;&lt;br&gt;One score per bounded action" vertex="1">
+          <mxGeometry height="165" width="480" x="1830" y="725" as="geometry" />
+        </mxCell>
+        <mxCell id="calibration" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#FFF7D6;strokeColor=#B88900;strokeWidth=2;" value="&lt;b&gt;Validation-fitted temperature scaling&lt;/b&gt;&lt;br&gt;Calibrated model confidence; the 120-case gate concerns full audited-benchmark eligibility" vertex="1">
+          <mxGeometry height="190" width="480" x="80" y="930" as="geometry" />
+        </mxCell>
+        <mxCell id="ranking" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#E9F6EC;strokeColor=#3D8B5A;strokeWidth=2;" value="&lt;b&gt;Ranked recommendation&lt;/b&gt;&lt;br&gt;Selected action, alternatives and confidence category" vertex="1">
+          <mxGeometry height="190" width="410" x="650" y="930" as="geometry" />
+        </mxCell>
+        <mxCell id="explain" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#E9F6EC;strokeColor=#3D8B5A;strokeWidth=2;" value="&lt;b&gt;Structured explanation&lt;/b&gt;&lt;br&gt;Driver, Implication, Action and Caveat; Intent is contextual metadata" vertex="1">
+          <mxGeometry height="190" width="570" x="1150" y="930" as="geometry" />
+        </mxCell>
+        <mxCell id="persist" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#E9F6EC;strokeColor=#3D8B5A;strokeWidth=2;" value="&lt;b&gt;Persisted evidence and human review&lt;/b&gt;&lt;br&gt;Scores, rule traces, local predictive attribution evidence and decision feedback" vertex="1">
+          <mxGeometry height="190" width="520" x="1810" y="930" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="inputs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#2F75B5;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;" target="campaign" value="11-feature ROI input">
+          <mxGeometry relative="1" x="0.3846" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="inputs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#2F75B5;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;" target="action" value="13 + 3 intent input">
+          <mxGeometry relative="1" x="0.3816" as="geometry">
+            <mxPoint y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="inputs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#738291;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=8 6;" target="rules" value="Metrics, intent and optional budget">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="860" y="140" />
+              <mxPoint x="860" y="140" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="campaign" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#2F75B5;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;" target="construction" value="ROI probability">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="285" y="610" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="action" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#2F75B5;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" target="construction" value="Four-class probability">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1260" y="450" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="channel" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#738291;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;dashed=1;dashPattern=8 6;" target="construction" value="Channel adjustment">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1010" y="655" />
+              <mxPoint x="1010" y="655" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="candidate" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#7551B2;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;" target="construction" value="Action order">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="rules" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#D97706;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.75;exitDx=0;exitDy=0;" target="construction" value="Penalty">
+          <mxGeometry relative="1" x="0.5232" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="1780.14" y="300" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="rules" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#D97706;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;" target="boost" value="Violation trace">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="boost" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#D97706;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" target="intent_risk" value="Investigate contribution">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2070.04" y="700" />
+              <mxPoint x="1610.04" y="700" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="construction" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#7551B2;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;" target="intent_risk" value="Adjusted scores">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="intent_risk" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#7551B2;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;" target="final" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" edge="1" parent="1" source="final" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#B88900;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;" target="calibration" value="Final score vector">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2070.07" y="910.07" />
+              <mxPoint x="320.07" y="910.07" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e14" edge="1" parent="1" source="calibration" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#B88900;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;" target="ranking" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e15" edge="1" parent="1" source="ranking" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#3D8B5A;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;" target="explain" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e16" edge="1" parent="1" source="explain" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#3D8B5A;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;" target="persist" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

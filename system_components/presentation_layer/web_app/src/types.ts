@@ -1,7 +1,7 @@
 export type User = { name: string; email: string; role: string; organisation: string }
 export type Campaign = {
   id: string; name: string; type: string; intent: 'Growth' | 'Retention' | 'Survival'; channel: string;
-  status: 'Active' | 'Review' | 'Completed'; roi: number; conversion: number; budget: number;
+  status: 'Active' | 'Review' | 'Completed'; roi: number; conversion: number; budget: number | null;
   target_audience: string; duration: number; impressions: number; clicks: number; leads: number;
   conversions: number; revenue: number; acquisition_cost: number; engagement_score: number;
 }
@@ -10,10 +10,11 @@ export type Explanation = { driver: string; implication: string; action: string;
 export type Recommendation = {
   id: string; numeric_id: number; campaign_id: string; campaign: string; intent: string; action: string;
   confidence: number; raw_confidence: number; performance_score: number; explanation: Explanation;
-  evidence: { attribution: { feature: string; contribution: number }[]; channels: { channel: string; contribution: number }[]; confidence_level: string };
+  evidence: { attribution: { feature: string; contribution: number }[]; channels: { channel: string; contribution: number }[]; confidence_level: string; action_evidence_status: string };
   ranked_actions: { action: string; score: number }[]; latency_ms: number; status: string; date: string;
   rules?: { name: string; triggered: boolean; score: number }[];
   calibration_status: 'calibrated' | 'pending_human_annotations' | 'uncalibrated_ablation' | 'legacy_unknown';
+  action_evidence_status: 'audited_actionnet' | 'development_actionnet' | 'campaignnet_only_fallback' | 'legacy_unknown';
 }
 export type Intervals = Record<string, [number, number]>
 export type MetricRow = Record<string, string | number | Intervals>

@@ -1,0 +1,29 @@
+{
+  "generated_at_utc": "2026-08-14T13:21:54.405679+00:00",
+  "split_rule": "chronological 70/15/15 after prepare_frame ordering",
+  "source": {
+    "path": "data\\layers\\02_processed_model_data.csv",
+    "sha256": "7979e95284e034236e684de0e26e00d551ba7ba0dbabe3f2a5a71655e212b1dd",
+    "record_count": 55555,
+    "train_count": 38888,
+    "validation_count": 8333,
+    "test_count": 8334
+  },
+  "audited_benchmark": {
+    "path": "data\\benchmark_audited.csv",
+    "sha256": "3f2320fbd190b24766db4453ab1dc7e7b212803fdfa2ac048c2437012d4d51ee",
+    "record_count": 125,
+    "train_count": 87,
+    "validation_count": 19,
+    "test_count": 19
+  },
+  "linked_identity_checks": {
+    "benchmark_train_in_source_train": 87,
+    "benchmark_train_total": 87,
+    "benchmark_validation_in_source_train": 0,
+    "benchmark_validation_total": 19,
+    "benchmark_test_in_source_train": 0,
+    "benchmark_test_total": 19,
+    "validation_test_isolation_pass": true
+  }
+}
