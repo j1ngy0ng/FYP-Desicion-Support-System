@@ -1,9 +1,9 @@
 {
-  "run_id": "R002-20260814T223229+0800",
-  "timestamp": "2026-08-14T22:32:29+08:00",
-  "source_commit": "c0163610ece50fffb937f117e3649e136c6bf8dc",
+  "run_id": "R002-20260815T220434+0800",
+  "timestamp": "2026-08-15T22:04:34+08:00",
+  "source_commit": "59746b299e4e4e3a82197686df3cd741431578c3",
   "source_tags": [
-    "fyp-code-freeze-v1"
+    "fyp-code-freeze-v2"
   ],
   "evaluation_type": "confirmatory_technical_evaluation",
   "dataset": "data\\benchmark_audited.csv",

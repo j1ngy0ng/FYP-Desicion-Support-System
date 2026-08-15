@@ -1,0 +1,46 @@
+{
+  "verification_date": "2026-08-15",
+  "source_commit": "59746b299e4e4e3a82197686df3cd741431578c3",
+  "source_tag": "fyp-code-freeze-v2",
+  "backend_data_test_command": ".venv\\Scripts\\python -m unittest backend.tests.test_engine backend.tests.test_api tests.test_three_layer_data tests.test_human_provided_dataset tests.test_baseline_evaluation",
+  "backend_data_test_result": {
+    "tests_run": 38,
+    "failures": 0,
+    "errors": 0,
+    "status": "PASS"
+  },
+  "frontend_build_command": "npx pnpm build",
+  "frontend_build_result": {
+    "typescript_check": "PASS",
+    "vite_build": "PASS",
+    "vite_version": "8.1.4"
+  },
+  "confirmatory_run": {
+    "run_id": "R002-20260815T220434+0800",
+    "timestamp": "2026-08-15T22:04:34+08:00",
+    "source_tag_recorded": "fyp-code-freeze-v2",
+    "calibration_fit_partition": "validation_only",
+    "action_evidence_status": "audited_actionnet",
+    "run_metadata_sha256": "262E855C45BD82F265354CB59F8040911CDE31AEC94CE1728C4B128C306F327C",
+    "metrics_sha256": "CFC50298303F2BD7A3E9A53EE08F776808222087B4CB774623D952D9519F1481"
+  },
+  "data_hashes": {
+    "raw_55555x16_sha256": "4969A1C5961FBA85772822467F87E2C3069107017BDC6D685C21B47A0ED22665",
+    "processed_55555x31_sha256": "7979E95284E034236E684DE0E26E00D551BA7BA0DBABE3F2A5A71655E212B1DD",
+    "audited_benchmark_125_sha256": "3F2320FBD190B24766DB4453AB1DC7E7B212803FDFA2AC048C2437012D4D51EE",
+    "rule_catalogue_sha256": "C048D442C121C7B4820DBD0271B8133B9B75D0B9CCB436B5C1D6317C8FDD2F7A"
+  },
+  "software_environment": {
+    "operating_system": "Windows-10-10.0.26200-SP0",
+    "python": "3.11.9",
+    "torch": "2.7.1+cu118",
+    "numpy": "1.26.4",
+    "pandas": "2.1.4",
+    "scikit_learn": "1.7.2"
+  },
+  "notes": [
+    "The 125 audited benchmark cases are seeded as active administrator campaigns without changing the frozen benchmark file.",
+    "CampaignNet-only, ActionNet-only and fixed-fusion branch comparisons are included in the confirmatory runner.",
+    "Human-participant evaluation remains pending formal ethics approval or exemption."
+  ]
+}

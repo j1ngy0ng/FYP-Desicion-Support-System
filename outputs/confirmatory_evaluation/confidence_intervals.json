@@ -51,7 +51,7 @@
       0.28522910873199747
     ]
   },
-  "Baseline C - Predictive Analytics with Attribution": {
+  "Baseline C - Predictive Plus Channel Evidence": {
     "Recommendation Accuracy": [
       0.42105263157894735,
       0.8421052631578947
@@ -127,6 +127,84 @@
     "Expected Calibration Error (ECE)": [
       0.17647894736842104,
       0.33668070175438597
+    ]
+  },
+  "Branch Ablation - CampaignNet Only": {
+    "Recommendation Accuracy": [
+      0.22807017543859645,
+      0.6491228070175439
+    ],
+    "Macro F1": [
+      0.2172077922077922,
+      0.5068627450980392
+    ],
+    "Top-2 Agreement": [
+      0.3157894736842105,
+      0.7192982456140351
+    ],
+    "Scenario-Fit Rate": [
+      0.8421052631578947,
+      1.0
+    ],
+    "Logical Conflict Rate": [
+      0.0,
+      0.2631578947368421
+    ],
+    "Expected Calibration Error (ECE)": [
+      0.04452280701754385,
+      0.31114561403508767
+    ]
+  },
+  "Branch Ablation - ActionNet Only": {
+    "Recommendation Accuracy": [
+      0.7719298245614036,
+      1.0
+    ],
+    "Macro F1": [
+      0.7172619047619048,
+      1.0
+    ],
+    "Top-2 Agreement": [
+      1.0,
+      1.0
+    ],
+    "Scenario-Fit Rate": [
+      1.0,
+      1.0
+    ],
+    "Logical Conflict Rate": [
+      0.0,
+      0.2631578947368421
+    ],
+    "Expected Calibration Error (ECE)": [
+      0.3345578947368421,
+      0.5575385964912281
+    ]
+  },
+  "Branch Ablation - Fused CampaignNet-ActionNet": {
+    "Recommendation Accuracy": [
+      0.7894736842105262,
+      1.0
+    ],
+    "Macro F1": [
+      0.7876623376623376,
+      1.0
+    ],
+    "Top-2 Agreement": [
+      1.0,
+      1.0
+    ],
+    "Scenario-Fit Rate": [
+      1.0,
+      1.0
+    ],
+    "Logical Conflict Rate": [
+      0.0,
+      0.2631578947368421
+    ],
+    "Expected Calibration Error (ECE)": [
+      0.3998052631578947,
+      0.6085736842105264
     ]
   },
   "Proposed Ablation - Without Intent": {
