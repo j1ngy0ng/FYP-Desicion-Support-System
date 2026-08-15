@@ -3,6 +3,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 import pandas as pd
+import numpy as np
 
 from backend.app.engine import DEFAULT_RULES, RecommendationEngine, case_features, prepare_frame
 from system_components.neuro_symbolic_reasoning_layer.engine import RecommendationEngine as ComponentEngine
@@ -134,6 +135,22 @@ class RecommendationEngineTests(unittest.TestCase):
         self.assertEqual(growth.action, survival.action)
         self.assertEqual(growth.ranked_actions, survival.ranked_actions)
         self.assertFalse(growth.rule_results)
+
+    def test_branch_ablations_isolate_campaign_action_and_fused_evidence(self):
+        case = self.engine.test.iloc[0].to_dict()
+        campaign = self.engine._score(
+            case, self.rules, "Growth", "campaignnet_only", self.engine.scoring
+        )
+        action = self.engine._score(
+            case, self.rules, "Growth", "actionnet_only", self.engine.scoring
+        )
+        fused = self.engine._score(
+            case, self.rules, "Growth", "fused_evidence", self.engine.scoring
+        )
+        self.assertTrue(all(not result for result in (campaign[1], action[1], fused[1])))
+        np.testing.assert_allclose(
+            fused[2], .25 * campaign[2] + .75 * action[2], rtol=1e-6, atol=1e-6
+        )
 
 
 if __name__ == "__main__":

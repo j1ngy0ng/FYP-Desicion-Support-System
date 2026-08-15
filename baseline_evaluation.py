@@ -349,13 +349,13 @@ def baseline_c_predict(test_rows: List[dict], model, channel_attr: Dict[str, flo
         confs.append(adj_probs[pred])
         top2.append(sorted(adj_probs, key=adj_probs.get, reverse=True)[:2])
         exps.append(
-            f"Attribution-adjusted recommendation from channels {', '.join(row['channels']) or 'N/A'} "
+            f"Channel-evidence-adjusted recommendation from channels {', '.join(row['channels']) or 'N/A'} "
             f"(strength={attr_strength:.2f})."
         )
         case_latencies.append((time.perf_counter() - case_started) * 1000)
     latency = (time.perf_counter() - start) * 1000 / max(1, len(test_rows))
     return BaselineResult(
-        "Baseline C - Predictive Analytics with Attribution", preds, confs, exps,
+        "Baseline C - Predictive Plus Channel Evidence", preds, confs, exps,
         latency, top2, case_latencies,
     )
 
@@ -707,7 +707,7 @@ def save_markdown(
             "## Notes",
             "- Baseline A: heuristic scorecard (manual threshold logic).",
             "- Baseline B: predictive-only centroid classifier.",
-            "- Baseline C: predictive + channel attribution adjustment.",
+            "- Baseline C: predictive plus training-derived channel-evidence adjustment.",
             "- Baseline D: predictive ranking followed by hard post-hoc conflict filtering.",
             "- Proxy metrics are deterministic technical indicators, not results from human participants.",
         ]

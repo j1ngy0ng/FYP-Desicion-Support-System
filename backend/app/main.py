@@ -199,6 +199,52 @@ def seed(db: Session) -> None:
     db.commit()
 
 
+def seed_audited_campaigns(db: Session) -> None:
+    """Add the frozen audited cases to the administrator's campaign workspace once."""
+    if not AUDITED_BENCHMARK.exists():
+        return
+    user = db.scalar(select(User).where(User.email == "jingyong@example.com"))
+    intents = {item.name: item for item in db.scalars(select(Intent)).all()}
+    if not user or not {"Growth", "Retention", "Survival"}.issubset(intents):
+        return
+
+    existing_ids = set(db.scalars(select(Campaign.id)).all())
+    frame = pd.read_csv(AUDITED_BENCHMARK)
+    for row in frame.to_dict("records"):
+        campaign_id = str(row["Campaign_ID"])
+        if campaign_id in existing_ids:
+            continue
+        campaign_type = str(row["Campaign_Type"])
+        target_audience = str(row["Target_Audience"])
+        campaign_date = pd.to_datetime(row["Date"], dayfirst=True).date()
+        intent = intents[str(row["Adjudicated_Intent"])]
+        db.add(Campaign(
+            id=campaign_id,
+            user_id=user.id,
+            intent_id=intent.id,
+            name=f"{campaign_type} - {target_audience}"[:100],
+            campaign_type=campaign_type,
+            target_audience=target_audience,
+            duration=int(row["Duration"]),
+            channels=str(row["Channel_Used"]),
+            impressions=int(row["Impressions"]),
+            clicks=int(row["Clicks"]),
+            leads=int(row["Leads"]),
+            conversions=int(row["Conversions"]),
+            revenue=float(row["Revenue"]),
+            acquisition_cost=float(row["Acquisition_Cost"]),
+            roi=float(row["ROI"]),
+            language=str(row["Language"]),
+            engagement_score=float(row["Engagement_Score"]),
+            customer_segment=str(row["Customer_Segment"]),
+            campaign_date=campaign_date,
+            budget=None,
+            status="Active",
+        ))
+        existing_ids.add(campaign_id)
+    db.commit()
+
+
 def upgrade_schema() -> None:
     columns = {column["name"] for column in inspect(engine).get_columns("human_study_responses")}
     additions = {
@@ -228,6 +274,7 @@ async def lifespan(_: FastAPI):
     upgrade_schema()
     with SessionLocal() as db:
         seed(db)
+        seed_audited_campaigns(db)
     yield
 
 

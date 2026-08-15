@@ -148,27 +148,34 @@ class RecommendationEngine:
 
     def _score(self, case: dict[str, Any], rules: list[dict[str, Any]], intent: str, variant: str, parameters: ScoringParameters, explain: bool = False):
         features = case_features(case)
-        probabilities, attribution = self.predictive.evidence(features, explain)
+        campaign_probabilities, attribution = self.predictive.evidence(features, explain)
+        probabilities = campaign_probabilities
+        if variant == "actionnet_only" and self.action_supervision is None:
+            raise RuntimeError("ActionNet-only evaluation requires audited ActionNet supervision.")
         if self.action_supervision is not None:
             supervised_intent = intent if variant not in {"without_intent", "backbone"} else None
             action_evidence = self.action_supervision.evidence(features, supervised_intent)
-            probabilities = .25 * probabilities + .75 * action_evidence
+            if variant == "actionnet_only":
+                probabilities = action_evidence
+            elif variant not in {"campaignnet_only"}:
+                probabilities = .25 * campaign_probabilities + .75 * action_evidence
         smoothed = .90 * probabilities + .10 / len(ACTIONS)
         scores = {action: float(smoothed[index]) for index, action in enumerate(ACTIONS)}
         channels = self.predictive.channels(case)
         channel_signal = statistics_mean([float(item["contribution"]) for item in channels], .5)
-        if variant != "backbone":
+        evidence_only = variant in {"backbone", "campaignnet_only", "actionnet_only", "fused_evidence"}
+        if not evidence_only:
             scores["Increase"] += parameters.channel_strength * (channel_signal - .5)
             scores["Reduce"] += parameters.channel_strength * (.5 - channel_signal)
             scores["Maintain"] += parameters.channel_strength * (.25 - abs(channel_signal - .5))
 
         budget_value = case.get("budget", case.get("Budget"))
         budget = None if budget_value in {None, ""} else float(budget_value)
-        rule_results = [] if variant in {"without_rules", "backbone"} else apply_rules(
+        rule_results = [] if variant == "without_rules" or evidence_only else apply_rules(
             scores, rules, features, intent, budget, parameters.rule_penalty,
             parameters.investigate_boost, variant == "without_intent",
         )
-        if variant not in {"without_intent", "backbone"}:
+        if variant != "without_intent" and not evidence_only:
             apply_intent(scores, intent, parameters.intent_strength)
         return np.array([scores[action] for action in ACTIONS]), rule_results, probabilities, attribution, channels
 
@@ -184,12 +191,18 @@ class RecommendationEngine:
         raw_probabilities = softmax(raw)
         temperature = (
             1.0
-            if ablation in {"without_calibration", "backbone"}
+            if ablation in {
+                "without_calibration", "backbone", "campaignnet_only",
+                "actionnet_only", "fused_evidence",
+            }
             else self.temperature
         )
         result_calibration_status = (
             self.calibration_status
-            if ablation not in {"without_calibration", "backbone"}
+            if ablation not in {
+                "without_calibration", "backbone", "campaignnet_only",
+                "actionnet_only", "fused_evidence",
+            }
             else "uncalibrated_ablation"
         )
         ranked = rank_actions(raw, temperature)

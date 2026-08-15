@@ -236,6 +236,16 @@ class ApiTests(unittest.TestCase):
             3,
         )
 
+    def test_audited_benchmark_cases_are_active_campaigns(self):
+        response = self.client.get("/api/campaigns", headers=self.headers)
+        self.assertEqual(response.status_code, 200)
+        campaigns = response.json()
+        audited = [item for item in campaigns if item["id"].startswith("NY-CMP-")]
+        self.assertEqual(len(audited), 125)
+        self.assertTrue(all(item["status"] == "Active" for item in audited))
+        self.assertTrue(all(item["budget"] is None for item in audited))
+        self.assertEqual(sum(item["status"] == "Active" for item in campaigns), 127)
+
     def test_seeded_admin_can_login_create_and_update_rule(self):
         login = self.client.post(
             "/api/auth/login",

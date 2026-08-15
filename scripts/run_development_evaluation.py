@@ -41,6 +41,9 @@ HUMAN_PROVIDED_PROVENANCE = (
 )
 VARIANTS = {
     "Proposed System - Full Framework": "full",
+    "Branch Ablation - CampaignNet Only": "campaignnet_only",
+    "Branch Ablation - ActionNet Only": "actionnet_only",
+    "Branch Ablation - Fused CampaignNet-ActionNet": "fused_evidence",
     "Proposed Ablation - Without Intent": "without_intent",
     "Proposed Ablation - Without Rules": "without_rules",
     "Proposed Ablation - Without Calibration": "without_calibration",
@@ -141,7 +144,10 @@ def proposed_predict(
             )
             temperature = (
                 1.0
-                if variant in {"without_calibration", "backbone"}
+                if variant in {
+                    "without_calibration", "backbone", "campaignnet_only",
+                    "actionnet_only", "fused_evidence",
+                }
                 else engine.temperature
             )
             ranked = rank_actions(raw, temperature)
@@ -150,7 +156,7 @@ def proposed_predict(
             confidences.append(float(ranked[0]["score"]))
             triggered = sum(1 for result in rule_results if result["triggered"])
             explanations.append(
-                "Intent-aware recommendation with predictive strength, channel attribution, "
+                "Intent-aware recommendation with predictive strength, training-derived channel evidence, "
                 f"{triggered} triggered weighted rules, confidence evidence, and "
                 f"calibration status {engine.calibration_status}; "
                 f"{len(channels)} channel signals evaluated."

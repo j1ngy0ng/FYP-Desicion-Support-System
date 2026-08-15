@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Codex">
   <diagram id="Figure_4_3_Internal_Method_Architecture_Guidance_Revised" name="Figure 4 3 Internal Method Architecture Guidance Revised">
-    <mxGraphModel dx="710" dy="388" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1400" math="0" shadow="0">
+    <mxGraphModel dx="2289" dy="1324" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1400" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -10,7 +10,7 @@
         <mxCell id="learned_zone" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#F5F7FA;strokeColor=#2F75B5;strokeWidth=3;fontStyle=1" value="LEARNED EVIDENCE BRANCHES" vertex="1">
           <mxGeometry height="435" width="1020" x="40" y="285" as="geometry" />
         </mxCell>
-        <mxCell id="campaign" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#E8F2FC;strokeColor=#2F75B5;strokeWidth=2;" value="&lt;b&gt;CampaignNet ROI branch&lt;/b&gt;&lt;br&gt;11-feature input → ROI evidence and local predictive sensitivity / attribution evidence" vertex="1">
+        <mxCell id="campaign" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#E8F2FC;strokeColor=#2F75B5;strokeWidth=2;" value="&lt;b&gt;CampaignNet ROI branch&lt;/b&gt;&lt;br&gt;11-feature input → ROI evidence and local predictive sensitivity" vertex="1">
           <mxGeometry height="210" width="400" x="85" y="380" as="geometry" />
         </mxCell>
         <mxCell id="action" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#E8F2FC;strokeColor=#2F75B5;strokeWidth=2;" value="&lt;b&gt;ActionNet action branch&lt;/b&gt;&lt;br&gt;13 campaign features + three-element intent one-hot input → four-class evidence" vertex="1">
@@ -46,7 +46,7 @@
         <mxCell id="explain" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#E9F6EC;strokeColor=#3D8B5A;strokeWidth=2;" value="&lt;b&gt;Structured explanation&lt;/b&gt;&lt;br&gt;Driver, Implication, Action and Caveat; Intent is contextual metadata" vertex="1">
           <mxGeometry height="190" width="570" x="1150" y="930" as="geometry" />
         </mxCell>
-        <mxCell id="persist" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#E9F6EC;strokeColor=#3D8B5A;strokeWidth=2;" value="&lt;b&gt;Persisted evidence and human review&lt;/b&gt;&lt;br&gt;Scores, rule traces, local predictive attribution evidence and decision feedback" vertex="1">
+        <mxCell id="persist" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#E9F6EC;strokeColor=#3D8B5A;strokeWidth=2;" value="&lt;b&gt;Persisted evidence and human review&lt;/b&gt;&lt;br&gt;Scores, rule traces, Training-Derived Channel Evidence and decision feedback" vertex="1">
           <mxGeometry height="190" width="520" x="1810" y="930" as="geometry" />
         </mxCell>
         <mxCell id="e1" edge="1" parent="1" source="inputs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#2F75B5;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;" target="campaign" value="11-feature ROI input">
