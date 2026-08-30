@@ -1,6 +1,14 @@
 import unittest
 
-from baseline_evaluation import conflict_reasons, filter_conflicting_actions, row_has_conflict
+from baseline_evaluation import (
+    ACTION_ORDER,
+    assert_canonical_action_order,
+    conflict_reasons,
+    filter_conflicting_actions,
+    fit_centroid_model,
+    rank_actions,
+    row_has_conflict,
+)
 
 
 def sample_row(**overrides):
@@ -18,6 +26,33 @@ def sample_row(**overrides):
 
 
 class ConflictRuleTests(unittest.TestCase):
+    def test_every_baseline_uses_the_canonical_action_index_order(self):
+        self.assertEqual(ACTION_ORDER, ("Increase", "Maintain", "Reduce", "Investigate"))
+        rows = []
+        for action in reversed(ACTION_ORDER):
+            row = sample_row()
+            row.update(
+                {
+                    "label": action,
+                    "Duration": 1.0,
+                    "Impressions": 1_000.0,
+                    "Leads": 100.0,
+                    "Revenue": 1_000.0,
+                    "Acquisition_Cost": 100.0,
+                    "lead_to_conversion": 0.5,
+                    "cost_per_conversion": 1.0,
+                }
+            )
+            rows.append(row)
+        labels, _, _, _ = fit_centroid_model(rows)
+        self.assertEqual(tuple(labels), ACTION_ORDER)
+        self.assertEqual(
+            rank_actions({action: 0.25 for action in reversed(ACTION_ORDER)}),
+            list(ACTION_ORDER),
+        )
+        with self.assertRaises(ValueError):
+            assert_canonical_action_order(ACTION_ORDER[:-1])
+
     def test_safe_recommendation_has_no_conflict(self):
         self.assertFalse(row_has_conflict(sample_row(), "Maintain"))
 

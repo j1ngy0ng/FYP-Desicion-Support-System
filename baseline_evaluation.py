@@ -35,6 +35,23 @@ ACTION_ALIASES = {
     "investigate": "Investigate",
 }
 
+# Canonical index mapping used by every baseline probability vector, ranking,
+# export and metric: 0=Increase, 1=Maintain, 2=Reduce, 3=Investigate.
+ACTION_ORDER = ("Increase", "Maintain", "Reduce", "Investigate")
+ACTION_INDEX = {action: index for index, action in enumerate(ACTION_ORDER)}
+
+
+def assert_canonical_action_order(actions: Sequence[str]) -> None:
+    if tuple(actions) != ACTION_ORDER:
+        raise ValueError(f"Action order must be {ACTION_ORDER}, got {tuple(actions)}")
+
+
+def rank_actions(probabilities: Dict[str, float]) -> List[str]:
+    return sorted(
+        probabilities,
+        key=lambda action: (-probabilities[action], ACTION_INDEX[action]),
+    )
+
 INTENT_SCENARIO_ACTIONS = {
     "Survival": {"Reduce", "Maintain", "Investigate"},
     "Retention": {"Maintain", "Increase", "Investigate"},
@@ -243,8 +260,8 @@ def baseline_a_predict(rows: List[dict]) -> BaselineResult:
         score_increase = 0.8 * max(0.0, roi - 1.8) + 1.1 * max(0.0, conv - 0.2) + 0.02 * engagement
         score_maintain = 1.0 - min(1.0, abs(roi - 1.0) / 2.0) + max(0.0, 0.18 - abs(conv - 0.15))
         score_investigate = 0.25 if (0.05 <= conv <= 0.12 and 0.2 <= roi <= 0.9) else 0.0
-        actions = ["Reduce", "Maintain", "Increase", "Investigate"]
-        scores = [score_reduce, score_maintain, score_increase, score_investigate]
+        actions = ACTION_ORDER
+        scores = [score_increase, score_maintain, score_reduce, score_investigate]
         probs = softmax(scores)
         idx = max(range(len(actions)), key=lambda i: probs[i])
         preds.append(actions[idx])
@@ -263,7 +280,9 @@ def baseline_a_predict(rows: List[dict]) -> BaselineResult:
 
 
 def fit_centroid_model(train_rows: List[dict]) -> Tuple[List[str], Dict[str, List[float]], List[float], List[float]]:
-    labels = sorted({row["label"] for row in train_rows})
+    observed = {row["label"] for row in train_rows}
+    labels = [action for action in ACTION_ORDER if action in observed]
+    assert_canonical_action_order(labels)
     vectors = [get_feature_vector(r) for r in train_rows]
     means, stds = fit_scaler(vectors)
     class_vectors: Dict[str, List[List[float]]] = defaultdict(list)
@@ -315,11 +334,12 @@ def baseline_b_predict(test_rows: List[dict], model) -> BaselineResult:
     for row in test_rows:
         case_started = time.perf_counter()
         probs = predict_centroid_proba(row, labels, centroids, means, stds)
-        pred = max(probs, key=probs.get)
+        ranked = rank_actions(probs)
+        pred = ranked[0]
         preds.append(pred)
         confs.append(probs[pred])
         exps.append("")
-        top2.append(sorted(probs, key=probs.get, reverse=True)[:2])
+        top2.append(ranked[:2])
         case_latencies.append((time.perf_counter() - case_started) * 1000)
     latency = (time.perf_counter() - start) * 1000 / max(1, len(test_rows))
     return BaselineResult(
@@ -341,13 +361,14 @@ def baseline_c_predict(test_rows: List[dict], model, channel_attr: Dict[str, flo
         logits["Increase"] = logits.get("Increase", -20) + (attr_strength - 0.5) * 1.3
         logits["Reduce"] = logits.get("Reduce", -20) + (0.5 - attr_strength) * 1.3
         logits["Maintain"] = logits.get("Maintain", -20) + (0.6 - abs(attr_strength - 0.5)) * 0.35
-        keys = sorted(logits.keys())
+        keys = [action for action in ACTION_ORDER if action in logits]
         values = softmax([logits[k] for k in keys])
         adj_probs = {k: values[i] for i, k in enumerate(keys)}
-        pred = max(adj_probs, key=adj_probs.get)
+        ranked = rank_actions(adj_probs)
+        pred = ranked[0]
         preds.append(pred)
         confs.append(adj_probs[pred])
-        top2.append(sorted(adj_probs, key=adj_probs.get, reverse=True)[:2])
+        top2.append(ranked[:2])
         exps.append(
             f"Channel-evidence-adjusted recommendation from channels {', '.join(row['channels']) or 'N/A'} "
             f"(strength={attr_strength:.2f})."
@@ -367,7 +388,7 @@ def filter_conflicting_actions(row: dict, probabilities: Dict[str, float]) -> Tu
         return "Investigate", 1.0, rejected
     total = sum(allowed.values())
     adjusted = {action: probability / total for action, probability in allowed.items()}
-    action = max(adjusted, key=adjusted.get)
+    action = rank_actions(adjusted)[0]
     return action, adjusted[action], rejected
 
 
@@ -390,7 +411,7 @@ def baseline_d_predict(test_rows: List[dict], model) -> BaselineResult:
             if action not in rejected
         }
         top2.append(
-            sorted(allowed, key=allowed.get, reverse=True)[:2]
+            rank_actions(allowed)[:2]
             or ["Investigate"]
         )
         case_latencies.append((time.perf_counter() - case_started) * 1000)
@@ -409,7 +430,8 @@ def recommendation_accuracy(preds: Sequence[str], labels: Sequence[str]) -> floa
 
 
 def macro_f1_score(preds: Sequence[str], labels: Sequence[str]) -> float:
-    classes = sorted(set(labels) | set(preds))
+    observed = set(labels) | set(preds)
+    classes = [action for action in ACTION_ORDER if action in observed]
     scores = []
     for label in classes:
         true_positive = sum(

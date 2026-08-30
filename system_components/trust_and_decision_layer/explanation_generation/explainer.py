@@ -34,7 +34,7 @@ def explain(
     elif confidence < .5:
         caveat = "Low calibrated confidence; obtain more observations before relying on this recommendation."
     else:
-        caveat = "Confidence is calibrated on final validation-set reasoning scores; channel attribution remains campaign-level."
+        caveat = "Confidence is calibrated on final validation-set reasoning scores; channel evidence remains campaign-level."
     return {
         "driver": f"{feature.title()} is the strongest model driver; {channel} has the strongest historical channel evidence.",
         "implication": implications[action], "action": actions[action], "caveat": caveat,

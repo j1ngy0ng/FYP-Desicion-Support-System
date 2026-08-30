@@ -1244,12 +1244,12 @@ def experiment_blocks(
         "R003": {
             "systems": [
                 run_metric_row(
-                    "Uncalibrated recommendation",
+                    "H1: Raw-Uncalibrated",
                     metrics,
                     without_calibration,
                 ),
                 run_metric_row(
-                    "Calibrated full framework",
+                    "H6: Complete Calibrated DIAC",
                     metrics,
                     full_name,
                 ),
@@ -1269,22 +1269,22 @@ def experiment_blocks(
         },
         "R004": {
             "systems": [
-                run_metric_row("No logic layer", metrics, without_rules),
-                run_metric_row("Post-hoc hard-rule filter", metrics, posthoc),
-                run_metric_row("Weighted soft-rule layer", metrics, full_name),
+                run_metric_row("A1: Full Method without Rules", metrics, without_rules),
+                run_metric_row("Post-hoc Hard-Rule Filter", metrics, posthoc),
+                run_metric_row("P: Full Proposed Method", metrics, full_name),
             ],
             "reversal_rate": constraint_reversal_rate(),
             "active_rule_count": len(DEFAULT_RULES),
         },
         "R005": {
             "systems": [
-                run_metric_row("Global policy", metrics, without_intent),
+                run_metric_row("A2: Full Method without Intent", metrics, without_intent),
                 run_metric_row(
-                    "Intent-conditioned without calibration",
+                    "A3: Full Method without Calibration",
                     metrics,
                     without_calibration,
                 ),
-                run_metric_row("Full proposed system", metrics, full_name),
+                run_metric_row("P: Full Proposed Method", metrics, full_name),
             ],
             "participant_status": human_status,
         },
