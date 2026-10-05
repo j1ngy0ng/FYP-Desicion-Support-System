@@ -1,0 +1,19 @@
+{
+  "records": 125,
+  "unique_campaign_ids": 125,
+  "exact_feature_duplicate_pairs": 0,
+  "near_duplicate_pairs_threshold_0_05": 0,
+  "cross_partition_near_duplicate_pairs": 0,
+  "partition_sizes": {
+    "Train": 87,
+    "Validation": 19,
+    "Test": 19
+  },
+  "partition_id_overlap": false,
+  "near_duplicate_definition": "Same campaign type, target audience, channel set and intent, with root-mean-square normalised numeric-feature distance <= 0.05.",
+  "action_set_validation": {
+    "records": 125,
+    "valid_records": 125,
+    "invalid_records": 0
+  }
+}

@@ -1,0 +1,11 @@
+﻿Campaign_ID,Intent,Reference_Action,Recommended_Action,Confidence,Decision_Status,Conflict_Reasons,Failure_Type
+NY-CMP-10185,Retention,Investigate,Investigate,0.3635,HUMAN REVIEW REQUIRED,,Selective review escalation
+NY-CMP-36230,Retention,Investigate,Investigate,0.3596,HUMAN REVIEW REQUIRED,,Selective review escalation
+NY-CMP-8294,Growth,Increase,Maintain,0.3533,CHECK ADVISED,,Reference disagreement
+NY-CMP-24871,Growth,Increase,Increase,0.3822,HUMAN REVIEW REQUIRED,,Selective review escalation
+NY-CMP-35135,Retention,Maintain,Investigate,0.357,HUMAN REVIEW REQUIRED,,Reference disagreement
+NY-CMP-38649,Retention,Investigate,Investigate,0.3571,HUMAN REVIEW REQUIRED,,Selective review escalation
+NY-CMP-11980,Survival,Reduce,Investigate,0.5114,HUMAN REVIEW REQUIRED,,Reference disagreement
+NY-CMP-20926,Retention,Investigate,Investigate,1.0,NO SAFE RECOMMENDATION,,Selective review escalation
+NY-CMP-55748,Survival,Reduce,Investigate,0.5069,HUMAN REVIEW REQUIRED,,Reference disagreement
+NY-CMP-33194,Growth,Increase,Increase,0.3822,HUMAN REVIEW REQUIRED,,Selective review escalation

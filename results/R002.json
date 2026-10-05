@@ -1,11 +1,11 @@
 {
   "run_id": "R002",
   "metadata": {
-    "run_id": "R002-20260815T220434+0800",
-    "timestamp": "2026-08-15T22:04:34+08:00",
-    "source_commit": "59746b299e4e4e3a82197686df3cd741431578c3",
+    "run_id": "R002-20261005T184142+0800",
+    "timestamp": "2026-10-05T18:41:42+08:00",
+    "source_commit": "5f0fa47adff8aec07f9fe6c4adf391ba546a205f",
     "source_tags": [
-      "fyp-code-freeze-v2"
+      "fyp-code-freeze-v6"
     ],
     "evaluation_type": "confirmatory_technical_evaluation",
     "dataset": "data\\benchmark_audited.csv",
@@ -13,7 +13,7 @@
     "training_dataset": "data\\layers\\02_processed_model_data.csv",
     "training_dataset_sha256": "7979e95284e034236e684de0e26e00d551ba7ba0dbabe3f2a5a71655e212b1dd",
     "rule_catalogue_version": "rule-catalogue-v1",
-    "rule_catalogue_sha256": "c048d442c121c7b4820dbd0271b8133b9b75d0b9ccb436b5c1d6317c8fdd2f7a",
+    "rule_catalogue_sha256": "99851cd7ce70a8eb9fbd2f208d146d563e9119eeb21fd885a6c394e56cba5f8e",
     "split": "chronological_70_15_15",
     "records": 125,
     "training_records": 87,
@@ -29,10 +29,13 @@
     "ece_bins": 5,
     "bootstrap_samples": 2000,
     "calibration_fit_partition": "validation_only",
+    "selective_policy_threshold_partition": "validation_only",
+    "minimum_auto_confidence": 0.35,
+    "minimum_top_two_margin": 0.02,
     "temperatures": {
-      "42": 0.5,
-      "52": 0.5,
-      "62": 0.5
+      "42": 5.0,
+      "52": 5.0,
+      "62": 5.0
     },
     "calibration_statuses": {
       "42": "calibrated",
@@ -69,61 +72,91 @@
     }
   },
   "metrics": {
-    "Baseline A - Heuristic Scorecard": {
+    "Supervisor Baseline - Intent-Only Deterministic": {
+      "Recommendation Accuracy": 0.6842105263157895,
+      "Macro F1": 0.59375,
+      "Top-2 Agreement": 0.7894736842105263,
+      "Scenario-Fit Rate": 1.0,
+      "Logical Conflict Rate": 0.10526315789473684,
+      "Expected Calibration Error (ECE)": 0.3157894736842105,
+      "Recommendation Latency (ms)": 0.0014052554768951315,
+      "P50 Latency (ms)": 0.0008998904377222061,
+      "P95 Latency (ms)": 0.001970119774341582,
+      "Actionability Proxy": 0.963157894736842,
+      "Trust Alignment Proxy": 0.6842105263157895,
+      "Explanation Usefulness Proxy": 0.0,
+      "User Acceptance Proxy": 0.6247368421052631
+    },
+    "Supervisor Baseline - Weighted Deterministic": {
+      "Recommendation Accuracy": 0.5789473684210527,
+      "Macro F1": 0.5071428571428571,
+      "Top-2 Agreement": 0.8421052631578947,
+      "Scenario-Fit Rate": 1.0,
+      "Logical Conflict Rate": 0.10526315789473684,
+      "Expected Calibration Error (ECE)": 0.061988859472307596,
+      "Recommendation Latency (ms)": 0.009773678979591319,
+      "P50 Latency (ms)": 0.0078000593930482864,
+      "P95 Latency (ms)": 0.02189995720982551,
+      "Actionability Proxy": 0.866549596526591,
+      "Trust Alignment Proxy": 0.5379218904710904,
+      "Explanation Usefulness Proxy": 0.12249999999999998,
+      "User Acceptance Proxy": 0.5655175002755181
+    },
+    "B1: Heuristic Scorecard": {
       "Recommendation Accuracy": 0.5263157894736842,
       "Macro F1": 0.4722222222222222,
-      "Top-2 Agreement": 0.631578947368421,
+      "Top-2 Agreement": 0.7894736842105263,
       "Scenario-Fit Rate": 1.0,
       "Logical Conflict Rate": 0.10526315789473684,
       "Expected Calibration Error (ECE)": 0.28744362802374424,
-      "Recommendation Latency (ms)": 0.006100000494993047,
-      "P50 Latency (ms)": 0.004599976819008589,
-      "P95 Latency (ms)": 0.009640009375289069,
+      "Recommendation Latency (ms)": 0.005347372375820812,
+      "P50 Latency (ms)": 0.004499917849898338,
+      "P95 Latency (ms)": 0.008320156484842295,
       "Actionability Proxy": 0.8738816255256912,
       "Trust Alignment Proxy": 0.5037843049538574,
       "Explanation Usefulness Proxy": 0.0,
       "User Acceptance Proxy": 0.5258771569441265
     },
-    "Baseline B - Predictive Analytics Only": {
+    "B2: Predictive Only": {
       "Recommendation Accuracy": 0.631578947368421,
       "Macro F1": 0.6002747252747253,
       "Top-2 Agreement": 0.9473684210526315,
       "Scenario-Fit Rate": 0.8947368421052632,
       "Logical Conflict Rate": 0.21052631578947367,
-      "Expected Calibration Error (ECE)": 0.05525658630457882,
-      "Recommendation Latency (ms)": 0.014589474487461541,
-      "P50 Latency (ms)": 0.013399985618889332,
-      "P95 Latency (ms)": 0.01932997256517409,
+      "Expected Calibration Error (ECE)": 0.055256586304578824,
+      "Recommendation Latency (ms)": 0.013942107264148561,
+      "P50 Latency (ms)": 0.012800097465515137,
+      "P95 Latency (ms)": 0.018449919298291192,
       "Actionability Proxy": 0.805834852603471,
       "Trust Alignment Proxy": 0.6007874867141084,
       "Explanation Usefulness Proxy": 0.0,
       "User Acceptance Proxy": 0.5326095613913263
     },
-    "Baseline C - Predictive Plus Channel Evidence": {
+    "B3: Predictive plus Channel Evidence": {
       "Recommendation Accuracy": 0.631578947368421,
       "Macro F1": 0.6002747252747253,
       "Top-2 Agreement": 1.0,
       "Scenario-Fit Rate": 0.8947368421052632,
       "Logical Conflict Rate": 0.21052631578947367,
-      "Expected Calibration Error (ECE)": 0.06835267931922023,
-      "Recommendation Latency (ms)": 0.020447370939348872,
-      "P50 Latency (ms)": 0.018900027498602867,
-      "P95 Latency (ms)": 0.02690002438612281,
+      "Expected Calibration Error (ECE)": 0.06835267931922025,
+      "Recommendation Latency (ms)": 0.01958946354295078,
+      "P50 Latency (ms)": 0.018399907276034355,
+      "P95 Latency (ms)": 0.024109845981001844,
       "Actionability Proxy": 0.8050400213984714,
       "Trust Alignment Proxy": 0.594485305960838,
       "Explanation Usefulness Proxy": 0.7605263157894736,
       "User Acceptance Proxy": 0.7202174445930504
     },
-    "Baseline D - Post-Hoc Rule Overlay": {
+    "Post-hoc Hard-Rule Filter": {
       "Recommendation Accuracy": 0.631578947368421,
       "Macro F1": 0.6443764568764568,
       "Top-2 Agreement": 0.8421052631578947,
       "Scenario-Fit Rate": 1.0,
       "Logical Conflict Rate": 0.0,
       "Expected Calibration Error (ECE)": 0.07421461455596104,
-      "Recommendation Latency (ms)": 0.02332631572100677,
-      "P50 Latency (ms)": 0.01850002445280552,
-      "P95 Latency (ms)": 0.032629986526444464,
+      "Recommendation Latency (ms)": 0.01911580023404799,
+      "P50 Latency (ms)": 0.018300022929906845,
+      "P95 Latency (ms)": 0.022029946558177468,
       "Actionability Proxy": 0.9379112647372574,
       "Trust Alignment Proxy": 0.5714952622254624,
       "Explanation Usefulness Proxy": 0.032236842105263154,
@@ -132,17 +165,17 @@
     "Proposed System - Full Framework": {
       "Recommendation Accuracy": 0.8245614035087719,
       "Macro F1": 0.8279262404262404,
-      "Top-2 Agreement": 1.0,
+      "Top-2 Agreement": 0.8947368421052632,
       "Scenario-Fit Rate": 1.0,
       "Logical Conflict Rate": 0.0,
-      "Expected Calibration Error (ECE)": 0.22644035087719297,
-      "Recommendation Latency (ms)": 2.552377192810047,
-      "P50 Latency (ms)": 2.360733322954426,
-      "P95 Latency (ms)": 3.426569995159903,
-      "Actionability Proxy": 0.9254908771929825,
-      "Trust Alignment Proxy": 0.6263771929824561,
+      "Expected Calibration Error (ECE)": 0.5186771929824562,
+      "Recommendation Latency (ms)": 2.421036840563542,
+      "P50 Latency (ms)": 2.1267333067953587,
+      "P95 Latency (ms)": 3.452406668414671,
+      "Actionability Proxy": 0.8827080701754385,
+      "Trust Alignment Proxy": 0.4314140350877193,
       "Explanation Usefulness Proxy": 0.9999999999999997,
-      "User Acceptance Proxy": 0.8394283684210526
+      "User Acceptance Proxy": 0.7540781403508771
     },
     "Branch Ablation - CampaignNet Only": {
       "Recommendation Accuracy": 0.43859649122807015,
@@ -151,9 +184,9 @@
       "Scenario-Fit Rate": 0.9473684210526315,
       "Logical Conflict Rate": 0.12280701754385964,
       "Expected Calibration Error (ECE)": 0.08746491228070175,
-      "Recommendation Latency (ms)": 2.215910527299632,
-      "P50 Latency (ms)": 2.0202333301616213,
-      "P95 Latency (ms)": 3.230346679144228,
+      "Recommendation Latency (ms)": 2.0391175425366352,
+      "P50 Latency (ms)": 1.8539999922116597,
+      "P95 Latency (ms)": 3.0028999162216983,
       "Actionability Proxy": 0.8069133333333333,
       "Trust Alignment Proxy": 0.5141771929824562,
       "Explanation Usefulness Proxy": 0.3499999999999999,
@@ -166,9 +199,9 @@
       "Scenario-Fit Rate": 1.0,
       "Logical Conflict Rate": 0.10526315789473684,
       "Expected Calibration Error (ECE)": 0.4702157894736842,
-      "Recommendation Latency (ms)": 2.2207350876558114,
-      "P50 Latency (ms)": 1.993166651421537,
-      "P95 Latency (ms)": 3.0997299880255,
+      "Recommendation Latency (ms)": 2.024626310326551,
+      "P50 Latency (ms)": 1.873900027324756,
+      "P95 Latency (ms)": 2.668773258725801,
       "Actionability Proxy": 0.8515708771929824,
       "Trust Alignment Proxy": 0.45570350877192983,
       "Explanation Usefulness Proxy": 0.3499999999999999,
@@ -181,9 +214,9 @@
       "Scenario-Fit Rate": 1.0,
       "Logical Conflict Rate": 0.10526315789473684,
       "Expected Calibration Error (ECE)": 0.5354105263157894,
-      "Recommendation Latency (ms)": 2.275324562409272,
-      "P50 Latency (ms)": 1.9410000143883128,
-      "P95 Latency (ms)": 3.549406673604,
+      "Recommendation Latency (ms)": 1.9960736839525532,
+      "P50 Latency (ms)": 1.827200020973881,
+      "P95 Latency (ms)": 2.7043999793628832,
       "Actionability Proxy": 0.842040701754386,
       "Trust Alignment Proxy": 0.41100000000000003,
       "Explanation Usefulness Proxy": 0.3499999999999999,
@@ -192,17 +225,17 @@
     "Proposed Ablation - Without Intent": {
       "Recommendation Accuracy": 0.7368421052631579,
       "Macro F1": 0.7513791763791765,
-      "Top-2 Agreement": 0.9824561403508771,
+      "Top-2 Agreement": 0.8771929824561404,
       "Scenario-Fit Rate": 0.9473684210526315,
       "Logical Conflict Rate": 0.05263157894736842,
-      "Expected Calibration Error (ECE)": 0.19416140350877195,
-      "Recommendation Latency (ms)": 2.4585666670055506,
-      "P50 Latency (ms)": 2.1277999815841517,
-      "P95 Latency (ms)": 3.853363301216934,
-      "Actionability Proxy": 0.8691684210526315,
-      "Trust Alignment Proxy": 0.5670701754385964,
+      "Expected Calibration Error (ECE)": 0.5030035087719298,
+      "Recommendation Latency (ms)": 2.2401210582373956,
+      "P50 Latency (ms)": 2.0853666743884482,
+      "P95 Latency (ms)": 3.023413359187543,
+      "Actionability Proxy": 0.8262357894736841,
+      "Trust Alignment Proxy": 0.41154035087719293,
       "Explanation Usefulness Proxy": 0.9999999999999997,
-      "User Acceptance Proxy": 0.7961419298245613
+      "User Acceptance Proxy": 0.7245334385964911
     },
     "Proposed Ablation - Without Rules": {
       "Recommendation Accuracy": 0.9298245614035087,
@@ -210,59 +243,59 @@
       "Top-2 Agreement": 1.0,
       "Scenario-Fit Rate": 1.0,
       "Logical Conflict Rate": 0.10526315789473684,
-      "Expected Calibration Error (ECE)": 0.3189754385964912,
-      "Recommendation Latency (ms)": 2.2339298238716365,
-      "P50 Latency (ms)": 1.896100021743526,
-      "P95 Latency (ms)": 3.5470066475681947,
-      "Actionability Proxy": 0.8853277192982455,
-      "Trust Alignment Proxy": 0.6093684210526316,
+      "Expected Calibration Error (ECE)": 0.6482315789473684,
+      "Recommendation Latency (ms)": 2.121470174180311,
+      "P50 Latency (ms)": 1.8788333206127088,
+      "P95 Latency (ms)": 3.2695965996632963,
+      "Actionability Proxy": 0.8194764912280701,
+      "Trust Alignment Proxy": 0.3133929824561404,
       "Explanation Usefulness Proxy": 0.9999999999999997,
-      "User Acceptance Proxy": 0.8174100350877191
+      "User Acceptance Proxy": 0.6874781403508772
     },
     "Proposed Ablation - Without Calibration": {
       "Recommendation Accuracy": 0.8245614035087719,
       "Macro F1": 0.8279262404262404,
-      "Top-2 Agreement": 1.0,
+      "Top-2 Agreement": 0.8947368421052632,
       "Scenario-Fit Rate": 1.0,
       "Logical Conflict Rate": 0.0,
-      "Expected Calibration Error (ECE)": 0.42356140350877186,
-      "Recommendation Latency (ms)": 2.7288543877371567,
-      "P50 Latency (ms)": 2.2749000151331225,
-      "P95 Latency (ms)": 4.685170032704868,
-      "Actionability Proxy": 0.8912301754385966,
-      "Trust Alignment Proxy": 0.4912666666666667,
+      "Expected Calibration Error (ECE)": 0.29424385964912286,
+      "Recommendation Latency (ms)": 2.6762877231496467,
+      "P50 Latency (ms)": 2.5331000021348395,
+      "P95 Latency (ms)": 3.879336710087953,
+      "Actionability Proxy": 0.9060635087719299,
+      "Trust Alignment Proxy": 0.5256614035087719,
       "Explanation Usefulness Proxy": 0.9999999999999997,
-      "User Acceptance Proxy": 0.7784354035087718
+      "User Acceptance Proxy": 0.7964068947368421
     },
-    "Proposed Ablation - Predictive Backbone": {
+    "B4: Integrated Learned Backbone": {
       "Recommendation Accuracy": 0.7894736842105262,
       "Macro F1": 0.7830891330891331,
       "Top-2 Agreement": 0.9473684210526315,
       "Scenario-Fit Rate": 0.8947368421052632,
       "Logical Conflict Rate": 0.21052631578947367,
       "Expected Calibration Error (ECE)": 0.3984421052631579,
-      "Recommendation Latency (ms)": 2.8240894735382316,
-      "P50 Latency (ms)": 2.3916333448141813,
-      "P95 Latency (ms)": 4.555946673887466,
+      "Recommendation Latency (ms)": 2.2066947350507244,
+      "P50 Latency (ms)": 1.921499924113353,
+      "P95 Latency (ms)": 3.529026646477478,
       "Actionability Proxy": 0.7571536842105263,
       "Trust Alignment Proxy": 0.44945964912280695,
-      "Explanation Usefulness Proxy": 0.9999999999999997,
-      "User Acceptance Proxy": 0.710172350877193
+      "Explanation Usefulness Proxy": 0.3499999999999999,
+      "User Acceptance Proxy": 0.547672350877193
     }
   },
   "confidence_intervals_95": {
-    "Baseline A - Heuristic Scorecard": {
+    "Supervisor Baseline - Intent-Only Deterministic": {
       "Recommendation Accuracy": [
-        0.3157894736842105,
-        0.7368421052631579
+        0.47368421052631576,
+        0.8947368421052632
       ],
       "Macro F1": [
-        0.28125,
-        0.6141774891774892
+        0.40789473684210525,
+        0.7058823529411764
       ],
       "Top-2 Agreement": [
-        0.42105263157894735,
-        0.8421052631578947
+        0.5789473684210527,
+        0.9473684210526315
       ],
       "Scenario-Fit Rate": [
         1.0,
@@ -273,11 +306,63 @@
         0.2631578947368421
       ],
       "Expected Calibration Error (ECE)": [
-        0.14208288112727055,
+        0.10526315789473684,
+        0.5263157894736843
+      ]
+    },
+    "Supervisor Baseline - Weighted Deterministic": {
+      "Recommendation Accuracy": [
+        0.3684210526315789,
+        0.7894736842105263
+      ],
+      "Macro F1": [
+        0.3412698412698413,
+        0.6388888888888888
+      ],
+      "Top-2 Agreement": [
+        0.6842105263157895,
+        1.0
+      ],
+      "Scenario-Fit Rate": [
+        1.0,
+        1.0
+      ],
+      "Logical Conflict Rate": [
+        0.0,
+        0.2631578947368421
+      ],
+      "Expected Calibration Error (ECE)": [
+        0.036430465178458125,
+        0.29604530708860466
+      ]
+    },
+    "B1: Heuristic Scorecard": {
+      "Recommendation Accuracy": [
+        0.3157894736842105,
+        0.7368421052631579
+      ],
+      "Macro F1": [
+        0.28125,
+        0.6141774891774892
+      ],
+      "Top-2 Agreement": [
+        0.5789473684210527,
+        0.9473684210526315
+      ],
+      "Scenario-Fit Rate": [
+        1.0,
+        1.0
+      ],
+      "Logical Conflict Rate": [
+        0.0,
+        0.2631578947368421
+      ],
+      "Expected Calibration Error (ECE)": [
+        0.14208288112727058,
         0.49724978452364826
       ]
     },
-    "Baseline B - Predictive Analytics Only": {
+    "B2: Predictive Only": {
       "Recommendation Accuracy": [
         0.42105263157894735,
         0.8421052631578947
@@ -299,11 +384,11 @@
         0.42105263157894735
       ],
       "Expected Calibration Error (ECE)": [
-        0.056040998420243585,
+        0.05604099842024354,
         0.28522910873199747
       ]
     },
-    "Baseline C - Predictive Plus Channel Evidence": {
+    "B3: Predictive plus Channel Evidence": {
       "Recommendation Accuracy": [
         0.42105263157894735,
         0.8421052631578947
@@ -325,11 +410,11 @@
         0.42105263157894735
       ],
       "Expected Calibration Error (ECE)": [
-        0.031910820211567256,
+        0.03191082021156728,
         0.2701193529620534
       ]
     },
-    "Baseline D - Post-Hoc Rule Overlay": {
+    "Post-hoc Hard-Rule Filter": {
       "Recommendation Accuracy": [
         0.42105263157894735,
         0.8421052631578947
@@ -365,7 +450,7 @@
         0.9694444444444444
       ],
       "Top-2 Agreement": [
-        1.0,
+        0.7368421052631579,
         1.0
       ],
       "Scenario-Fit Rate": [
@@ -377,8 +462,8 @@
         0.0
       ],
       "Expected Calibration Error (ECE)": [
-        0.17647894736842104,
-        0.33668070175438597
+        0.37699824561403505,
+        0.6157157894736842
       ]
     },
     "Branch Ablation - CampaignNet Only": {
@@ -469,7 +554,7 @@
         0.9083333333333333
       ],
       "Top-2 Agreement": [
-        0.9473684210526315,
+        0.7368421052631579,
         1.0
       ],
       "Scenario-Fit Rate": [
@@ -481,8 +566,8 @@
         0.15789473684210525
       ],
       "Expected Calibration Error (ECE)": [
-        0.11705614035087719,
-        0.342059649122807
+        0.33102105263157894,
+        0.6452859649122806
       ]
     },
     "Proposed Ablation - Without Rules": {
@@ -507,8 +592,8 @@
         0.2631578947368421
       ],
       "Expected Calibration Error (ECE)": [
-        0.21395087719298245,
-        0.4027771929824562
+        0.5097701754385965,
+        0.7193175438596491
       ]
     },
     "Proposed Ablation - Without Calibration": {
@@ -521,7 +606,7 @@
         0.9694444444444444
       ],
       "Top-2 Agreement": [
-        1.0,
+        0.7368421052631579,
         1.0
       ],
       "Scenario-Fit Rate": [
@@ -533,11 +618,11 @@
         0.0
       ],
       "Expected Calibration Error (ECE)": [
-        0.30012105263157896,
-        0.5286631578947368
+        0.10147368421052634,
+        0.44720350877192977
       ]
     },
-    "Proposed Ablation - Predictive Backbone": {
+    "B4: Integrated Learned Backbone": {
       "Recommendation Accuracy": [
         0.5964912280701754,
         0.9473684210526315

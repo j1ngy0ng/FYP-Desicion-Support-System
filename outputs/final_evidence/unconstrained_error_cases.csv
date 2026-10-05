@@ -1,0 +1,5 @@
+﻿Campaign_ID,Intent,Reference_Action,Unconstrained_Action,Confidence,Unsafe,Categories,Conflict_Reasons,Affected_Action
+NY-CMP-8294,Growth,Increase,Maintain,0.274,No,Primary-reference disagreement,,Maintain
+NY-CMP-35135,Retention,Maintain,Investigate,0.2737,No,Primary-reference disagreement,,Investigate
+NY-CMP-11980,Survival,Reduce,Reduce,0.284,Yes,Evidence-sufficiency conflict,evidence:decisive_action_with_insufficient_sample,Reduce
+NY-CMP-55748,Survival,Reduce,Reduce,0.2836,Yes,Evidence-sufficiency conflict,evidence:decisive_action_with_insufficient_sample,Reduce

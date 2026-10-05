@@ -1,0 +1,20 @@
+﻿Campaign_ID,Reference_Action,Recommended_Action,Confidence,Top_Two_Margin,Decision_Status,Decision_Reasons,Correct,Logical_Conflict
+NY-CMP-36411,Maintain,Maintain,0.3648,0.0426,RECOMMEND,,Yes,No
+NY-CMP-50598,Reduce,Reduce,0.3658,0.0429,RECOMMEND,,Yes,No
+NY-CMP-28883,Maintain,Maintain,0.3671,0.0496,RECOMMEND,,Yes,No
+NY-CMP-10185,Investigate,Investigate,0.3635,0.0368,HUMAN REVIEW REQUIRED,The selected action is Investigate.,Yes,No
+NY-CMP-36230,Investigate,Investigate,0.3596,0.0327,HUMAN REVIEW REQUIRED,The selected action is Investigate.,Yes,No
+NY-CMP-8294,Increase,Maintain,0.3533,0.0184,CHECK ADVISED,The top-two action margin is below 0.02.,No,No
+NY-CMP-18730,Maintain,Maintain,0.3555,0.0219,RECOMMEND,,Yes,No
+NY-CMP-24871,Increase,Increase,0.3822,0.0668,HUMAN REVIEW REQUIRED,"Budget is missing, so expansion feasibility cannot be evaluated.",Yes,No
+NY-CMP-35135,Maintain,Investigate,0.357,0.0273,HUMAN REVIEW REQUIRED,The selected action is Investigate.,No,No
+NY-CMP-43265,Maintain,Maintain,0.3555,0.0218,RECOMMEND,,Yes,No
+NY-CMP-38649,Investigate,Investigate,0.3571,0.0277,HUMAN REVIEW REQUIRED,The selected action is Investigate.,Yes,No
+NY-CMP-11980,Reduce,Investigate,0.5114,0.0228,HUMAN REVIEW REQUIRED,The selected action is Investigate.,No,No
+NY-CMP-11348,Reduce,Reduce,0.3678,0.0455,RECOMMEND,,Yes,No
+NY-CMP-20926,Investigate,Investigate,1.0,1.0,NO SAFE RECOMMENDATION,No executable campaign action passed the hard safeguards; manual review is required.,Yes,No
+NY-CMP-3704,Maintain,Maintain,0.3661,0.0455,RECOMMEND,,Yes,No
+NY-CMP-55748,Reduce,Investigate,0.5069,0.0138,HUMAN REVIEW REQUIRED,The selected action is Investigate.,No,No
+NY-CMP-1119,Maintain,Maintain,0.3667,0.0475,RECOMMEND,,Yes,No
+NY-CMP-50131,Reduce,Reduce,0.3663,0.0463,RECOMMEND,,Yes,No
+NY-CMP-33194,Increase,Increase,0.3822,0.0668,HUMAN REVIEW REQUIRED,"Budget is missing, so expansion feasibility cannot be evaluated.",Yes,No

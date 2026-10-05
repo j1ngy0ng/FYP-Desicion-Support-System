@@ -1,0 +1,85 @@
+{
+  "generated_at": "2026-10-05T18:42:03+08:00",
+  "source_commit": "5f0fa47adff8aec07f9fe6c4adf391ba546a205f",
+  "source_tags": [
+    "fyp-code-freeze-v6"
+  ],
+  "working_tree_clean": false,
+  "benchmark": "data\\benchmark_audited.csv",
+  "benchmark_sha256": "3f2320fbd190b24766db4453ab1dc7e7b212803fdfa2ac048c2437012d4d51ee",
+  "training_data": "data\\layers\\02_processed_model_data.csv",
+  "training_data_sha256": "7979e95284e034236e684de0e26e00d551ba7ba0dbabe3f2a5a71655e212b1dd",
+  "rule_catalogue_sha256": "99851cd7ce70a8eb9fbd2f208d146d563e9119eeb21fd885a6c394e56cba5f8e",
+  "benchmark_records": 125,
+  "held_out_test_records": 19,
+  "candidate_safe_interventions": 13,
+  "set_based_correct_interventions": 13,
+  "candidate_interventions_matching_primary_reference": 0,
+  "no_safe_recommendation_cases": 13,
+  "independent_review_complete": true,
+  "independent_reviewer": {
+    "name": "Sherlynn Poh",
+    "qualification": "Bachelor's degree in Marketing",
+    "role": "Independent marketing reviewer",
+    "scope": "Action-set annotations and safeguard classifications",
+    "review_date": null,
+    "review_date_status": "Actual review date to be inserted from the review record"
+  },
+  "approved_structured_review_complete": true,
+  "intervention_correctness_policy": {
+    "primary": "Reviewed acceptable/conditional/unacceptable action-set membership",
+    "no_safe": "Increase, Maintain and Reduce are unacceptable; Investigate is an acceptable manual fallback",
+    "secondary": "Exact agreement with the single primary reference action"
+  },
+  "review_provenance": "Supervisor- and university-approved structured domain review protocol, followed by independent review by Sherlynn Poh (Bachelor's degree in Marketing).",
+  "selective_policy": {
+    "threshold_selection_partition": "validation_only",
+    "minimum_auto_confidence": 0.35,
+    "minimum_top_two_margin": 0.02,
+    "validation_summary": {
+      "Partition": "Validation",
+      "Cases": 19,
+      "Recommend": 7,
+      "Check_Advised": 2,
+      "Human_Review_Required": 8,
+      "No_Safe_Recommendation": 2,
+      "Automatic_Coverage": 0.368421,
+      "Accepted_Recommendation_Accuracy": 0.857143,
+      "Review_Demand": 0.631579,
+      "Unresolved_Rate": 0.105263,
+      "Automatic_Conflict_Rate": 0.0,
+      "Minimum_Auto_Confidence": 0.35,
+      "Minimum_Top_Two_Margin": 0.02
+    },
+    "test_summary": {
+      "Partition": "Test",
+      "Cases": 19,
+      "Recommend": 9,
+      "Check_Advised": 1,
+      "Human_Review_Required": 8,
+      "No_Safe_Recommendation": 1,
+      "Automatic_Coverage": 0.473684,
+      "Accepted_Recommendation_Accuracy": 1.0,
+      "Review_Demand": 0.526316,
+      "Unresolved_Rate": 0.052632,
+      "Automatic_Conflict_Rate": 0.0,
+      "Minimum_Auto_Confidence": 0.35,
+      "Minimum_Top_Two_Margin": 0.02
+    }
+  },
+  "hard_safeguards": [
+    "budget_feasibility",
+    "conflicting_evidence",
+    "evidence_sufficiency",
+    "growth_safeguard",
+    "retention_safeguard",
+    "survival_safeguard"
+  ],
+  "soft_safeguard_count": 8,
+  "ethics_document_verified": false,
+  "limitations": [
+    "Current recommendation unit is an operational investment action, not a channel.",
+    "The original benchmark contains one adjudicated primary action; safeguard correctness therefore uses independently reviewed action sets, with exact primary-label agreement retained as a secondary diagnostic.",
+    "The safeguard classification and intervention verdicts follow the approved structured review protocol."
+  ]
+}

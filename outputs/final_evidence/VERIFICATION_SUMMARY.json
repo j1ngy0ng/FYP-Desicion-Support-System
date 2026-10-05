@@ -1,0 +1,35 @@
+{
+  "verified_at": "2026-10-05T19:05:00+08:00",
+  "source_commit": "5f0fa47adff8aec07f9fe6c4adf391ba546a205f",
+  "source_tag": "fyp-code-freeze-v6",
+  "confirmatory_run_id": "R002-20261005T184142+0800",
+  "python_tests": {
+    "status": "passed",
+    "count": 49,
+    "command": ".venv\\Scripts\\python.exe -m unittest backend.tests.test_engine backend.tests.test_api tests.test_three_layer_data tests.test_human_provided_dataset tests.test_baseline_evaluation tests.test_final_research_evidence tests.test_synthetic_annotations"
+  },
+  "frontend_build": {
+    "status": "passed",
+    "command": "pnpm build",
+    "toolchain": "TypeScript type-check followed by Vite production build"
+  },
+  "report_qa": {
+    "status": "passed",
+    "docx_comments": 9,
+    "sections": 17,
+    "rendered_pdf_pages": 149,
+    "chapter_5_placeholders_remaining": 0,
+    "visual_checks": [
+      "single-intent and action-level scope",
+      "hard and soft safeguard specification",
+      "proposed-method component narrative",
+      "Algorithm 4.2 feasibility and no-safe logic",
+      "Chapter 5 evidence tables and chapter headers"
+    ]
+  },
+  "external_evidence_still_required": [
+    "Attach the official ethics approval document and ensure its reference and date match Appendix B.",
+    "Record the independent reviewer's actual review date and retain the signed or otherwise attributable review evidence.",
+    "Complete and report the approved human-participant study; no participant outcomes are claimed in the current report."
+  ]
+}

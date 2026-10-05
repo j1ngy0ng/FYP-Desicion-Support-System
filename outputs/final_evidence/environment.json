@@ -1,0 +1,18 @@
+{
+  "captured_at": "2026-10-05T18:42:16+08:00",
+  "operating_system": "Windows-10-10.0.26200-SP0",
+  "machine": "AMD64",
+  "processor": "Intel64 Family 6 Model 154 Stepping 4, GenuineIntel",
+  "python": "3.11.9",
+  "torch": "2.7.1+cu118",
+  "cuda_available": false,
+  "cuda_device": null,
+  "packages": {
+    "fastapi": "0.139.0",
+    "numpy": "1.26.4",
+    "pandas": "2.1.4",
+    "scikit-learn": "1.7.2",
+    "sqlalchemy": "2.0.46",
+    "pydantic": "2.13.4"
+  }
+}

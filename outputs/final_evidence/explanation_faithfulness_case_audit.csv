@@ -1,0 +1,20 @@
+﻿Campaign_ID,Partition,Recommended_Action,Decision_Status,Top_Driver_Feature,Top_Channel_Evidence,Source_Fact_Support,Triggered_Rule_Consistency,Material_Perturbation_Response,Unused_Metadata_Invariance,Overall
+NY-CMP-36411,Test,Maintain,RECOMMEND,Acquisition Cost,['google'],Pass,Pass,Pass,Pass,Pass
+NY-CMP-50598,Test,Reduce,RECOMMEND,Acquisition Cost,['email',Pass,Pass,Pass,Pass,Pass
+NY-CMP-28883,Test,Maintain,RECOMMEND,Acquisition Cost,['whatsapp',Pass,Pass,Pass,Pass,Pass
+NY-CMP-10185,Test,Investigate,HUMAN REVIEW REQUIRED,Acquisition Cost,['instagram',Pass,Pass,Pass,Pass,Pass
+NY-CMP-36230,Test,Investigate,HUMAN REVIEW REQUIRED,Acquisition Cost,['whatsapp',Pass,Pass,Pass,Pass,Pass
+NY-CMP-8294,Test,Maintain,CHECK ADVISED,Acquisition Cost,['instagram'],Pass,Pass,Pass,Pass,Pass
+NY-CMP-18730,Test,Maintain,RECOMMEND,Acquisition Cost,['email',Pass,Pass,Pass,Pass,Pass
+NY-CMP-24871,Test,Increase,HUMAN REVIEW REQUIRED,Acquisition Cost,['youtube'],Pass,Pass,Pass,Pass,Pass
+NY-CMP-35135,Test,Investigate,HUMAN REVIEW REQUIRED,Acquisition Cost,['facebook',Pass,Pass,Pass,Pass,Pass
+NY-CMP-43265,Test,Maintain,RECOMMEND,Acquisition Cost,['whatsapp',Pass,Pass,Pass,Pass,Pass
+NY-CMP-38649,Test,Investigate,HUMAN REVIEW REQUIRED,Conversions,['youtube',Pass,Pass,Pass,Pass,Pass
+NY-CMP-11980,Test,Investigate,HUMAN REVIEW REQUIRED,cost per conversion,['google'],Pass,Pass,Pass,Pass,Pass
+NY-CMP-11348,Test,Reduce,RECOMMEND,Acquisition Cost,['instagram',Pass,Pass,Pass,Pass,Pass
+NY-CMP-20926,Test,Investigate,NO SAFE RECOMMENDATION,Acquisition Cost,['google',Pass,Pass,Pass,Pass,Pass
+NY-CMP-3704,Test,Maintain,RECOMMEND,Acquisition Cost,['facebook',Pass,Pass,Pass,Pass,Pass
+NY-CMP-55748,Test,Investigate,HUMAN REVIEW REQUIRED,cost per conversion,['youtube'],Pass,Pass,Pass,Pass,Pass
+NY-CMP-1119,Test,Maintain,RECOMMEND,Acquisition Cost,['youtube'],Pass,Pass,Pass,Pass,Pass
+NY-CMP-50131,Test,Reduce,RECOMMEND,Acquisition Cost,['youtube',Pass,Pass,Pass,Pass,Pass
+NY-CMP-33194,Test,Increase,HUMAN REVIEW REQUIRED,Acquisition Cost,['youtube'],Pass,Pass,Pass,Pass,Pass

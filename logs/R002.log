@@ -1,9 +1,9 @@
 {
-  "run_id": "R002-20260815T220434+0800",
-  "timestamp": "2026-08-15T22:04:34+08:00",
-  "source_commit": "59746b299e4e4e3a82197686df3cd741431578c3",
+  "run_id": "R002-20261005T184142+0800",
+  "timestamp": "2026-10-05T18:41:42+08:00",
+  "source_commit": "5f0fa47adff8aec07f9fe6c4adf391ba546a205f",
   "source_tags": [
-    "fyp-code-freeze-v2"
+    "fyp-code-freeze-v6"
   ],
   "evaluation_type": "confirmatory_technical_evaluation",
   "dataset": "data\\benchmark_audited.csv",
@@ -11,7 +11,7 @@
   "training_dataset": "data\\layers\\02_processed_model_data.csv",
   "training_dataset_sha256": "7979e95284e034236e684de0e26e00d551ba7ba0dbabe3f2a5a71655e212b1dd",
   "rule_catalogue_version": "rule-catalogue-v1",
-  "rule_catalogue_sha256": "c048d442c121c7b4820dbd0271b8133b9b75d0b9ccb436b5c1d6317c8fdd2f7a",
+  "rule_catalogue_sha256": "99851cd7ce70a8eb9fbd2f208d146d563e9119eeb21fd885a6c394e56cba5f8e",
   "split": "chronological_70_15_15",
   "records": 125,
   "training_records": 87,
@@ -27,10 +27,13 @@
   "ece_bins": 5,
   "bootstrap_samples": 2000,
   "calibration_fit_partition": "validation_only",
+  "selective_policy_threshold_partition": "validation_only",
+  "minimum_auto_confidence": 0.35,
+  "minimum_top_two_margin": 0.02,
   "temperatures": {
-    "42": 0.5,
-    "52": 0.5,
-    "62": 0.5
+    "42": 5.0,
+    "52": 5.0,
+    "62": 5.0
   },
   "calibration_statuses": {
     "42": "calibrated",

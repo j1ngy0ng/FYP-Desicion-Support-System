@@ -1,0 +1,7 @@
+﻿Partition,Seed,Cases,ECE,NLL,Brier_Score,Increase_Support,Qualification
+Validation,42,19,0.308305,2.403844,0.679231,0,Descriptive small-sample evidence; no Increase-class calibration claim.
+Test,42,19,0.483568,3.765835,0.673175,3,Descriptive small-sample evidence; no population-level calibration claim.
+Validation,52,19,0.361879,2.399104,0.676013,0,Descriptive small-sample evidence; no Increase-class calibration claim.
+Test,52,19,0.535558,3.76001,0.669147,3,Descriptive small-sample evidence; no population-level calibration claim.
+Validation,62,19,0.255884,2.398874,0.675871,0,Descriptive small-sample evidence; no Increase-class calibration claim.
+Test,62,19,0.536905,3.763946,0.671904,3,Descriptive small-sample evidence; no population-level calibration claim.

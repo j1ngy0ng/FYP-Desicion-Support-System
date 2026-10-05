@@ -1,16 +1,16 @@
 {
-  "Baseline A - Heuristic Scorecard": {
+  "Supervisor Baseline - Intent-Only Deterministic": {
     "Recommendation Accuracy": [
-      0.3157894736842105,
-      0.7368421052631579
+      0.47368421052631576,
+      0.8947368421052632
     ],
     "Macro F1": [
-      0.28125,
-      0.6141774891774892
+      0.40789473684210525,
+      0.7058823529411764
     ],
     "Top-2 Agreement": [
-      0.42105263157894735,
-      0.8421052631578947
+      0.5789473684210527,
+      0.9473684210526315
     ],
     "Scenario-Fit Rate": [
       1.0,
@@ -21,11 +21,63 @@
       0.2631578947368421
     ],
     "Expected Calibration Error (ECE)": [
-      0.14208288112727055,
+      0.10526315789473684,
+      0.5263157894736843
+    ]
+  },
+  "Supervisor Baseline - Weighted Deterministic": {
+    "Recommendation Accuracy": [
+      0.3684210526315789,
+      0.7894736842105263
+    ],
+    "Macro F1": [
+      0.3412698412698413,
+      0.6388888888888888
+    ],
+    "Top-2 Agreement": [
+      0.6842105263157895,
+      1.0
+    ],
+    "Scenario-Fit Rate": [
+      1.0,
+      1.0
+    ],
+    "Logical Conflict Rate": [
+      0.0,
+      0.2631578947368421
+    ],
+    "Expected Calibration Error (ECE)": [
+      0.036430465178458125,
+      0.29604530708860466
+    ]
+  },
+  "B1: Heuristic Scorecard": {
+    "Recommendation Accuracy": [
+      0.3157894736842105,
+      0.7368421052631579
+    ],
+    "Macro F1": [
+      0.28125,
+      0.6141774891774892
+    ],
+    "Top-2 Agreement": [
+      0.5789473684210527,
+      0.9473684210526315
+    ],
+    "Scenario-Fit Rate": [
+      1.0,
+      1.0
+    ],
+    "Logical Conflict Rate": [
+      0.0,
+      0.2631578947368421
+    ],
+    "Expected Calibration Error (ECE)": [
+      0.14208288112727058,
       0.49724978452364826
     ]
   },
-  "Baseline B - Predictive Analytics Only": {
+  "B2: Predictive Only": {
     "Recommendation Accuracy": [
       0.42105263157894735,
       0.8421052631578947
@@ -47,11 +99,11 @@
       0.42105263157894735
     ],
     "Expected Calibration Error (ECE)": [
-      0.056040998420243585,
+      0.05604099842024354,
       0.28522910873199747
     ]
   },
-  "Baseline C - Predictive Plus Channel Evidence": {
+  "B3: Predictive plus Channel Evidence": {
     "Recommendation Accuracy": [
       0.42105263157894735,
       0.8421052631578947
@@ -73,11 +125,11 @@
       0.42105263157894735
     ],
     "Expected Calibration Error (ECE)": [
-      0.031910820211567256,
+      0.03191082021156728,
       0.2701193529620534
     ]
   },
-  "Baseline D - Post-Hoc Rule Overlay": {
+  "Post-hoc Hard-Rule Filter": {
     "Recommendation Accuracy": [
       0.42105263157894735,
       0.8421052631578947
@@ -113,7 +165,7 @@
       0.9694444444444444
     ],
     "Top-2 Agreement": [
-      1.0,
+      0.7368421052631579,
       1.0
     ],
     "Scenario-Fit Rate": [
@@ -125,8 +177,8 @@
       0.0
     ],
     "Expected Calibration Error (ECE)": [
-      0.17647894736842104,
-      0.33668070175438597
+      0.37699824561403505,
+      0.6157157894736842
     ]
   },
   "Branch Ablation - CampaignNet Only": {
@@ -217,7 +269,7 @@
       0.9083333333333333
     ],
     "Top-2 Agreement": [
-      0.9473684210526315,
+      0.7368421052631579,
       1.0
     ],
     "Scenario-Fit Rate": [
@@ -229,8 +281,8 @@
       0.15789473684210525
     ],
     "Expected Calibration Error (ECE)": [
-      0.11705614035087719,
-      0.342059649122807
+      0.33102105263157894,
+      0.6452859649122806
     ]
   },
   "Proposed Ablation - Without Rules": {
@@ -255,8 +307,8 @@
       0.2631578947368421
     ],
     "Expected Calibration Error (ECE)": [
-      0.21395087719298245,
-      0.4027771929824562
+      0.5097701754385965,
+      0.7193175438596491
     ]
   },
   "Proposed Ablation - Without Calibration": {
@@ -269,7 +321,7 @@
       0.9694444444444444
     ],
     "Top-2 Agreement": [
-      1.0,
+      0.7368421052631579,
       1.0
     ],
     "Scenario-Fit Rate": [
@@ -281,11 +333,11 @@
       0.0
     ],
     "Expected Calibration Error (ECE)": [
-      0.30012105263157896,
-      0.5286631578947368
+      0.10147368421052634,
+      0.44720350877192977
     ]
   },
-  "Proposed Ablation - Predictive Backbone": {
+  "B4: Integrated Learned Backbone": {
     "Recommendation Accuracy": [
       0.5964912280701754,
       0.9473684210526315
