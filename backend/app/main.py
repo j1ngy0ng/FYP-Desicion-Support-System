@@ -1202,7 +1202,11 @@ def experiment_blocks(
     without_calibration = "Proposed Ablation - Without Calibration"
     without_rules = "Proposed Ablation - Without Rules"
     without_intent = "Proposed Ablation - Without Intent"
-    posthoc = "Baseline D - Post-Hoc Rule Overlay"
+    posthoc = (
+        "Post-hoc Hard-Rule Filter"
+        if "Post-hoc Hard-Rule Filter" in metrics
+        else "Baseline D - Post-Hoc Rule Overlay"
+    )
     runs = [
         {
             "id": "R001",
@@ -1338,7 +1342,7 @@ def evaluation_summary(_: CurrentUser, db: Db) -> dict[str, Any]:
         proposed_name = "Proposed System - Full Framework"
         baseline_names = [
             name for name in metrics
-            if name.startswith(("Baseline", "Supervisor Baseline"))
+            if name.startswith(("B1:", "B2:", "B3:", "B4:", "Post-hoc", "Supervisor Baseline"))
         ]
         ablation_names = [name for name in metrics if name.startswith("Proposed Ablation")]
         runs, blocks = experiment_blocks(metrics, study_rows)

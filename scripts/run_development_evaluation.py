@@ -47,7 +47,7 @@ VARIANTS = {
     "Proposed Ablation - Without Intent": "without_intent",
     "Proposed Ablation - Without Rules": "without_rules",
     "Proposed Ablation - Without Calibration": "without_calibration",
-    "Proposed Ablation - Predictive Backbone": "backbone",
+    "B4: Integrated Learned Backbone": "backbone",
 }
 
 

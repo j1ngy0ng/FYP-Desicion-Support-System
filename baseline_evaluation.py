@@ -274,7 +274,7 @@ def baseline_a_predict(rows: List[dict]) -> BaselineResult:
         case_latencies.append((time.perf_counter() - case_started) * 1000)
     latency = (time.perf_counter() - start) * 1000 / max(1, len(rows))
     return BaselineResult(
-        "Baseline A - Heuristic Scorecard", preds, confs, exps, latency,
+        "B1: Heuristic Scorecard", preds, confs, exps, latency,
         top2, case_latencies,
     )
 
@@ -430,7 +430,7 @@ def baseline_b_predict(test_rows: List[dict], model) -> BaselineResult:
         case_latencies.append((time.perf_counter() - case_started) * 1000)
     latency = (time.perf_counter() - start) * 1000 / max(1, len(test_rows))
     return BaselineResult(
-        "Baseline B - Predictive Analytics Only", preds, confs, exps, latency,
+        "B2: Predictive Only", preds, confs, exps, latency,
         top2, case_latencies,
     )
 
@@ -463,7 +463,7 @@ def baseline_c_predict(test_rows: List[dict], model, channel_attr: Dict[str, flo
         case_latencies.append((time.perf_counter() - case_started) * 1000)
     latency = (time.perf_counter() - start) * 1000 / max(1, len(test_rows))
     return BaselineResult(
-        "Baseline C - Predictive Plus Channel Evidence", preds, confs, exps,
+        "B3: Predictive plus Channel Evidence", preds, confs, exps,
         latency, top2, case_latencies,
     )
 
@@ -504,7 +504,7 @@ def baseline_d_predict(test_rows: List[dict], model) -> BaselineResult:
         case_latencies.append((time.perf_counter() - case_started) * 1000)
     latency = (time.perf_counter() - start) * 1000 / max(1, len(test_rows))
     return BaselineResult(
-        "Baseline D - Post-Hoc Rule Overlay", preds, confs, exps, latency,
+        "Post-hoc Hard-Rule Filter", preds, confs, exps, latency,
         top2, case_latencies,
     )
 
@@ -674,7 +674,7 @@ def explanation_usefulness_score(explanations: Sequence[str], baseline_name: str
             score += 0.35
         richness.append(min(1.0, score))
     avg = statistics.fmean(richness)
-    if "Baseline C" in baseline_name or "Proposed" in baseline_name:
+    if "B3:" in baseline_name or "Proposed" in baseline_name:
         return avg
     return avg * NON_ATTRIBUTION_EXPLANATION_FACTOR
 
@@ -814,10 +814,10 @@ def save_markdown(
         [
             "",
             "## Notes",
-            "- Baseline A: heuristic scorecard (manual threshold logic).",
-            "- Baseline B: predictive-only centroid classifier.",
-            "- Baseline C: predictive plus training-derived channel-evidence adjustment.",
-            "- Baseline D: predictive ranking followed by hard post-hoc conflict filtering.",
+            "- B1: heuristic scorecard (manual threshold logic).",
+            "- B2: predictive-only centroid classifier.",
+            "- B3: predictive plus training-derived campaign-level channel-evidence adjustment.",
+            "- Post-hoc Hard-Rule Filter: predictive ranking followed by hard post-hoc conflict filtering.",
             "- Proxy metrics are deterministic technical indicators, not results from human participants.",
         ]
     )

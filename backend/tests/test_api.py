@@ -239,7 +239,14 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(body["target_records"], 125)
         self.assertEqual(body["human_provided_development_records"], 55555)
         self.assertEqual(body["development_annotation_status"], "audited_human_benchmark")
-        self.assertEqual(len(body["baselines"]), 6)
+        self.assertEqual(len(body["baselines"]), 7)
+        self.assertTrue({
+            "B1: Heuristic Scorecard",
+            "B2: Predictive Only",
+            "B3: Predictive plus Channel Evidence",
+            "B4: Integrated Learned Backbone",
+            "Post-hoc Hard-Rule Filter",
+        }.issubset({row["Baseline"] for row in body["baselines"]}))
         self.assertTrue({
             "Supervisor Baseline - Intent-Only Deterministic",
             "Supervisor Baseline - Weighted Deterministic",

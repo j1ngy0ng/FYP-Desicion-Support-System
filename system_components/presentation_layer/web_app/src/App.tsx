@@ -113,12 +113,7 @@ function EvaluationPage({ toast, canExport }: { toast: (m: string) => void; canE
   const metric = (value: string | number | Intervals | undefined, interval?: [number, number]) => <>{pct(value as string | number)}{interval && <><br /><span className="campaign-id">95% CI {pct(interval[0])}–{pct(interval[1])}</span></>}</>
   const resultCells = (row: MetricRow, ci?: Intervals) => <><td>{metric(row['Macro F1'], ci?.['Macro F1'])}</td><td>{metric(row['Recommendation Accuracy'], ci?.['Recommendation Accuracy'])}</td><td>{metric(row['Top-2 Agreement'], ci?.['Top-2 Agreement'])}</td><td>{metric(row['Scenario-Fit Rate'], ci?.['Scenario-Fit Rate'])}</td><td>{metric(row['Logical Conflict Rate'], ci?.['Logical Conflict Rate'])}</td><td>{metric(row['Expected Calibration Error (ECE)'], ci?.['Expected Calibration Error (ECE)'])}</td><td>{Number(row['P95 Latency (ms)'] || 0).toFixed(2)} ms</td></>
   const systemLabel = (name: string) => {
-    const canonical = name.startsWith('Baseline A') ? 'B1: Heuristic Scorecard'
-      : name.startsWith('Baseline B') ? 'B2: Predictive Only'
-      : name.startsWith('Baseline C') ? 'B3: Predictive plus Channel Evidence'
-      : name.startsWith('Baseline D') ? 'Post-hoc Hard-Rule Filter'
-      : name
-    const [id, detail] = canonical.split(': ')
+    const [id, detail] = name.split(': ')
     return <><strong>{id}</strong>{detail && <><br /><span className="campaign-id">{detail}</span></>}</>
   }
   const statusLabel = (value: string) => ({ complete: 'Complete', pending_participants: 'Participant study pending', technical_complete_human_pending: 'Technical complete · human pending' }[value] || value)

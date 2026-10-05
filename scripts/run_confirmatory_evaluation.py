@@ -59,7 +59,7 @@ VARIANTS = {
     "Proposed Ablation - Without Intent": "without_intent",
     "Proposed Ablation - Without Rules": "without_rules",
     "Proposed Ablation - Without Calibration": "without_calibration",
-    "Proposed Ablation - Predictive Backbone": "backbone",
+    "B4: Integrated Learned Backbone": "backbone",
 }
 SEEDS = (42, 52, 62)
 
@@ -410,7 +410,7 @@ def main() -> None:
     )
 
     full = metrics["Proposed System - Full Framework"]
-    heuristic = metrics["Baseline A - Heuristic Scorecard"]
+    heuristic = metrics["B1: Heuristic Scorecard"]
     claim_status = (
         "meets_initial_technical_success_criterion"
         if full["Macro F1"] >= .60
