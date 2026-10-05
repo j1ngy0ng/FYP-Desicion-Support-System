@@ -1,0 +1,136 @@
+<mxfile host="app.diagrams.net" agent="Codex">
+  <diagram id="Figure_4_4_Learned_Evidence_Architecture_Portrait" name="Figure 4.4 Learned Evidence">
+    <mxGraphModel dx="1250" dy="1490" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="header" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=3;" value="I. LEARNED EVIDENCE" vertex="1">
+          <mxGeometry height="75" width="820" x="90" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="input" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=2;" value="Validated Decision Context&lt;br&gt;&lt;font style=&quot;font-weight: normal;&quot;&gt;Campaign features and selected intent&lt;/font&gt;" vertex="1">
+          <mxGeometry height="95" width="500" x="250" y="140" as="geometry" />
+        </mxCell>
+        <mxCell id="campaignZone" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacingTop=12;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=3;" value="CAMPAIGNNET ROI BRANCH" vertex="1">
+          <mxGeometry height="650" width="400" x="70" y="285" as="geometry" />
+        </mxCell>
+        <mxCell id="campaignInput" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=2;" value="11-Feature ROI Input" vertex="1">
+          <mxGeometry height="80" width="300" x="120" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="campaignScale" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=2;" value="Frozen Campaign Scaler" vertex="1">
+          <mxGeometry height="80" width="300" x="120" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="campaignNet" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=3;" value="CampaignNet" vertex="1">
+          <mxGeometry height="90" width="300" x="120" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="roiEvidence" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=2;" value="ROI Action Evidence" vertex="1">
+          <mxGeometry height="80" width="300" x="120" y="755" as="geometry" />
+        </mxCell>
+        <mxCell id="sensitivity" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=2;" value="Local Predictive Sensitivity" vertex="1">
+          <mxGeometry height="70" width="300" x="120" y="855" as="geometry" />
+        </mxCell>
+        <mxCell id="actionZone" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=top;spacingTop=12;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=3;" value="ACTIONNET ACTION BRANCH" vertex="1">
+          <mxGeometry height="650" width="400" x="530" y="285" as="geometry" />
+        </mxCell>
+        <mxCell id="actionInput" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=2;" value="13 Features + Intent One-Hot" vertex="1">
+          <mxGeometry height="80" width="300" x="580" y="380" as="geometry" />
+        </mxCell>
+        <mxCell id="actionScale" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=2;" value="Frozen Action Scaler" vertex="1">
+          <mxGeometry height="80" width="300" x="580" y="500" as="geometry" />
+        </mxCell>
+        <mxCell id="actionNet" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=3;" value="ActionNet" vertex="1">
+          <mxGeometry height="90" width="300" x="580" y="620" as="geometry" />
+        </mxCell>
+        <mxCell id="actionEvidence" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=2;" value="Four-Class Action Evidence" vertex="1">
+          <mxGeometry height="80" width="300" x="580" y="755" as="geometry" />
+        </mxCell>
+        <mxCell id="pmV8QubVW5LtHQzErF-2-1" edge="1" parent="1" source="branchStatus" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;fontSize=22;" target="channel" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="branchStatus" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=2;" value="Action-Evidence Status&lt;br&gt;&lt;font style=&quot;font-weight: normal;&quot;&gt;Audited • development • fallback&lt;/font&gt;" vertex="1">
+          <mxGeometry height="70" width="300" x="580" y="855" as="geometry" />
+        </mxCell>
+        <mxCell id="channel" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=2;" value="Training-Derived Campaign-Level Channel Evidence" vertex="1">
+          <mxGeometry height="85" width="650" x="175" y="985" as="geometry" />
+        </mxCell>
+        <mxCell id="package" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=3;" value="Learned Evidence Package&lt;br&gt;&lt;font style=&quot;font-weight: normal;&quot;&gt;ROI evidence • action evidence • channel evidence • sensitivity • status&lt;/font&gt;" vertex="1">
+          <mxGeometry height="105" width="700" x="150" y="1130" as="geometry" />
+        </mxCell>
+        <mxCell id="next" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=2;" value="II. Neuro-Symbolic Decision Logic" vertex="1">
+          <mxGeometry height="75" width="500" x="250" y="1290" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="input" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=22;" target="campaignInput" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="500" y="350" />
+              <mxPoint x="270" y="350" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="input" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=22;" target="actionInput" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="500" y="350" />
+              <mxPoint x="730" y="350" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="campaignInput" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=22;" target="campaignScale" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="campaignScale" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=22;" target="campaignNet" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="campaignNet" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=22;" target="roiEvidence" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="campaignNet" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;dashed=1;dashPattern=8 6;fontSize=22;" target="sensitivity" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="90" y="665" />
+              <mxPoint x="90" y="890.06" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="actionInput" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=22;" target="actionScale" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="actionScale" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=22;" target="actionNet" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="actionNet" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=22;" target="actionEvidence" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="actionNet" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;dashed=1;dashPattern=8 6;fontSize=22;" target="branchStatus" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="910" y="665" />
+              <mxPoint x="910" y="890" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="roiEvidence" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=22;" target="package" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="100" y="795" />
+              <mxPoint x="100" y="1182.53" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="actionEvidence" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=22;" target="package" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="900" y="795" />
+              <mxPoint x="900" y="1182.53" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e13" edge="1" parent="1" source="channel" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=22;" target="package" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e14" edge="1" parent="1" source="package" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=22;" target="next" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

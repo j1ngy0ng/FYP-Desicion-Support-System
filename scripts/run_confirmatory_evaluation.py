@@ -33,16 +33,22 @@ from baseline_evaluation import (
     evaluate_baseline,
     expected_calibration_error,
     fit_centroid_model,
+    intent_only_predict,
     logical_conflict_rate,
     macro_f1_score,
     recommendation_accuracy,
     scenario_fit_rate,
     top2_agreement,
+    weighted_deterministic_predict,
 )
 from system_components.neuro_symbolic_reasoning_layer.candidate_action_generation import (
     rank_actions,
 )
-from system_components.neuro_symbolic_reasoning_layer.engine import RecommendationEngine
+from system_components.neuro_symbolic_reasoning_layer.engine import (
+    MIN_AUTO_CONFIDENCE,
+    MIN_TOP_TWO_MARGIN,
+    RecommendationEngine,
+)
 
 
 VARIANTS = {
@@ -309,6 +315,8 @@ def main() -> None:
     centroid = fit_centroid_model(train_rows)
     channel_attribution = build_channel_attribution(train_rows)
     deterministic = [
+        intent_only_predict(test_rows),
+        weighted_deterministic_predict(test_rows),
         baseline_a_predict(test_rows),
         baseline_b_predict(test_rows, centroid),
         baseline_c_predict(test_rows, centroid, channel_attribution),
@@ -432,6 +440,9 @@ def main() -> None:
         "ece_bins": args.ece_bins,
         "bootstrap_samples": args.bootstrap_samples,
         "calibration_fit_partition": "validation_only",
+        "selective_policy_threshold_partition": "validation_only",
+        "minimum_auto_confidence": MIN_AUTO_CONFIDENCE,
+        "minimum_top_two_margin": MIN_TOP_TWO_MARGIN,
         "temperatures": temperatures,
         "calibration_statuses": calibration_statuses,
         "action_evidence_statuses": action_evidence_statuses,

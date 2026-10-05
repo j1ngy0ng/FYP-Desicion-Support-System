@@ -279,6 +279,93 @@ def baseline_a_predict(rows: List[dict]) -> BaselineResult:
     )
 
 
+def intent_only_predict(rows: List[dict]) -> BaselineResult:
+    """Fixed intent-to-action comparator requested by the supervision review."""
+
+    intent_action = {
+        "Growth": "Increase",
+        "Retention": "Maintain",
+        "Survival": "Reduce",
+    }
+    started = time.perf_counter()
+    predictions, confidences, explanations, top2, latencies = [], [], [], [], []
+    for row in rows:
+        case_started = time.perf_counter()
+        action = intent_action[row["Intent"]]
+        alternatives = [item for item in ACTION_ORDER if item != action]
+        predictions.append(action)
+        confidences.append(1.0)
+        explanations.append(f"Fixed {row['Intent']} intent lookup selected {action}.")
+        top2.append([action, alternatives[0]])
+        latencies.append((time.perf_counter() - case_started) * 1000)
+    return BaselineResult(
+        "Supervisor Baseline - Intent-Only Deterministic",
+        predictions,
+        confidences,
+        explanations,
+        (time.perf_counter() - started) * 1000 / max(1, len(rows)),
+        top2,
+        latencies,
+    )
+
+
+def weighted_deterministic_predict(rows: List[dict]) -> BaselineResult:
+    """Fixed intent, performance and safeguard score without learned parameters."""
+
+    intent_scores = {
+        "Growth": {"Increase": 1.0, "Maintain": .5, "Reduce": 0.0, "Investigate": .15},
+        "Retention": {"Increase": .4, "Maintain": 1.0, "Reduce": 0.0, "Investigate": .15},
+        "Survival": {"Increase": 0.0, "Maintain": .5, "Reduce": 1.0, "Investigate": .2},
+    }
+    started = time.perf_counter()
+    predictions, confidences, explanations, top2, latencies = [], [], [], [], []
+    for row in rows:
+        case_started = time.perf_counter()
+        scores = dict(intent_scores[row["Intent"]])
+        strong = (
+            (row["ROI"] >= HIGH_ROI),
+            (row["conversion_rate"] >= HIGH_CONVERSION_RATE),
+            (row["ctr"] >= HIGH_CTR),
+            (row["Engagement_Score"] >= HIGH_ENGAGEMENT),
+        )
+        weak = (
+            (row["ROI"] < LOW_ROI),
+            (row["conversion_rate"] < LOW_CONVERSION_RATE),
+            (row["ctr"] < LOW_CTR),
+            (row["Engagement_Score"] < LOW_ENGAGEMENT),
+        )
+        scores["Increase"] += sum(strong) * .25
+        scores["Reduce"] += sum(weak) * .25
+        if row["Clicks"] < MIN_DECISION_CLICKS or row["Conversions"] < MIN_DECISION_CONVERSIONS:
+            scores["Investigate"] += .6
+        conflict_count = 0
+        for action in ACTION_ORDER:
+            conflicts = conflict_reasons(row, action)
+            conflict_count += len(conflicts)
+            scores[action] -= .45 * len(conflicts)
+        if conflict_count:
+            scores["Investigate"] += .15
+        probabilities = dict(zip(ACTION_ORDER, softmax([scores[action] for action in ACTION_ORDER])))
+        ranked = rank_actions(probabilities)
+        predictions.append(ranked[0])
+        confidences.append(probabilities[ranked[0]])
+        explanations.append(
+            "Fixed weighted score combined declared intent, performance thresholds, "
+            f"evidence sufficiency and {conflict_count} safeguard conflict(s)."
+        )
+        top2.append(ranked[:2])
+        latencies.append((time.perf_counter() - case_started) * 1000)
+    return BaselineResult(
+        "Supervisor Baseline - Weighted Deterministic",
+        predictions,
+        confidences,
+        explanations,
+        (time.perf_counter() - started) * 1000 / max(1, len(rows)),
+        top2,
+        latencies,
+    )
+
+
 def fit_centroid_model(train_rows: List[dict]) -> Tuple[List[str], Dict[str, List[float]], List[float], List[float]]:
     observed = {row["label"] for row in train_rows}
     labels = [action for action in ACTION_ORDER if action in observed]

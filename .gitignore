@@ -7,6 +7,10 @@ dist/
 *.db
 .codex-report-render/
 .codex_tmp/
+.codex_tmp*
+.tmp_*
+.vscode/
+tmp/
 tools/
 *.tsbuildinfo
 vite.config.js

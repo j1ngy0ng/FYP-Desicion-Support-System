@@ -1,0 +1,70 @@
+<mxfile host="app.diagrams.net" agent="Codex">
+  <diagram id="Figure_4_6_Decision_Support_Output_Portrait" name="Figure 4.6 Decision-Support Output">
+    <mxGraphModel dx="1250" dy="1490" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="header" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=3;" value="III. DECISION-SUPPORT OUTPUT" vertex="1">
+          <mxGeometry height="75" width="820" x="90" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="scores" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=2;" value="Final Action-Score Vector" vertex="1">
+          <mxGeometry height="85" width="500" x="250" y="145" as="geometry" />
+        </mxCell>
+        <mxCell id="calibration" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=3;" value="Confidence Calibration&lt;br&gt;&lt;font style=&quot;font-weight: normal;&quot;&gt;Validation-fitted temperature scaling&lt;/font&gt;" vertex="1">
+          <mxGeometry height="100" width="520" x="240" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="ranking" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=2;" value="Ranked Actions and Model Confidence&lt;br&gt;&lt;font style=&quot;font-weight: normal;&quot;&gt;Canonical action order preserved&lt;/font&gt;" vertex="1">
+          <mxGeometry height="100" width="520" x="240" y="450" as="geometry" />
+        </mxCell>
+        <mxCell id="package" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=3;" value="Recommendation Package" vertex="1">
+          <mxGeometry height="90" width="500" x="250" y="610" as="geometry" />
+        </mxCell>
+        <mxCell id="explanation" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=2;" value="Structured DIAC Explanation&lt;br&gt;&lt;font style=&quot;font-weight: normal;&quot;&gt;Intent reported as metadata&lt;/font&gt;" vertex="1">
+          <mxGeometry height="105" width="350" x="105" y="765" as="geometry" />
+        </mxCell>
+        <mxCell id="trace" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=2;" value="Evidence and Rule Trace&lt;br&gt;&lt;font style=&quot;font-weight: normal;&quot;&gt;Scores • safeguards • status fields&lt;/font&gt;" vertex="1">
+          <mxGeometry height="105" width="350" x="545" y="765" as="geometry" />
+        </mxCell>
+        <mxCell id="display" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=2;" value="React Recommendation View" vertex="1">
+          <mxGeometry height="85" width="500" x="250" y="935" as="geometry" />
+        </mxCell>
+        <mxCell id="review" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=3;" value="Human Review&lt;br&gt;&lt;font style=&quot;font-weight: normal;&quot;&gt;Accept • reject • defer • modify&lt;/font&gt;" vertex="1">
+          <mxGeometry height="100" width="520" x="240" y="1080" as="geometry" />
+        </mxCell>
+        <mxCell id="persistence" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=2;" value="Persisted Recommendation and Audit Record" vertex="1">
+          <mxGeometry height="85" width="520" x="240" y="1230" as="geometry" />
+        </mxCell>
+        <mxCell id="noAuto" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=1;" value="Final decision remains human • No automatic campaign execution" vertex="1">
+          <mxGeometry height="55" width="600" x="200" y="1335" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="scores" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;" target="calibration" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="calibration" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;" target="ranking" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="ranking" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;" target="package" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="package" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;" target="explanation" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="package" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;" target="trace" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="explanation" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;" target="display" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="trace" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;" target="display" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="display" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;" target="review" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="review" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontFamily=Arial;fontSize=23;labelBackgroundColor=#FFFFFF;" target="persistence" value="Decision and feedback">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

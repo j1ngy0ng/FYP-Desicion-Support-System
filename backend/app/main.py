@@ -29,7 +29,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from .database import Base, SessionLocal, engine
-from .engine import DEFAULT_RULES, RecommendationEngine, prepare_frame
+from .engine import DEFAULT_RULES, HARD_RULE_CODES, RecommendationEngine, prepare_frame
 from .models import BusinessRule, Campaign, Evaluation, HumanStudyResponse, Intent, Recommendation, RecommendationRule, User
 
 
@@ -62,6 +62,7 @@ STUDY_CONDITIONS = (
     "structured_calibrated",
     "full_framework",
 )
+DEFAULT_RULE_CONDITIONS = {code: condition for code, _, _, condition, _, _ in DEFAULT_RULES}
 
 
 def password_hash(password: str, salt: bytes | None = None) -> str:
@@ -453,8 +454,13 @@ def rule_json(rule: BusinessRule) -> dict[str, Any]:
     definition = rule_definition(rule)
     return {
         "id": rule.id, "code": rule.code, "name": rule.name, "category": rule.category,
-        "condition": rule_condition(definition) if definition else rule.condition,
+        "condition": (
+            rule_condition(definition)
+            if definition
+            else DEFAULT_RULE_CONDITIONS.get(rule.code, rule.condition)
+        ),
         "definition": definition, "weight": rule.weight, "priority": rule.priority, "active": rule.active,
+        "constraint_type": "Hard" if rule.code in HARD_RULE_CODES else "Soft",
     }
 
 
@@ -654,6 +660,10 @@ def analysis(campaign_id: str, user: CurrentUser, db: Db) -> dict[str, Any]:
         "channel_attribution": result.channel_attribution,
         "calibration_status": result.calibration_status,
         "action_evidence_status": result.action_evidence_status,
+        "decision_status": result.decision_status,
+        "decision_reasons": result.decision_reasons,
+        "feasible_actions": result.feasible_actions,
+        "hard_rejected_actions": result.hard_rejected_actions,
     }
 
 
@@ -668,6 +678,8 @@ def recommendation_json(item: Recommendation) -> dict[str, Any]:
         "evidence": evidence, "ranked_actions": json.loads(item.ranked_actions),
         "calibration_status": evidence.get("calibration_status", "legacy_unknown"),
         "action_evidence_status": evidence.get("action_evidence_status", "legacy_unknown"),
+        "decision_status": evidence.get("decision_status", "legacy_unknown"),
+        "decision_reasons": evidence.get("decision_reasons", []),
         "latency_ms": item.latency_ms, "status": item.decision, "date": item.generated_at.strftime("%d %b %Y"),
     }
 
@@ -690,13 +702,22 @@ def generate(payload: GenerateInput, user: CurrentUser, db: Db) -> dict[str, Any
             "confidence_level": result.confidence_level,
             "calibration_status": result.calibration_status,
             "action_evidence_status": result.action_evidence_status,
+            "decision_status": result.decision_status,
+            "decision_reasons": result.decision_reasons,
+            "feasible_actions": result.feasible_actions,
+            "hard_rejected_actions": result.hard_rejected_actions,
         }),
         ranked_actions=json.dumps(result.ranked_actions), latency_ms=result.latency_ms,
     )
     db.add(record); db.flush()
     for rule_result in result.rule_results:
-        if rule_result["action"] == result.action and rule_result.get("id"):
-            db.add(RecommendationRule(recommendation_id=record.id, rule_id=rule_result["id"], score=rule_result["score"], triggered=rule_result["triggered"], detail=rule_result["detail"]))
+        selected_check = rule_result["action"] == result.action
+        hard_exclusion = rule_result["triggered"] and rule_result.get("constraint_type") == "Hard"
+        if rule_result.get("id") and (selected_check or hard_exclusion):
+            detail = rule_result["detail"]
+            if hard_exclusion:
+                detail = f"Hard exclusion — {rule_result['action']}: {detail}"
+            db.add(RecommendationRule(recommendation_id=record.id, rule_id=rule_result["id"], score=rule_result["score"], triggered=rule_result["triggered"], detail=detail))
     db.commit()
     return recommendation_json(record)
 
@@ -1315,7 +1336,10 @@ def evaluation_summary(_: CurrentUser, db: Db) -> dict[str, Any]:
         metrics = result["metrics"]
         intervals = result["confidence_intervals_95"]
         proposed_name = "Proposed System - Full Framework"
-        baseline_names = [name for name in metrics if name.startswith("Baseline")]
+        baseline_names = [
+            name for name in metrics
+            if name.startswith(("Baseline", "Supervisor Baseline"))
+        ]
         ablation_names = [name for name in metrics if name.startswith("Proposed Ablation")]
         runs, blocks = experiment_blocks(metrics, study_rows)
         return {

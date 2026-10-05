@@ -6,6 +6,7 @@ import pandas as pd
 import numpy as np
 
 from backend.app.engine import DEFAULT_RULES, RecommendationEngine, case_features, prepare_frame
+from system_components.neuro_symbolic_reasoning_layer.engine import selective_decision_status
 from system_components.neuro_symbolic_reasoning_layer.engine import RecommendationEngine as ComponentEngine
 
 
@@ -29,6 +30,49 @@ class RecommendationEngineTests(unittest.TestCase):
         self.assertEqual(set(result.explanation), {"driver", "implication", "action", "caveat", "intent"})
         self.assertTrue(result.attribution)
         self.assertEqual(result.action_evidence_status, "audited_actionnet")
+        self.assertIn(result.decision_status, {
+            "RECOMMEND", "CHECK ADVISED", "HUMAN REVIEW REQUIRED", "NO SAFE RECOMMENDATION",
+        })
+
+    def test_selective_policy_exposes_all_four_states(self):
+        ranked = [
+            {"action": "Maintain", "score": .36},
+            {"action": "Increase", "score": .33},
+        ]
+        self.assertEqual(
+            selective_decision_status("Maintain", .36, ranked, [], 1000)[0],
+            "RECOMMEND",
+        )
+        low_confidence = [
+            {"action": "Maintain", "score": .34},
+            {"action": "Increase", "score": .20},
+        ]
+        self.assertEqual(
+            selective_decision_status("Maintain", .34, low_confidence, [], 1000)[0],
+            "CHECK ADVISED",
+        )
+        low_margin = [
+            {"action": "Maintain", "score": .36},
+            {"action": "Increase", "score": .35},
+        ]
+        self.assertEqual(
+            selective_decision_status("Maintain", .36, low_margin, [], 1000)[0],
+            "CHECK ADVISED",
+        )
+        self.assertEqual(
+            selective_decision_status("Investigate", .7, ranked, [], 1000)[0],
+            "HUMAN REVIEW REQUIRED",
+        )
+        self.assertEqual(
+            selective_decision_status(
+                "Maintain", .8, ranked, [], 1000, no_safe_action=True
+            )[0],
+            "NO SAFE RECOMMENDATION",
+        )
+        self.assertEqual(
+            selective_decision_status("Increase", .8, ranked, [], None)[0],
+            "HUMAN REVIEW REQUIRED",
+        )
 
     def test_backend_uses_architecture_component(self):
         self.assertIs(RecommendationEngine, ComponentEngine)
@@ -38,6 +82,15 @@ class RecommendationEngineTests(unittest.TestCase):
         result = self.engine.recommend(case, self.rules, "Survival")
         safeguard = [item for item in result.rule_results if item["code"] == "survival_safeguard"]
         self.assertTrue(safeguard and safeguard[0]["triggered"])
+        self.assertIn("Increase", result.hard_rejected_actions)
+
+    def test_conflicting_evidence_reaches_no_safe_recommendation(self):
+        case = self.engine.test.iloc[0].to_dict()
+        case.update({"ROI": 3, "Clicks": 1000, "Conversions": 60, "Impressions": 100000, "Engagement_Score": 2})
+        result = self.engine.recommend(case, self.rules, "Retention")
+        self.assertEqual(result.decision_status, "NO SAFE RECOMMENDATION")
+        self.assertEqual(set(result.hard_rejected_actions), {"Increase", "Maintain", "Reduce"})
+        self.assertEqual(result.action, "Investigate")
 
     def test_chronological_holdout_is_used(self):
         self.assertLessEqual(self.engine.train.Date.max(), self.engine.validation.Date.min())

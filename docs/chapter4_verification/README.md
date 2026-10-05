@@ -1,10 +1,15 @@
-# Chapter 4 verification manifest — 14 August 2026
+# Chapter 4 verification manifest — final post-exam source freeze
+
+The current technical source is frozen by the annotated tag
+`fyp-code-freeze-v4`. The earlier `post_exam_supervision_candidate_v4_20261002.md`
+is retained only as a historical checkpoint; its open technical gates were
+subsequently resolved.
 
 This manifest supports the Chapter 4 as-built statements. Performance results remain Chapter 5 evidence.
 
 ## Source-freeze boundary
 
-- The implementation is frozen by the annotated Git tag `fyp-code-freeze-v1` before the confirmatory rerun.
+- The implementation is frozen by the annotated Git tag `fyp-code-freeze-v4` before the final confirmatory rerun.
 - The exact source commit and tag are recorded by `outputs/confirmatory_evaluation/run_metadata.json` when the frozen runner executes.
 - Temporary document-rendering material and superseded figure variants were moved to `C:\Users\user\Desktop\FYP Repository Archive\strict-review-20260814` rather than committed.
 
@@ -30,17 +35,19 @@ Chronological partition membership is:
 - Held-out test cases are excluded from fitting, calibration, rule revision and explanation-template revision.
 - An omitted budget remains `null`; the budget-feasibility rule is skipped without evidence. Explicit zero and positive budgets are evaluated as real values.
 - `action_evidence_status` records `audited_actionnet`, `development_actionnet` or `campaignnet_only_fallback`. The fallback also adds a user-visible caveat.
-- The 14 rule weights and priorities are predefined and frozen; training and validation do not learn them.
+- The 14 rule weights and priorities are predefined and frozen; six hard safeguards exclude infeasible actions and eight soft safeguards adjust action scores. Training and validation do not learn them.
+- The recommendation unit remains one action: Increase, Maintain, Reduce or Investigate. Channel evidence supports the action but is not itself the output.
+- Each request supplies exactly one primary intent: Growth, Retention or Survival. Mixed intent is outside the study scope and is rejected by request validation for manual clarification.
 - Human-study endpoints are locked unless `ETHICS_APPROVAL_REFERENCE` contains a formal TAR UMT approval or exemption reference.
 
 ## Verification commands
 
 ```text
-.venv\Scripts\python -m unittest backend.tests.test_engine backend.tests.test_api tests.test_three_layer_data tests.test_human_provided_dataset tests.test_baseline_evaluation
+.venv\Scripts\python -m unittest backend.tests.test_engine backend.tests.test_api tests.test_baseline_evaluation tests.test_final_research_evidence tests.test_human_provided_dataset tests.test_synthetic_annotations tests.test_three_layer_data
 pnpm build
 ```
 
-The verified suite contains 36 tests after adding the ethics, budget and ActionNet trace cases. The frontend command performs TypeScript checking and a Vite production build. Docker is not installed in the captured Windows environment, so no executed MySQL 8.4 integration run is claimed; API verification uses a freshly recreated SQLite prototype through the same SQLAlchemy models.
+The verified suite contains 49 tests, including hard/soft safeguards, a reachable no-safe outcome, selective-decision states, set-based intervention correctness, explanation evidence signatures and rejection of mixed-intent requests. The frontend command performs TypeScript checking and a Vite production build. Docker is not installed in the captured Windows environment, so no executed MySQL 8.4 integration run is claimed; API verification uses a freshly recreated SQLite prototype through the same SQLAlchemy models.
 
 ## Editable figures
 

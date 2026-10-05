@@ -9,19 +9,27 @@ DEFAULT_RULES = (
     ("low_conversion", "Low conversion protection", "Performance", "Penalise Increase when conversion rate is below 8%", .80, 2),
     ("low_ctr", "Low CTR protection", "Performance", "Penalise Increase when CTR is below 3%", .75, 2),
     ("low_engagement", "Low engagement protection", "Performance", "Penalise Increase when engagement is below 5", .70, 2),
-    ("evidence_sufficiency", "Evidence sufficiency", "Evidence", "Penalise decisive action below 500 clicks or 50 conversions", .85, 3),
+    ("evidence_sufficiency", "Evidence sufficiency", "Evidence", "Exclude Increase and Reduce below 500 clicks or 50 conversions", .85, 3),
     ("strong_signal", "Strong signal protection", "Performance", "Penalise Reduce when at least two performance signals are strong", .85, 2),
     ("exceptional_performance", "Exceptional performance", "Performance", "Penalise Maintain when all core signals are exceptional", .70, 1),
-    ("growth_safeguard", "Growth intent safeguard", "Intent", "Penalise Reduce under Growth intent", .90, 3),
-    ("survival_safeguard", "Survival intent safeguard", "Intent", "Penalise Increase under Survival intent", .90, 3),
-    ("retention_safeguard", "Retention intent safeguard", "Intent", "Penalise Reduce under Retention intent", .75, 2),
+    ("growth_safeguard", "Growth intent safeguard", "Intent", "Exclude Reduce under Growth intent", .90, 3),
+    ("survival_safeguard", "Survival intent safeguard", "Intent", "Exclude Increase under Survival intent", .90, 3),
+    ("retention_safeguard", "Retention intent safeguard", "Intent", "Exclude Reduce under Retention intent", .75, 2),
     ("high_cpa", "Acquisition cost protection", "Cost", "Penalise Increase when acquisition cost exceeds revenue per conversion", .80, 2),
     ("channel_saturation", "Channel saturation", "Channel", "Penalise Increase when exposure is high but CTR is weak", .70, 2),
-    ("budget_feasibility", "Budget feasibility", "Budget", "Penalise Increase when budget cannot support 50 additional acquisitions", .80, 2),
-    ("conflicting_evidence", "Conflicting evidence", "Risk", "Favour Investigate when strong and weak signals conflict", .75, 2),
+    ("budget_feasibility", "Budget feasibility", "Budget", "Exclude Increase when the supplied budget cannot support 50 additional acquisitions", .80, 2),
+    ("conflicting_evidence", "Conflicting evidence", "Risk", "Exclude executable actions and require manual review when strong and weak signals conflict", .75, 2),
 )
 
 INTENT_RULES = {"growth_safeguard", "retention_safeguard", "survival_safeguard"}
+HARD_RULE_CODES = frozenset({
+    "evidence_sufficiency",
+    "growth_safeguard",
+    "survival_safeguard",
+    "retention_safeguard",
+    "budget_feasibility",
+    "conflicting_evidence",
+})
 COMPARISONS = {"lt": operator.lt, "lte": operator.le, "gt": operator.gt, "gte": operator.ge, "eq": operator.eq}
 
 
@@ -67,10 +75,14 @@ def evaluate_rule(code: str, action: str, features: dict[str, float], intent: st
 
 def apply_rules(scores: dict[str, float], rules: list[dict[str, Any]], features: dict[str, float], intent: str, budget: float | None, penalty: float, investigate_boost: float, without_intent: bool = False) -> list[dict[str, Any]]:
     results = []
+    hard_rejected = set()
     for rule in rules:
         definition = rule.get("definition") or {}
         if not rule.get("active", True) or without_intent and (rule["code"] in INTENT_RULES or definition.get("intent")):
             continue
+        constraint_type = rule.get("constraint_type") or (
+            "Hard" if rule["code"] in HARD_RULE_CODES else "Soft"
+        )
         for action in ACTIONS:
             result = evaluate_rule(rule["code"], action, features, intent, budget, definition or None)
             if result is None:
@@ -78,8 +90,29 @@ def apply_rules(scores: dict[str, float], rules: list[dict[str, Any]], features:
             satisfaction, detail = result
             weight = float(rule["weight"])
             if not satisfaction:
-                scores[action] -= weight * max(1, int(rule.get("priority", 1))) * penalty
-                if action != "Investigate":
-                    scores["Investigate"] += weight * investigate_boost
-            results.append({"id": rule.get("id"), "code": rule["code"], "name": rule["name"], "action": action, "score": satisfaction, "triggered": not bool(satisfaction), "detail": detail})
+                if constraint_type == "Hard":
+                    hard_rejected.add(action)
+                else:
+                    scores[action] -= weight * max(1, int(rule.get("priority", 1))) * penalty
+                    if action != "Investigate":
+                        scores["Investigate"] += weight * investigate_boost
+            results.append({
+                "id": rule.get("id"), "code": rule["code"], "name": rule["name"],
+                "action": action, "score": satisfaction, "triggered": not bool(satisfaction),
+                "constraint_type": constraint_type, "detail": detail,
+            })
+    for action in hard_rejected:
+        scores[action] = -1e9
     return results
+
+
+def hard_rejected_actions(results: list[dict[str, Any]]) -> list[str]:
+    return [
+        action for action in ACTIONS
+        if any(
+            item["action"] == action
+            and item["triggered"]
+            and item.get("constraint_type") == "Hard"
+            for item in results
+        )
+    ]

@@ -1,4 +1,6 @@
-# Weighted Soft-Rule Reasoning
+# Hard-Constraint and Weighted Soft-Rule Reasoning
 
-Evaluates candidate actions against weighted business rules, applies penalties for
-violations, and contributes symbolic scores to the final ranking.
+Evaluates candidate actions against the frozen safeguard catalogue. Six hard
+safeguards exclude infeasible candidates before final ranking; eight soft
+safeguards apply weighted score adjustments. The historical directory name is
+retained to avoid breaking imports.

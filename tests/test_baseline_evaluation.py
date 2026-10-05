@@ -6,9 +6,12 @@ from baseline_evaluation import (
     conflict_reasons,
     filter_conflicting_actions,
     fit_centroid_model,
+    intent_only_predict,
     rank_actions,
     row_has_conflict,
+    weighted_deterministic_predict,
 )
+from scripts.generate_supervision_evidence import set_based_intervention_correct
 
 
 def sample_row(**overrides):
@@ -26,6 +29,44 @@ def sample_row(**overrides):
 
 
 class ConflictRuleTests(unittest.TestCase):
+    def test_set_based_intervention_correctness_includes_valid_no_safe_outcome(self):
+        self.assertTrue(set_based_intervention_correct(
+            "Increase", "Maintain", "HUMAN REVIEW REQUIRED",
+            ["Maintain"], ["Investigate"], ["Increase", "Reduce"],
+        ))
+        self.assertTrue(set_based_intervention_correct(
+            "Reduce", "Investigate", "NO SAFE RECOMMENDATION",
+            ["Investigate"], [], ["Increase", "Maintain", "Reduce"],
+        ))
+        self.assertFalse(set_based_intervention_correct(
+            "Reduce", "Investigate", "NO SAFE RECOMMENDATION",
+            ["Investigate"], [], ["Increase", "Reduce"],
+        ))
+
+    def test_intent_only_baseline_uses_the_locked_intent_lookup(self):
+        rows = [
+            sample_row(Intent="Growth"),
+            sample_row(Intent="Retention"),
+            sample_row(Intent="Survival"),
+        ]
+        result = intent_only_predict(rows)
+        self.assertEqual(result.predictions, ["Increase", "Maintain", "Reduce"])
+
+    def test_weighted_deterministic_baseline_is_fixed_and_rule_aware(self):
+        growth = sample_row(
+            Intent="Growth", ROI=4.0, conversion_rate=.25, ctr=.12,
+            Engagement_Score=24.0,
+        )
+        survival = sample_row(
+            Intent="Survival", ROI=-1.0, conversion_rate=.02, ctr=.01,
+            Engagement_Score=2.0,
+        )
+        first = weighted_deterministic_predict([growth, survival])
+        second = weighted_deterministic_predict([growth, survival])
+        self.assertEqual(first.predictions, ["Increase", "Reduce"])
+        self.assertEqual(first.predictions, second.predictions)
+        self.assertEqual(first.confidences, second.confidences)
+
     def test_every_baseline_uses_the_canonical_action_index_order(self):
         self.assertEqual(ACTION_ORDER, ("Increase", "Maintain", "Reduce", "Investigate"))
         rows = []

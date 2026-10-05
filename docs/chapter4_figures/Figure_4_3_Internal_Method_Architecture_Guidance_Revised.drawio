@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Codex">
   <diagram id="Figure_4_3_Internal_Method_Architecture_Guidance_Revised" name="Figure 4 3 Internal Method Architecture Guidance Revised">
-    <mxGraphModel dx="2289" dy="1324" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1400" math="0" shadow="0">
+    <mxGraphModel dx="2091" dy="1703" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1400" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -16,7 +16,7 @@
         <mxCell id="action" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#E8F2FC;strokeColor=#2F75B5;strokeWidth=2;" value="&lt;b&gt;ActionNet action branch&lt;/b&gt;&lt;br&gt;13 campaign features + three-element intent one-hot input → four-class evidence" vertex="1">
           <mxGeometry height="210" width="410" x="605" y="380" as="geometry" />
         </mxCell>
-        <mxCell id="channel" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#F5F7FA;strokeColor=#738291;strokeWidth=2;" value="&lt;b&gt;Training-derived channel evidence&lt;/b&gt;&lt;br&gt;Neutral 0.5 for an unseen channel" vertex="1">
+        <mxCell id="channel" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#F5F7FA;strokeColor=#738291;strokeWidth=2;" value="&lt;b&gt;Training-derived campaign-level &lt;br&gt;channel evidence&lt;/b&gt;&lt;br&gt;Neutral 0.5 for an unseen channel" vertex="1">
           <mxGeometry height="70" width="435" x="350" y="630" as="geometry" />
         </mxCell>
         <mxCell id="candidate" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#F2ECFF;strokeColor=#7551B2;strokeWidth=2;" value="&lt;b&gt;Bounded action set&lt;/b&gt;&lt;br&gt;Increase | Maintain | Reduce | Investigate" vertex="1">
@@ -25,7 +25,7 @@
         <mxCell id="rules" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#FFF1DE;strokeColor=#D97706;strokeWidth=2;" value="&lt;b&gt;Frozen weighted soft rules&lt;/b&gt;&lt;br&gt;14 predefined safeguards; weights and priorities are not learned" vertex="1">
           <mxGeometry height="160" width="500" x="1820" y="180" as="geometry" />
         </mxCell>
-        <mxCell id="construction" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#F2ECFF;strokeColor=#7551B2;strokeWidth=2;" value="&lt;b&gt;Implemented score construction&lt;/b&gt;&lt;br&gt;0.25 ROI evidence + 0.75 ActionNet evidence; smoothing; channel adjustment; weighted rule penalties" vertex="1">
+        <mxCell id="construction" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#F2ECFF;strokeColor=#7551B2;strokeWidth=2;" value="&lt;b&gt;Specified score construction&lt;/b&gt;&lt;br&gt;0.25 ROI evidence + 0.75 ActionNet evidence; smoothing; channel adjustment; weighted rule penalties" vertex="1">
           <mxGeometry height="195" width="720" x="1080" y="470" as="geometry" />
         </mxCell>
         <mxCell id="boost" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#FFF1DE;strokeColor=#D97706;strokeWidth=2;" value="&lt;b&gt;Distinct Investigate fallback boost&lt;/b&gt;&lt;br&gt;Each violated non-Investigate action adds a smaller weighted contribution to Investigate" vertex="1">
@@ -46,7 +46,7 @@
         <mxCell id="explain" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#E9F6EC;strokeColor=#3D8B5A;strokeWidth=2;" value="&lt;b&gt;Structured explanation&lt;/b&gt;&lt;br&gt;Driver, Implication, Action and Caveat; Intent is contextual metadata" vertex="1">
           <mxGeometry height="190" width="570" x="1150" y="930" as="geometry" />
         </mxCell>
-        <mxCell id="persist" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#E9F6EC;strokeColor=#3D8B5A;strokeWidth=2;" value="&lt;b&gt;Persisted evidence and human review&lt;/b&gt;&lt;br&gt;Scores, rule traces, Training-Derived Channel Evidence and decision feedback" vertex="1">
+        <mxCell id="persist" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=21;fillColor=#E9F6EC;strokeColor=#3D8B5A;strokeWidth=2;" value="&lt;b&gt;Persisted evidence and human review&lt;/b&gt;&lt;br&gt;Scores, rule traces, Training-Derived Campaign-Level Channel Evidence and decision feedback" vertex="1">
           <mxGeometry height="190" width="520" x="1810" y="930" as="geometry" />
         </mxCell>
         <mxCell id="e1" edge="1" parent="1" source="inputs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#2F75B5;fontFamily=Arial;fontSize=21;labelBackgroundColor=#FFFFFF;" target="campaign" value="11-feature ROI input">

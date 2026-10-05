@@ -136,7 +136,8 @@ The Evaluation screen now provides an explicit R001-R006 run register:
 - R002 reports the frozen baseline and proposed-system technical comparison.
 - R003 compares calibrated and uncalibrated conditions and gates appropriate-
   reliance claims on participant responses.
-- R004 compares no-logic, post-hoc filtering and weighted soft-rule reasoning.
+- R004 compares no-logic, post-hoc filtering and the proposed combination of
+  hard feasibility constraints with weighted soft-rule reasoning.
 - R005 compares global, intent-conditioned and full-framework policies.
 - R006 compares a terse feature list, a structured Driver-Implication-Action
   explanation and the same explanation with a confidence caveat.

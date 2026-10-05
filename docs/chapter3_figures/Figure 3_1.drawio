@@ -1,0 +1,52 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="6Zu_GxL2b4WN95bchY4b">
+    <mxGraphModel dx="1144" dy="662" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="GOCo3Yav5UPEDYK1nt1X-11" edge="1" parent="1" source="GOCo3Yav5UPEDYK1nt1X-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=16;" target="GOCo3Yav5UPEDYK1nt1X-7">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="GOCo3Yav5UPEDYK1nt1X-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;" value="Literature review" vertex="1">
+          <mxGeometry height="50" width="140" x="250" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="GOCo3Yav5UPEDYK1nt1X-12" edge="1" parent="1" source="GOCo3Yav5UPEDYK1nt1X-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=16;" target="GOCo3Yav5UPEDYK1nt1X-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="GOCo3Yav5UPEDYK1nt1X-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;" value="Baseline comparison" vertex="1">
+          <mxGeometry height="50" width="140" x="250" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="GOCo3Yav5UPEDYK1nt1X-14" edge="1" parent="1" source="GOCo3Yav5UPEDYK1nt1X-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=16;" target="GOCo3Yav5UPEDYK1nt1X-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="GOCo3Yav5UPEDYK1nt1X-3" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;" value="Ablation experiments" vertex="1">
+          <mxGeometry height="50" width="140" x="420" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="GOCo3Yav5UPEDYK1nt1X-4" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;" value="System development" vertex="1">
+          <mxGeometry height="50" width="140" x="760" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="GOCo3Yav5UPEDYK1nt1X-15" edge="1" parent="1" source="GOCo3Yav5UPEDYK1nt1X-6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=16;" target="GOCo3Yav5UPEDYK1nt1X-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="GOCo3Yav5UPEDYK1nt1X-6" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;" value="Benchmark dataset construction" vertex="1">
+          <mxGeometry height="50" width="140" x="590" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="GOCo3Yav5UPEDYK1nt1X-13" edge="1" parent="1" source="GOCo3Yav5UPEDYK1nt1X-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=16;" target="GOCo3Yav5UPEDYK1nt1X-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="GOCo3Yav5UPEDYK1nt1X-7" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;" value="Research gap translation" vertex="1">
+          <mxGeometry height="50" width="140" x="420" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="GOCo3Yav5UPEDYK1nt1X-16" edge="1" parent="1" source="GOCo3Yav5UPEDYK1nt1X-8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=16;" target="GOCo3Yav5UPEDYK1nt1X-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="GOCo3Yav5UPEDYK1nt1X-8" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;" value="Human evaluation" vertex="1">
+          <mxGeometry height="50" width="140" x="590" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="GOCo3Yav5UPEDYK1nt1X-9" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontSize=16;" value="Result analysis" vertex="1">
+          <mxGeometry height="50" width="140" x="760" y="310" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

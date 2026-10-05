@@ -1,0 +1,94 @@
+<mxfile host="app.diagrams.net" agent="Codex">
+  <diagram id="Figure_4_1_Overall_Architecture_Portrait" name="Figure 4.1 Portrait">
+    <mxGraphModel dx="2289" dy="1324" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="systemBoundary" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;strokeWidth=2;fontFamily=Arial;fontSize=22;fontStyle=1;align=left;verticalAlign=top;spacingTop=14;spacingLeft=18;" value="PROPOSED LOCAL SYSTEM" vertex="1">
+          <mxGeometry height="740" width="820" x="90" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="user" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=2;" value="SME Manager / Administrator" vertex="1">
+          <mxGeometry height="100" width="430" x="200" y="60" as="geometry" />
+        </mxCell>
+        <mxCell id="react" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=2;" value="React Web Interface" vertex="1">
+          <mxGeometry height="95" width="390" x="220" y="275" as="geometry" />
+        </mxCell>
+        <mxCell id="fastapi" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=2;" value="FastAPI Service Layer" vertex="1">
+          <mxGeometry height="95" width="390" x="220" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="engine" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=3;" value="Neuro-Symbolic Recommendation Engine" vertex="1">
+          <mxGeometry height="115" width="390" x="220" y="590" as="geometry" />
+        </mxCell>
+        <mxCell id="package" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=2;" value="Recommendation Package" vertex="1">
+          <mxGeometry height="95" width="390" x="220" y="770" as="geometry" />
+        </mxCell>
+        <mxCell id="mysql" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=2;" value="MySQL Operational Store" vertex="1">
+          <mxGeometry height="105" width="230" x="660" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="research" parent="1" style="shape=folder;tabWidth=70;tabHeight=16;tabPosition=left;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacingTop=16;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=2;" value="Versioned Research Artefacts" vertex="1">
+          <mxGeometry height="105" width="230" x="660" y="705" as="geometry" />
+        </mxCell>
+        <mxCell id="review" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=22;fontStyle=1;strokeWidth=2;" value="Human Review" vertex="1">
+          <mxGeometry height="100" width="430" x="200" y="1020" as="geometry" />
+        </mxCell>
+        <mxCell id="humanBoundary" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fontFamily=Arial;fontSize=22;fontStyle=1;align=center;verticalAlign=middle;" value="HUMAN-DECISION BOUNDARY" vertex="1">
+          <mxGeometry height="30" width="365" x="240" y="970" as="geometry" />
+        </mxCell>
+        <mxCell id="noAuto" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;strokeWidth=1;fontFamily=Arial;fontSize=22;fontStyle=1;align=center;verticalAlign=middle;" value="Decision support only • No automatic campaign execution" vertex="1">
+          <mxGeometry height="60" width="500" x="165" y="1130" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="user" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontFamily=Arial;fontSize=22;labelBackgroundColor=#FFFFFF;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="react" value="Request">
+          <mxGeometry relative="1" x="-0.4783" y="-55" as="geometry">
+            <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="415" y="180" />
+              <mxPoint x="415" y="180" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="react" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=block;startFill=1;endArrow=block;endFill=1;strokeWidth=2;fontFamily=Arial;fontSize=22;labelBackgroundColor=#FFFFFF;" target="fastapi" value="REST / JSON">
+          <mxGeometry relative="1" y="-95" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="fastapi" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=block;startFill=1;endArrow=block;endFill=1;strokeWidth=2;fontFamily=Arial;fontSize=22;labelBackgroundColor=#FFFFFF;" target="engine" value="Validated case">
+          <mxGeometry relative="1" x="0.0769" y="-85" as="geometry">
+            <mxPoint y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="engine" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontFamily=Arial;fontSize=22;labelBackgroundColor=#FFFFFF;" target="package" value="Recommendation">
+          <mxGeometry relative="1" x="0.0769" y="-105" as="geometry">
+            <mxPoint y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="package" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontFamily=Arial;fontSize=22;labelBackgroundColor=#FFFFFF;" target="review" value="Review">
+          <mxGeometry relative="1" x="-0.2903" y="-65" as="geometry">
+            <mxPoint y="-1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="fastapi" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;startArrow=block;startFill=1;endArrow=block;endFill=1;strokeWidth=2;fontFamily=Arial;fontSize=22;labelBackgroundColor=#FFFFFF;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" target="mysql" value="Read / write">
+          <mxGeometry relative="1" x="0.3226" y="35" as="geometry">
+            <mxPoint y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="research" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;dashed=1;dashPattern=8 6;fontFamily=Arial;fontSize=22;labelBackgroundColor=#FFFFFF;" target="engine" value="Load artefacts">
+          <mxGeometry relative="1" x="-0.3437" y="55" as="geometry">
+            <mxPoint y="1" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="research" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;strokeColor=#D97706;dashed=1;dashPattern=8 6;fontFamily=Arial;fontSize=16;labelBackgroundColor=#FFFFFF;" target="mysql" value="125-case operational copy">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="review" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;dashed=1;dashPattern=8 6;fontFamily=Arial;fontSize=22;labelBackgroundColor=#FFFFFF;exitX=0;exitY=0.5;entryX=0;entryY=0.5;" target="react" value="Decision / feedback">
+          <mxGeometry relative="1" x="-0.5231" as="geometry">
+            <mxPoint y="-1" as="offset" />
+            <Array as="points">
+              <mxPoint x="145" y="1060" />
+              <mxPoint x="145" y="322.6" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

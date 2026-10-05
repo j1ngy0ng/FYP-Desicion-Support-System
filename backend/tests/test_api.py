@@ -43,6 +43,10 @@ class ApiTests(unittest.TestCase):
         self.assertIn(body["action"], {"Increase", "Maintain", "Reduce", "Investigate"})
         self.assertEqual(body["action_evidence_status"], "audited_actionnet")
         self.assertEqual(body["evidence"]["action_evidence_status"], "audited_actionnet")
+        self.assertIn(body["decision_status"], {
+            "RECOMMEND", "CHECK ADVISED", "HUMAN REVIEW REQUIRED",
+        })
+        self.assertEqual(body["decision_status"], body["evidence"]["decision_status"])
         details = self.client.get(
             f"/api/recommendations/{body['numeric_id']}", headers=self.headers
         )
@@ -204,6 +208,20 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 422)
         self.assertIn("Unsupported channel", response.text)
 
+    def test_campaign_rejects_mixed_intent(self):
+        response = self.client.post(
+            "/api/campaigns",
+            headers=self.headers,
+            json={
+                "name": "Mixed Intent Campaign",
+                "campaign_type": "Email",
+                "intent": "Growth, Retention",
+                "channels": "Email",
+            },
+        )
+        self.assertEqual(response.status_code, 422)
+        self.assertIn("Input should be", response.text)
+
     def test_evaluation_contains_full_framework_and_ablations(self):
         response = self.client.get("/api/evaluation/summary", headers=self.headers)
         self.assertEqual(response.status_code, 200)
@@ -221,7 +239,11 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(body["target_records"], 125)
         self.assertEqual(body["human_provided_development_records"], 55555)
         self.assertEqual(body["development_annotation_status"], "audited_human_benchmark")
-        self.assertEqual(len(body["baselines"]), 4)
+        self.assertEqual(len(body["baselines"]), 6)
+        self.assertTrue({
+            "Supervisor Baseline - Intent-Only Deterministic",
+            "Supervisor Baseline - Weighted Deterministic",
+        }.issubset({row["Baseline"] for row in body["baselines"]}))
         self.assertIn("Macro F1", body["proposed"])
         self.assertEqual(body["calibration_status"], "calibrated")
         self.assertEqual([run["id"] for run in body["runs"]], [

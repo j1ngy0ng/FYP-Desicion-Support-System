@@ -1,0 +1,101 @@
+<mxfile host="app.diagrams.net" agent="Codex">
+  <diagram id="Figure_4_5_Neuro_Symbolic_Decision_Logic_Portrait" name="Figure 4.5 Neuro-Symbolic Decision Logic">
+    <mxGraphModel dx="2250" dy="1490" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="header" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=3;" value="II. NEURO-SYMBOLIC DECISION LOGIC" vertex="1">
+          <mxGeometry height="75" width="820" x="90" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="evidence" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=2;" value="Learned Evidence Package" vertex="1">
+          <mxGeometry height="85" width="500" x="250" y="145" as="geometry" />
+        </mxCell>
+        <mxCell id="context" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=2;" value="Decision Context&lt;br&gt;&lt;font style=&quot;font-weight: normal;&quot;&gt;Metrics • intent • risk • active safeguards&lt;/font&gt;" vertex="1">
+          <mxGeometry height="90" width="250" x="720" y="275" as="geometry" />
+        </mxCell>
+        <mxCell id="actions" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;strokeWidth=1;" value="Canonical action order&lt;br&gt;Increase • Maintain • Reduce • Investigate" vertex="1">
+          <mxGeometry height="70" width="500" x="-70" y="285" as="geometry" />
+        </mxCell>
+        <mxCell id="fusion" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=2;" value="Evidence Fusion&lt;br&gt;&lt;font style=&quot;font-weight: normal;&quot;&gt;0.25 CampaignNet + 0.75 ActionNet&lt;/font&gt;" vertex="1">
+          <mxGeometry height="100" width="520" x="240" y="405" as="geometry" />
+        </mxCell>
+        <mxCell id="smoothing" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=2;" value="Evidence Smoothing and Channel Adjustment" vertex="1">
+          <mxGeometry height="85" width="520" x="240" y="555" as="geometry" />
+        </mxCell>
+        <mxCell id="ruleEvaluation" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=3;" value="Binary Safeguard Evaluation&lt;br&gt;&lt;font style=&quot;font-weight: normal;&quot;&gt;14 predefined and frozen safeguards&lt;/font&gt;" vertex="1">
+          <mxGeometry height="105" width="520" x="240" y="690" as="geometry" />
+        </mxCell>
+        <mxCell id="penalty" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=2;" value="Weighted Violation Penalty" vertex="1">
+          <mxGeometry height="85" width="330" x="120" y="850" as="geometry" />
+        </mxCell>
+        <mxCell id="investigate" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=2;" value="Investigate Fallback Boost" vertex="1">
+          <mxGeometry height="85" width="330" x="550" y="850" as="geometry" />
+        </mxCell>
+        <mxCell id="merge" parent="1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=2;" value="+" vertex="1">
+          <mxGeometry height="55" width="55" x="472.5" y="975" as="geometry" />
+        </mxCell>
+        <mxCell id="intentRisk" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=2;" value="Intent and Risk Adjustment" vertex="1">
+          <mxGeometry height="90" width="520" x="240" y="1065" as="geometry" />
+        </mxCell>
+        <mxCell id="scores" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=3;" value="Final Action-Score Vector" vertex="1">
+          <mxGeometry height="90" width="500" x="250" y="1200" as="geometry" />
+        </mxCell>
+        <mxCell id="next" parent="1" style="rounded=1;arcSize=8;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;fontFamily=Arial;fontSize=23;fontStyle=1;strokeWidth=2;" value="III. Decision-Support Output" vertex="1">
+          <mxGeometry height="65" width="500" x="250" y="1320" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="evidence" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;" target="fusion" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="actions" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;dashed=1;dashPattern=8 6;fontSize=23;" target="fusion" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="180.08" y="455" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="fusion" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;" target="smoothing" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="smoothing" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;" target="ruleEvaluation" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="context" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;dashed=1;dashPattern=8 6;fontSize=23;" target="ruleEvaluation" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="845" y="742.54" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="ruleEvaluation" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;" target="penalty" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="ruleEvaluation" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;" target="investigate" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="penalty" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;" target="merge" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="investigate" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;" target="merge" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="merge" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;" target="intentRisk" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="context" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;dashed=1;dashPattern=8 6;fontSize=23;" target="intentRisk" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1000.08" y="320.08" />
+              <mxPoint x="1000.08" y="1110.08" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="intentRisk" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;" target="scores" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" edge="1" parent="1" source="scores" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;strokeWidth=2;fontSize=23;" target="next" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

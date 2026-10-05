@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Codex">
   <diagram id="Figure_4_5_Implemented_Model_and_Service_Class_Diagram_Rebuilt" name="Figure 4 5 Implemented Model and Service Class Diagram Rebuilt">
-    <mxGraphModel dx="2060" dy="1192" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1400" math="0" shadow="0">
+    <mxGraphModel dx="1464" dy="1228" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2400" pageHeight="1400" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -37,7 +37,7 @@
         <mxCell id="sa" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=22;fillColor=#E8F2FC;strokeColor=#2F75B5;strokeWidth=2;" value="&lt;b&gt;SupervisedActionEvidence&lt;/b&gt;&lt;br&gt;evidence(features, intent); owns ActionNet and audited-training scaler" vertex="1">
           <mxGeometry height="170" width="575" x="1725" y="390" as="geometry" />
         </mxCell>
-        <mxCell id="rules_comp" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=22;fillColor=#FFF1DE;strokeColor=#D97706;strokeWidth=2;" value="&lt;b&gt;Weighted soft-rule functions&lt;/b&gt;&lt;br&gt;evaluate_rule(...); apply_rules(...); DEFAULT_RULES" vertex="1">
+        <mxCell id="rules_comp" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=22;fillColor=#FFF1DE;strokeColor=#D97706;strokeWidth=2;" value="&lt;b&gt;Weighted safeguard functions&lt;/b&gt;&lt;br&gt;evaluate_rule(...); apply_rules(...); DEFAULT_RULES" vertex="1">
           <mxGeometry height="170" width="575" x="1725" y="620" as="geometry" />
         </mxCell>
         <mxCell id="intent" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=22;fillColor=#E9F6EC;strokeColor=#3D8B5A;strokeWidth=2;" value="&lt;b&gt;Intent-aware decision&lt;/b&gt;&lt;br&gt;apply_intent(scores, intent, strength)" vertex="1">

@@ -1,10 +1,10 @@
 <mxfile host="app.diagrams.net" agent="Codex">
   <diagram id="Figure_4_1_Overall_Architecture_Final_Corrected" name="Figure 4.1 Final Corrected">
-    <mxGraphModel dx="1093" dy="1324" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1000" math="0" shadow="0">
+    <mxGraphModel dx="1464" dy="1192" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1000" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="prototypeBoundary" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#486581;strokeWidth=2;fontFamily=Arial;fontSize=16;fontStyle=1;fontColor=light-dark(#000000, #b1c8df);align=left;verticalAlign=top;spacingTop=14;spacingLeft=18;" value="IMPLEMENTED LOCAL PROTOTYPE" vertex="1">
+        <mxCell id="prototypeBoundary" parent="1" style="rounded=1;arcSize=10;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#486581;strokeWidth=2;fontFamily=Arial;fontSize=16;fontStyle=1;fontColor=light-dark(#000000, #b1c8df);align=left;verticalAlign=top;spacingTop=14;spacingLeft=18;" value="PROPOSED LOCAL SYSTEM" vertex="1">
           <mxGeometry height="735" width="1305" x="235" y="90" as="geometry" />
         </mxCell>
         <mxCell id="user" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);fillColor=#E9F6EC;strokeColor=#3D8B5A;strokeWidth=2;" value="&lt;b&gt;SME Manager / Administrator&lt;/b&gt;&lt;br&gt;&lt;font&gt;Provides decision context and reviews output&lt;/font&gt;" vertex="1">
@@ -16,7 +16,7 @@
         <mxCell id="fastapi" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);fillColor=#E8F2FC;strokeColor=#2F75B5;strokeWidth=2;" value="&lt;b&gt;FastAPI Service Layer&lt;/b&gt;&lt;br&gt;&lt;font&gt;Authentication, validation, routing and persistence orchestration&lt;/font&gt;" vertex="1">
           <mxGeometry height="155" width="235" x="545" y="290" as="geometry" />
         </mxCell>
-        <mxCell id="engine" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);fillColor=#F0EAFE;strokeColor=#7551B2;strokeWidth=3;" value="&lt;b&gt;Neuro-Symbolic Recommendation Engine&lt;/b&gt;&lt;br&gt;&lt;font&gt;Evidence → soft rules → intent/risk adjustment → calibrated recommendation&lt;/font&gt;" vertex="1">
+        <mxCell id="engine" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);fillColor=#F0EAFE;strokeColor=#7551B2;strokeWidth=3;" value="&lt;b&gt;Neuro-Symbolic Recommendation Engine&lt;/b&gt;&lt;br&gt;&lt;font&gt;Evidence → weighted safeguards → intent/risk adjustment → calibrated recommendation&lt;/font&gt;" vertex="1">
           <mxGeometry height="230" width="345" x="830" y="252.5" as="geometry" />
         </mxCell>
         <mxCell id="output" parent="1" style="rounded=1;arcSize=12;whiteSpace=wrap;html=1;align=center;verticalAlign=middle;spacing=10;fontFamily=Arial;fontSize=16;fontColor=light-dark(#000000, #b1c8df);fillColor=#FFF7D6;strokeColor=#B88900;strokeWidth=2;" value="&lt;b&gt;Recommendation Package&lt;/b&gt;&lt;br&gt;&lt;font&gt;Returned through FastAPI/React with action, confidence, alternatives, explanation and rule traces&lt;/font&gt;" vertex="1">

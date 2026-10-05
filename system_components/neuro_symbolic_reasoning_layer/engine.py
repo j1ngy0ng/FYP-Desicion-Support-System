@@ -12,13 +12,18 @@ import torch
 from system_components.data_management_layer.data_preprocessing import case_features, prepare_frame
 from system_components.neuro_symbolic_reasoning_layer.candidate_action_generation import ACTIONS, rank_actions, softmax
 from system_components.neuro_symbolic_reasoning_layer.intent_aware_decision import ALLOWED_ACTIONS, apply_intent
-from system_components.neuro_symbolic_reasoning_layer.weighted_soft_rule_reasoning import DEFAULT_RULES, apply_rules, evaluate_rule
+from system_components.neuro_symbolic_reasoning_layer.weighted_soft_rule_reasoning import DEFAULT_RULES, apply_rules, evaluate_rule, hard_rejected_actions
 from system_components.predictive_analytics_layer.predictive_attribution import (
     PredictiveAttribution,
     SupervisedActionEvidence,
 )
 from system_components.trust_and_decision_layer.explanation_generation import explain
 from system_components.trust_and_decision_layer.trust_calibration import fit_temperature
+
+
+# Frozen from the validation-only risk-coverage analysis.
+MIN_AUTO_CONFIDENCE = .35
+MIN_TOP_TWO_MARGIN = .02
 
 
 @dataclass(frozen=True)
@@ -44,6 +49,40 @@ class EngineResult:
     latency_ms: float
     calibration_status: str
     action_evidence_status: str
+    decision_status: str
+    decision_reasons: list[str]
+    feasible_actions: list[str]
+    hard_rejected_actions: list[str]
+
+
+def selective_decision_status(
+    action: str,
+    confidence: float,
+    ranked_actions: list[dict[str, Any]],
+    rule_results: list[dict[str, Any]],
+    budget: float | None,
+    *,
+    no_safe_action: bool = False,
+) -> tuple[str, list[str]]:
+    """Apply the frozen review policy without changing the recommended action."""
+
+    if no_safe_action:
+        return "NO SAFE RECOMMENDATION", [
+            "No executable campaign action passed the hard safeguards; manual review is required."
+        ]
+    if action == "Investigate":
+        return "HUMAN REVIEW REQUIRED", ["The selected action is Investigate."]
+    if action == "Increase" and budget is None:
+        return "HUMAN REVIEW REQUIRED", ["Budget is missing, so expansion feasibility cannot be evaluated."]
+    reasons = []
+    margin = confidence - (float(ranked_actions[1]["score"]) if len(ranked_actions) > 1 else 0.0)
+    if confidence < MIN_AUTO_CONFIDENCE:
+        reasons.append(f"Calibrated confidence is below {MIN_AUTO_CONFIDENCE:.2f}.")
+    if margin < MIN_TOP_TWO_MARGIN:
+        reasons.append(f"The top-two action margin is below {MIN_TOP_TWO_MARGIN:.2f}.")
+    if any(item["action"] == action and item["triggered"] for item in rule_results):
+        reasons.append("The selected action retains a triggered soft safeguard.")
+    return ("CHECK ADVISED", reasons) if reasons else ("RECOMMEND", [])
 
 
 class RecommendationEngine:
@@ -229,6 +268,24 @@ class RecommendationEngine:
             )
             existing = explanation.get("caveat", "").strip()
             explanation["caveat"] = f"{existing} {fallback}".strip()
+        budget_value = case.get("budget", case.get("Budget"))
+        budget = None if budget_value in {None, ""} else float(budget_value)
+        decision_status, decision_reasons = selective_decision_status(
+            selected,
+            confidence,
+            ranked,
+            rule_results,
+            budget,
+            no_safe_action=set(ACTIONS[:3]).issubset(hard_rejected_actions(rule_results)),
+        )
+        rejected_actions = hard_rejected_actions(rule_results)
+        feasible_actions = [action for action in ACTIONS if action not in rejected_actions]
+        if decision_status == "NO SAFE RECOMMENDATION":
+            caveat = (
+                "All executable campaign actions were excluded by hard safeguards; "
+                "the displayed Investigate action is a manual-review fallback, not an execution instruction."
+            )
+            explanation["caveat"] = f"{explanation.get('caveat', '').strip()} {caveat}".strip()
         return EngineResult(
             selected, confidence, float(raw_probabilities[ACTIONS.index(selected)]), performance,
             "High" if confidence >= .75 else "Medium" if confidence >= .50 else "Low",
@@ -236,6 +293,10 @@ class RecommendationEngine:
             (time.perf_counter() - started) * 1000,
             result_calibration_status,
             action_evidence_status,
+            decision_status,
+            decision_reasons,
+            feasible_actions,
+            rejected_actions,
         )
 
 
