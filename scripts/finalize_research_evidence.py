@@ -66,9 +66,15 @@ def git_output(*args: str) -> str:
 
 def source_tree_clean() -> bool:
     """Ignore generated evidence while checking whether source inputs are frozen."""
-    status = git_output("status", "--porcelain")
-    if status in {"", "unavailable"}:
-        return status == ""
+    result = subprocess.run(
+        ["git", "status", "--porcelain"], cwd=ROOT,
+        capture_output=True, text=True, check=False,
+    )
+    if result.returncode != 0:
+        return False
+    status = result.stdout
+    if not status:
+        return True
     generated_prefixes = ("outputs/", "logs/", "results/", "refine-logs/")
     source_changes = []
     for line in status.splitlines():
