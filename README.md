@@ -118,6 +118,24 @@ Open `http://127.0.0.1:5173` and sign in with `jingyong@example.com` / `prototyp
 Tables are created and the initial intents, campaigns and complete rule catalogue are seeded
 automatically on first startup.
 
+### Run the approved human experiment
+
+The controlled launcher enables the ethics gate, uses a separate local SQLite database and dedicated ports (`8010`/`5180`), opens the participant-only interface and keeps the administrator evaluation dashboard hidden from participants:
+
+```powershell
+.\scripts\human_study.ps1
+```
+
+The dedicated local study sign-in is `study@example.com` / `participant`. Give each participant a pseudonymous participant code separately; never use a name or email address as that code.
+
+Stop the two local services after the session:
+
+```powershell
+.\scripts\human_study.ps1 -Stop
+```
+
+Participants must use pseudonymous codes and the approved information-and-consent procedure. The administrator can export the anonymised response CSV from the normal evaluation dashboard after data collection.
+
 ### Verify
 
 ```powershell

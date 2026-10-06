@@ -1,14 +1,14 @@
 # Human-participant ethics gate
 
-The prototype does not enable participant recruitment by default. The human-study endpoints remain locked unless the environment variable `ETHICS_APPROVAL_REFERENCE` contains the formal TAR UMT ethics approval or exemption reference.
+The human-study endpoints remain locked unless `ETHICS_APPROVAL_REFERENCE` identifies the formal TAR UMT ethics approval. The approved document for this study is the TAR UMT Ethics Committee Checklist supplied for Ng Jing Yong's project. The approval document is retained outside the public repository.
 
 Before enabling the study:
 
-1. Submit the approved protocol, participant information sheet, consent form, recruitment material and instruments to the responsible TAR UMT authority.
-2. Obtain the formal approval or exemption letter/email.
-3. Store a copy of the approval evidence outside the public source repository if it contains personal or administrative data.
-4. Add the reference, approval date and approved scope to Chapter 3 and the relevant appendix.
-5. Set `ETHICS_APPROVAL_REFERENCE` only for the approved study deployment.
-6. Do not recruit participants or report a completed human study before approval/exemption.
+1. Retain the formal approval evidence outside the public source repository.
+2. Keep the participant information, consent statement, pseudonymous-code procedure and collected fields within the approved scope.
+3. Start the approved local study deployment with `scripts\human_study.ps1`.
+4. Use the participant-only URL opened by the launcher and sign in with `study@example.com` / `participant`. This dedicated role cannot display the administrator workspace or aggregate study results.
+5. Export responses only through the administrator-only CSV endpoint and store the export securely.
+6. Report participant results only after genuine responses have been collected and checked.
 
-If approval is not obtained, Chapter 5 must describe the human evaluation as proposed future work and must not report participant results.
+The approval permits the study to begin; it does not make pending participant outcomes complete results.

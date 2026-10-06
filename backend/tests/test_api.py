@@ -320,6 +320,30 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(response.status_code, 409)
         self.assertIn("ethics approval or exemption", response.text)
 
+    def test_dedicated_participant_account_cannot_access_study_results(self):
+        login = self.client.post(
+            "/api/auth/login",
+            json={"email": "study@example.com", "password": "participant"},
+        )
+        self.assertEqual(login.status_code, 200)
+        self.assertEqual(login.json()["user"]["role"], "participant")
+        headers = {"Authorization": f"Bearer {login.json()['token']}"}
+        cases = self.client.get(
+            "/api/human-study/cases",
+            headers=headers,
+            params={"participant_code": "ROLE-TEST"},
+        )
+        self.assertEqual(cases.status_code, 200)
+        self.assertEqual(cases.json()["total"], 9)
+        self.assertEqual(
+            self.client.get("/api/human-study/summary", headers=headers).status_code,
+            403,
+        )
+        self.assertEqual(
+            self.client.get("/api/human-study/export.csv", headers=headers).status_code,
+            403,
+        )
+
     def test_blinded_human_study_flow_and_duplicate_prevention(self):
         participant = "TEST-PARTICIPANT"
         study = self.client.get("/api/human-study/cases", headers=self.headers, params={"participant_code": participant})

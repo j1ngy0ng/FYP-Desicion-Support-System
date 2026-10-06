@@ -420,7 +420,7 @@ The implemented system recommends one campaign investment action: Increase, Main
 ## External evidence still required
 
 - Retain Sherlynn Poh's dated signature or email confirmation with the thesis evidence.
-- The TAR UMT approval or exemption reference must be obtained before participant recruitment and entered through `ETHICS_APPROVAL_REFERENCE`.
+- Formal TAR UMT ethics approval is documented by the Ethics Committee Checklist retained outside the public repository. The approved local study deployment supplies this document title through `ETHICS_APPROVAL_REFERENCE`.
 - The current 125-case source lacks business size, business maturity, available budget, operational constraints and prohibited-action fields. These gaps require either source enrichment or an explicit study-scope limitation.
 
 ## Claim boundary
@@ -518,7 +518,12 @@ The current diagnostic run may contain fewer than 10 candidates. If so, create t
         },
         "hard_safeguards": sorted(HARD_RULE_CODES),
         "soft_safeguard_count": 14 - len(HARD_RULE_CODES),
-        "ethics_document_verified": False,
+        "ethics_document_verified": True,
+        "ethics_approval": {
+            "authority": "TAR UMT Ethics Committee",
+            "document": "Ethics Committee Checklist",
+            "study_status": "approved_pending_participant_collection",
+        },
         "limitations": [
             "Current recommendation unit is an operational investment action, not a channel.",
             "The original benchmark contains one adjudicated primary action; safeguard correctness therefore uses independently reviewed action sets, with exact primary-label agreement retained as a secondary diagnostic.",

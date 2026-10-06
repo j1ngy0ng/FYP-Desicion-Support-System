@@ -537,7 +537,7 @@ def main() -> None:
 - The 19-case validation partition contains no Increase reference cases. Calibration is therefore aggregate, profile-specific descriptive evidence and does not establish Increase-class or population-level calibration.
 - The held-out test partition contains 19 cases. Coverage, correctness, conflict and faithfulness findings are small-sample technical evidence.
 - The source benchmark does not provide complete business size, business maturity or prohibited-action fields. These are documented limitations and are not imputed or invented.
-- Human-reliance results remain unavailable until genuine participant responses are collected under the recorded approval scope.
+- Formal TAR UMT ethics approval is recorded; human-reliance results remain unavailable until genuine participant responses are collected under that approved scope.
 """
     (OUTPUT / "LIMITATIONS.md").write_text(limitations, encoding="utf-8")
 
@@ -565,9 +565,15 @@ def main() -> None:
             "top_two_margin_threshold": MIN_TOP_TWO_MARGIN,
         },
         "set_based_safeguard_interventions": len(intervention_rows),
+        "ethics_approval": {
+            "authority": "TAR UMT Ethics Committee",
+            "document": "Ethics Committee Checklist",
+            "verified": True,
+            "study_status": "approved_pending_participant_collection",
+        },
         "environment_file": "environment.json",
         "limitations_file": "LIMITATIONS.md",
-        "status": "technical_evidence_complete_human_study_pending",
+        "status": "technical_evidence_complete_human_study_approved_pending_participants",
     }
     (OUTPUT / "FINAL_EVIDENCE_MANIFEST.json").write_text(
         json.dumps(manifest, indent=2) + "\n", encoding="utf-8",

@@ -35,7 +35,7 @@ function Shell({ route, user, children }: { route: string; user: User; children:
   </div>
 }
 
-function Login({ onLogin, toast }: { onLogin: (user: User) => void; toast: (message: string) => void }) {
+function Login({ onLogin, toast, studyMode }: { onLogin: (user: User) => void; toast: (message: string) => void; studyMode: boolean }) {
   const [registering, setRegistering] = useState(false)
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); const form = new FormData(event.currentTarget)
@@ -47,10 +47,10 @@ function Login({ onLogin, toast }: { onLogin: (user: User) => void; toast: (mess
         registering ? '/api/auth/register' : '/api/auth/login',
         { method: 'POST', body: JSON.stringify(payload) },
       )
-      sessionStorage.setItem('ms-token', result.token); onLogin(result.user); go('dashboard')
+      sessionStorage.setItem('ms-token', result.token); onLogin(result.user); go(studyMode ? 'study' : 'dashboard')
     } catch (error) { toast((error as Error).message) }
   }
-  return <section className="login-page"><div className="login-visual"><div className="brand"><span className="brand-mark">MS</span><span><strong>MarketSense</strong><small>Decision support</small></span></div><div><p className="eyebrow">Intent-aware intelligence</p><h1>Marketing decisions, grounded in evidence.</h1><p>Combine predictive and campaign-level channel evidence, business rules and strategic intent in one explainable workflow. Confidence calibration uses the frozen human-audited benchmark and supports appropriate reliance.</p></div><small>Final decisions remain under human control.</small></div><div className="login-panel"><form className="login-card" onSubmit={submit}><p className="eyebrow">{registering ? 'New manager account' : 'Welcome back'}</p><h2>{registering ? 'Create account' : 'Sign in'}</h2><p className="subhead">{registering ? 'Register a private campaign decision workspace.' : 'Access your campaign decision workspace.'}</p>{registering && <><div className="field"><label>Full name</label><input name="name" minLength={2} required /></div><div className="field"><label>Organisation</label><input name="organisation" defaultValue="SME Marketing Lab" /></div></>}<div className="field"><label>Email address</label><input name="email" type="email" defaultValue={registering ? '' : 'jingyong@example.com'} required /></div><div className="field"><label>Password</label><input name="password" type="password" minLength={8} defaultValue={registering ? '' : 'prototype'} required /></div><button className="btn btn-primary">{registering ? 'Create account' : 'Sign in →'}</button><button type="button" className="btn btn-ghost" onClick={() => setRegistering(!registering)}>{registering ? 'Use an existing account' : 'Create a manager account'}</button>{!registering && <div className="demo-note">Prototype access: use the pre-filled credentials.</div>}</form></div></section>
+  return <section className="login-page"><div className="login-visual"><div className="brand"><span className="brand-mark">MS</span><span><strong>MarketSense</strong><small>Decision support</small></span></div><div><p className="eyebrow">Intent-aware intelligence</p><h1>{studyMode ? 'Participant evaluation session.' : 'Marketing decisions, grounded in evidence.'}</h1><p>{studyMode ? 'Review nine assigned campaign cases using a pseudonymous participant code. The prototype does not execute marketing actions.' : 'Combine predictive and campaign-level channel evidence, business rules and strategic intent in one explainable workflow. Confidence calibration uses the frozen human-audited benchmark and supports appropriate reliance.'}</p></div><small>Final decisions remain under human control.</small></div><div className="login-panel"><form className="login-card" onSubmit={submit}><p className="eyebrow">{studyMode ? 'Approved participant study' : registering ? 'New manager account' : 'Welcome back'}</p><h2>{registering ? 'Create account' : 'Sign in'}</h2><p className="subhead">{studyMode ? 'Use the study access credentials supplied by the researcher.' : registering ? 'Register a private campaign decision workspace.' : 'Access your campaign decision workspace.'}</p>{registering && <><div className="field"><label>Full name</label><input name="name" minLength={2} required /></div><div className="field"><label>Organisation</label><input name="organisation" defaultValue="SME Marketing Lab" /></div></>}<div className="field"><label>Email address</label><input name="email" type="email" defaultValue={registering ? '' : studyMode ? 'study@example.com' : 'jingyong@example.com'} required /></div><div className="field"><label>Password</label><input name="password" type="password" minLength={8} defaultValue={registering ? '' : studyMode ? 'participant' : 'prototype'} required /></div><button className="btn btn-primary">{registering ? 'Create account' : 'Sign in →'}</button>{!studyMode && <button type="button" className="btn btn-ghost" onClick={() => setRegistering(!registering)}>{registering ? 'Use an existing account' : 'Create a manager account'}</button>}{!registering && <div className="demo-note">Prototype access: use the pre-filled credentials.</div>}</form></div></section>
 }
 
 function Campaigns({ campaigns, reload, toast }: { campaigns: Campaign[]; reload: () => void; toast: (message: string) => void }) {
@@ -169,6 +169,7 @@ function Rules({ rules, reload, toast }: { rules: Rule[]; reload: () => void; to
 }
 
 export default function App() {
+  const studyMode = new URLSearchParams(location.search).get('study') === '1'
   const [route, setRoute] = useState(() => location.hash.replace('#/', '').split('?')[0] || (sessionStorage.getItem('ms-token') ? 'dashboard' : 'login'))
   const [user, setUser] = useState<User>(); const [campaigns, setCampaigns] = useState<Campaign[]>([]); const [rules, setRules] = useState<Rule[]>([]); const [recommendations, setRecommendations] = useState<Recommendation[]>([]); const [current, setCurrent] = useState<Recommendation>(); const [toast, setToast] = useState('')
   const notify = (message: string) => { setToast(message); setTimeout(() => setToast(''), 2600) }
@@ -176,8 +177,8 @@ export default function App() {
   const loadRules = () => api<Rule[]>('/api/rules').then(setRules)
   const loadRecommendations = () => api<Recommendation[]>('/api/recommendations').then(setRecommendations)
   useEffect(() => { const change = () => { setRoute(location.hash.replace('#/', '').split('?')[0] || 'dashboard'); window.scrollTo(0, 0) }; addEventListener('hashchange', change); return () => removeEventListener('hashchange', change) }, [])
-  useEffect(() => { if (!sessionStorage.getItem('ms-token')) return; Promise.all([api<User>('/api/profile').then(setUser), loadCampaigns(), loadRules(), loadRecommendations()]).catch(error => { notify(error.message); sessionStorage.removeItem('ms-token'); go('login') }) }, [])
-  const loggedIn = (account: User) => { setUser(account); Promise.all([loadCampaigns(), loadRules(), loadRecommendations()]).catch(error => notify(error.message)) }
+  useEffect(() => { if (!sessionStorage.getItem('ms-token')) return; api<User>('/api/profile').then(async account => { setUser(account); if (account.role !== 'participant') await Promise.all([loadCampaigns(), loadRules(), loadRecommendations()]) }).catch(error => { notify(error.message); sessionStorage.removeItem('ms-token'); go('login') }) }, [])
+  const loggedIn = (account: User) => { setUser(account); if (account.role !== 'participant') Promise.all([loadCampaigns(), loadRules(), loadRecommendations()]).catch(error => notify(error.message)) }
   const content = useMemo(() => {
     if (!user) return null
     const pages: Record<string, ReactNode> = {
@@ -194,7 +195,8 @@ export default function App() {
     }
     return pages[route] || pages.dashboard
   }, [route, user, campaigns, rules, recommendations, current])
-  if (route === 'login' || !sessionStorage.getItem('ms-token')) return <><Login onLogin={loggedIn} toast={notify} /><div className={`toast ${toast ? 'show' : ''}`}>{toast}</div></>
+  if (route === 'login' || !sessionStorage.getItem('ms-token')) return <><Login onLogin={loggedIn} toast={notify} studyMode={studyMode} /><div className={`toast ${toast ? 'show' : ''}`}>{toast}</div></>
   if (!user) return <div className="empty-state"><strong>Loading MarketSense…</strong></div>
+  if (studyMode || user.role === 'participant') return <><main className="page" style={{ maxWidth: 1100, margin: '0 auto' }}><PageHead eyebrow="Approved participant study" title="Marketing decision-support evaluation" subtitle="Complete the nine assigned cases using only your pseudonymous participant code."><button className="btn btn-ghost" onClick={() => { sessionStorage.removeItem('ms-token'); sessionStorage.removeItem('study-participant'); location.hash = '#/login'; location.reload() }}>End session</button></PageHead><HumanStudy toast={notify} showSummary={false} /></main><div className={`toast ${toast ? 'show' : ''}`} role="status">{toast}</div></>
   return <><Shell route={route} user={user}>{content}</Shell><div className={`toast ${toast ? 'show' : ''}`} role="status">{toast}</div></>
 }

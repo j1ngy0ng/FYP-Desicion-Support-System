@@ -76,7 +76,12 @@
     "survival_safeguard"
   ],
   "soft_safeguard_count": 8,
-  "ethics_document_verified": false,
+  "ethics_document_verified": true,
+  "ethics_approval": {
+    "authority": "TAR UMT Ethics Committee",
+    "document": "Ethics Committee Checklist",
+    "study_status": "approved_pending_participant_collection"
+  },
   "limitations": [
     "Current recommendation unit is an operational investment action, not a channel.",
     "The original benchmark contains one adjudicated primary action; safeguard correctness therefore uses independently reviewed action sets, with exact primary-label agreement retained as a secondary diagnostic.",

@@ -130,7 +130,13 @@
     "top_two_margin_threshold": 0.02
   },
   "set_based_safeguard_interventions": 13,
+  "ethics_approval": {
+    "authority": "TAR UMT Ethics Committee",
+    "document": "Ethics Committee Checklist",
+    "verified": true,
+    "study_status": "approved_pending_participant_collection"
+  },
   "environment_file": "environment.json",
   "limitations_file": "LIMITATIONS.md",
-  "status": "technical_evidence_complete_human_study_pending"
+  "status": "technical_evidence_complete_human_study_approved_pending_participants"
 }

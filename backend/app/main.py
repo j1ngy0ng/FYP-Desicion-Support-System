@@ -167,6 +167,12 @@ def require_admin(user: CurrentUser) -> User:
     return user
 
 
+def require_study_user(user: CurrentUser) -> User:
+    if user.role not in {"admin", "participant"}:
+        raise HTTPException(status.HTTP_403_FORBIDDEN, "Participant-study access required")
+    return user
+
+
 def seed(db: Session) -> None:
     if db.scalar(select(User.id).limit(1)):
         return
@@ -198,6 +204,20 @@ def seed(db: Session) -> None:
         intent_name = "Growth" if code == "growth_safeguard" else "Survival" if code == "survival_safeguard" else "Retention" if code == "retention_safeguard" else None
         db.add(BusinessRule(code=code, name=name, category=category, condition=condition, weight=weight, priority=priority, intent_id=intents[intent_name].id if intent_name else None))
     db.commit()
+
+
+def seed_study_user(db: Session) -> None:
+    email = os.getenv("STUDY_ACCESS_EMAIL", "study@example.com").strip().lower()
+    password = os.getenv("STUDY_ACCESS_PASSWORD", "participant")
+    if not db.scalar(select(User.id).where(User.email == email)):
+        db.add(User(
+            name="Study Participant",
+            email=email,
+            password_hash=password_hash(password),
+            role="participant",
+            organisation="TAR UMT FYP Study",
+        ))
+        db.commit()
 
 
 def seed_audited_campaigns(db: Session) -> None:
@@ -275,6 +295,7 @@ async def lifespan(_: FastAPI):
     upgrade_schema()
     with SessionLocal() as db:
         seed(db)
+        seed_study_user(db)
         seed_audited_campaigns(db)
     yield
 
@@ -282,7 +303,10 @@ async def lifespan(_: FastAPI):
 app = FastAPI(title="MarketSense DSS API", version="1.0.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5173", "http://localhost:5173"],
+    allow_origins=[
+        "http://127.0.0.1:5173", "http://localhost:5173",
+        "http://127.0.0.1:5180", "http://localhost:5180",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -887,7 +911,7 @@ def study_result(row: dict[str, Any], condition: str):
 @app.get("/api/human-study/cases")
 def human_study_cases(
     participant_code: Annotated[str, Query(min_length=3, max_length=40, pattern=r"^[A-Za-z0-9_-]+$")],
-    _: CurrentUser, db: Db,
+    _: Annotated[User, Depends(require_study_user)], db: Db,
 ) -> dict[str, Any]:
     participant_code = participant_code.upper()
     rows = frozen_study_rows(); rng = random.Random(int(hashlib.sha256(participant_code.encode()).hexdigest()[:16], 16)); rng.shuffle(rows)
@@ -950,7 +974,11 @@ def human_study_cases(
 
 
 @app.post("/api/human-study/responses", status_code=201)
-def submit_human_study(payload: HumanStudyInput, _: CurrentUser, db: Db) -> dict[str, Any]:
+def submit_human_study(
+    payload: HumanStudyInput,
+    _: Annotated[User, Depends(require_study_user)],
+    db: Db,
+) -> dict[str, Any]:
     if not payload.consent:
         raise HTTPException(status.HTTP_400_BAD_REQUEST, "Participant consent is required")
     (
@@ -1023,7 +1051,7 @@ def submit_human_study(payload: HumanStudyInput, _: CurrentUser, db: Db) -> dict
 
 
 @app.get("/api/human-study/summary")
-def human_study_summary(_: CurrentUser, db: Db) -> dict[str, Any]:
+def human_study_summary(_: Annotated[User, Depends(require_admin)], db: Db) -> dict[str, Any]:
     rows = list(db.scalars(select(HumanStudyResponse).order_by(HumanStudyResponse.id)).all())
     return {
         "overall": human_study_statistics(rows),

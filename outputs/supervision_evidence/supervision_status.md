@@ -24,7 +24,7 @@ The implemented system recommends one campaign investment action: Increase, Main
 ## External evidence still required
 
 - Retain Sherlynn Poh's dated signature or email confirmation with the thesis evidence.
-- The TAR UMT approval or exemption reference must be obtained before participant recruitment and entered through `ETHICS_APPROVAL_REFERENCE`.
+- Formal TAR UMT ethics approval is documented by the Ethics Committee Checklist retained outside the public repository. The approved local study deployment supplies this document title through `ETHICS_APPROVAL_REFERENCE`.
 - The current 125-case source lacks business size, business maturity, available budget, operational constraints and prohibited-action fields. These gaps require either source enrichment or an explicit study-scope limitation.
 
 ## Claim boundary
