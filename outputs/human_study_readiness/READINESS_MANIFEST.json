@@ -1,0 +1,45 @@
+{
+  "status": "approved_and_ready_for_participant_collection",
+  "generated_at": "2026-10-06T22:34:29+08:00",
+  "implementation_commit": "567ba3f18dbf8a981a192df449ed43dfa297ba55",
+  "freeze_tag": "fyp-human-study-ready-v1",
+  "model_evaluation_freeze": "fyp-code-freeze-v6",
+  "ethics": {
+    "authority": "TAR UMT Ethics Committee",
+    "document": "Ethics Committee Checklist",
+    "sha256": "1468754525ca27dbd91f60c9b1b2b6e0c69f79fa1bc54b80fff10ccb718124c1",
+    "approval_reference_or_date_visible_in_document": false,
+    "collection_status": "approved; genuine participant responses pending"
+  },
+  "study_configuration": {
+    "launcher": "scripts/human_study.ps1",
+    "participant_url": "http://127.0.0.1:5180/?study=1#/login",
+    "backend_url": "http://127.0.0.1:8010",
+    "response_database": "human_study.db",
+    "database_separate_from_operational_prototype": true,
+    "cases_per_participant": 9,
+    "pseudonymous_codes_only": true,
+    "participant_role": "participant",
+    "aggregate_results_visible_to_participant": false,
+    "csv_export_role": "admin",
+    "automatic_marketing_execution": false
+  },
+  "verification": {
+    "python_tests": {
+      "passed": 50,
+      "failed": 0
+    },
+    "frontend_production_build": "passed",
+    "runtime_health": "ok",
+    "fresh_participant_cases": 9,
+    "fresh_participant_completed_cases": 0,
+    "participant_summary_http_status": 403,
+    "participant_export_http_status": 403,
+    "visual_check": "participant information, consent gate, blinded case and rating form rendered correctly",
+    "fake_responses_submitted": 0
+  },
+  "pending_external_evidence": [
+    "genuine participant responses",
+    "reviewer completion date in the independent review record"
+  ]
+}
