@@ -34,6 +34,7 @@ from .models import BusinessRule, Campaign, Evaluation, HumanStudyResponse, Inte
 
 
 ROOT = Path(__file__).resolve().parents[2]
+ETHICS_APPROVAL_FILE = ROOT / "data" / "ethics_approval_reference.txt"
 CHANNELS = ("Email", "Facebook", "Google", "Instagram", "WhatsApp", "YouTube")
 CHANNEL_NAMES = {channel.casefold(): channel for channel in CHANNELS}
 RAW_DATASET = ROOT / "data" / "layers" / "01_raw_dataset_55555x16.csv"
@@ -51,7 +52,11 @@ DECISION_CASES = BENCHMARK_CANDIDATE
 SYNTHETIC_DEVELOPMENT = ROOT / "data" / "Dataset_synthetic_development.csv"
 HUMAN_PROVIDED_DEVELOPMENT = ROOT / "data" / "Dataset_human_provided_development.csv"
 TOKEN_SECRET = os.getenv("TOKEN_SECRET", "change-this-development-secret").encode()
-ETHICS_APPROVAL_REFERENCE = os.getenv("ETHICS_APPROVAL_REFERENCE", "").strip()
+ETHICS_APPROVAL_REFERENCE = os.getenv("ETHICS_APPROVAL_REFERENCE", "").strip() or (
+    ETHICS_APPROVAL_FILE.read_text(encoding="utf-8").strip()
+    if ETHICS_APPROVAL_FILE.exists()
+    else ""
+)
 security = HTTPBearer(auto_error=False)
 recommendation_engine: RecommendationEngine | None = None
 STUDY_CONDITIONS = (
