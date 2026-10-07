@@ -91,8 +91,12 @@ h3 { margin: 0; font-size: 15px; }
 .bar-group { flex: 1; height: 100%; display: flex; align-items: end; gap: 5px; position: relative; }
 .bar { flex: 1; border-radius: 7px 7px 0 0; background: var(--green); min-height: 8px; transition: .2s; }
 .bar.alt { background: var(--mint); }
+.bar.outcome-1 { background: var(--amber); }
+.bar.outcome-2 { background: var(--blue); }
+.bar.outcome-3 { background: var(--red); }
+.bar-value { display: block; margin-top: -24px; text-align: center; color: var(--ink); }
 .bar:hover { filter: brightness(.9); }
-.bar-label { position: absolute; bottom: -27px; left: 50%; transform: translateX(-50%); color: var(--muted); font-size: 11px; }
+.bar-label { position: absolute; bottom: -27px; left: 50%; width: 100%; transform: translateX(-50%); color: var(--muted); font-size: 11px; text-align: center; }
 .chart-wrap { padding-bottom: 28px; }
 .donut { width: 180px; height: 180px; border-radius: 50%; background: conic-gradient(var(--green) 0 42%, var(--amber) 42% 72%, var(--blue) 72% 90%, #dfe5e1 90%); position: relative; margin: 12px auto; }
 .donut::after { content: attr(data-label); white-space: pre; position: absolute; inset: 28px; border-radius: 50%; background: var(--card); display: grid; place-items: center; text-align: center; font-weight: 800; font-size: 14px; }
