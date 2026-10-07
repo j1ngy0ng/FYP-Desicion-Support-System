@@ -1,8 +1,8 @@
 {
-  "generated_at": "2026-10-05T18:42:16+08:00",
-  "source_commit": "5f0fa47adff8aec07f9fe6c4adf391ba546a205f",
+  "generated_at": "2026-10-07T13:19:44+08:00",
+  "source_commit": "c86c4a3ebce4358fb00d55aa6a3f2922ae23b8e3",
   "source_tags": [
-    "fyp-code-freeze-v6"
+    "fyp-code-freeze-v7"
   ],
   "source_tree_clean_at_generation": true,
   "scope": {
@@ -65,6 +65,8 @@
       {
         "Partition": "Validation",
         "Seed": 42,
+        "Intent": "All",
+        "Calibration": "Calibrated",
         "Cases": 19,
         "ECE": 0.308305,
         "NLL": 2.403844,
@@ -75,6 +77,8 @@
       {
         "Partition": "Test",
         "Seed": 42,
+        "Intent": "All",
+        "Calibration": "Calibrated",
         "Cases": 19,
         "ECE": 0.483568,
         "NLL": 3.765835,
@@ -85,6 +89,8 @@
       {
         "Partition": "Validation",
         "Seed": 52,
+        "Intent": "All",
+        "Calibration": "Calibrated",
         "Cases": 19,
         "ECE": 0.361879,
         "NLL": 2.399104,
@@ -95,6 +101,8 @@
       {
         "Partition": "Test",
         "Seed": 52,
+        "Intent": "All",
+        "Calibration": "Calibrated",
         "Cases": 19,
         "ECE": 0.535558,
         "NLL": 3.76001,
@@ -105,6 +113,8 @@
       {
         "Partition": "Validation",
         "Seed": 62,
+        "Intent": "All",
+        "Calibration": "Calibrated",
         "Cases": 19,
         "ECE": 0.255884,
         "NLL": 2.398874,
@@ -115,6 +125,8 @@
       {
         "Partition": "Test",
         "Seed": 62,
+        "Intent": "All",
+        "Calibration": "Calibrated",
         "Cases": 19,
         "ECE": 0.536905,
         "NLL": 3.763946,
@@ -123,11 +135,32 @@
         "Qualification": "Descriptive small-sample evidence; no population-level calibration claim."
       }
     ],
+    "per_intent_summary_file": "per_intent_calibration_summary.csv",
+    "aggregate_reliability_plot": "reliability_plot.png",
+    "per_intent_reliability_plot": "per_intent_reliability_plot.png",
+    "mean_raw_validation_ece": 0.21813,
+    "mean_calibrated_validation_ece": 0.308689,
+    "claim_3_supported": false,
     "zero_increase_validation_limitation": true
   },
   "selective_policy": {
     "confidence_threshold": 0.35,
-    "top_two_margin_threshold": 0.02
+    "top_two_margin_threshold": 0.02,
+    "coverage_detector": "training-only audited-benchmark feature envelope plus observed-channel membership",
+    "out_of_coverage_validation_cases": 3,
+    "out_of_coverage_test_cases": 1
+  },
+  "recommendation_quality": {
+    "majority_baseline": "B0: Majority-Class Popularity",
+    "per_intent_metrics_file": "../confirmatory_evaluation/per_intent_metrics.csv"
+  },
+  "additional_ablations": {
+    "summary_file": "component_ablation_summary.csv",
+    "configurations": [
+      "P: Full Proposed Method",
+      "A4: Full Method without Structured Explanation",
+      "A5: Full Method without Review Gate"
+    ]
   },
   "set_based_safeguard_interventions": 13,
   "ethics_approval": {

@@ -1,12 +1,12 @@
 {
-  "verified_at": "2026-10-05T19:05:00+08:00",
-  "source_commit": "5f0fa47adff8aec07f9fe6c4adf391ba546a205f",
-  "source_tag": "fyp-code-freeze-v6",
-  "confirmatory_run_id": "R002-20261005T184142+0800",
+  "verified_at": "2026-10-07T13:22:28+08:00",
+  "source_commit": "c86c4a3ebce4358fb00d55aa6a3f2922ae23b8e3",
+  "source_tag": "fyp-code-freeze-v7",
+  "confirmatory_run_id": "R002-20261007T131827+0800",
   "python_tests": {
     "status": "passed",
-    "count": 49,
-    "command": ".venv\\Scripts\\python.exe -m unittest backend.tests.test_engine backend.tests.test_api tests.test_three_layer_data tests.test_human_provided_dataset tests.test_baseline_evaluation tests.test_final_research_evidence tests.test_synthetic_annotations"
+    "count": 54,
+    "command": ".venv\\Scripts\\python.exe -m unittest discover"
   },
   "frontend_build": {
     "status": "passed",
@@ -26,6 +26,16 @@
       "Algorithm 4.2 feasibility and no-safe logic",
       "Chapter 5 evidence tables and chapter headers"
     ]
+  },
+  "new_evaluation_evidence": {
+    "majority_popularity_baseline": "B0: Majority-Class Popularity",
+    "per_intent_calibration_tables": "generated",
+    "per_intent_reliability_plot": "generated",
+    "benchmark_coverage_detector": "implemented and tested",
+    "explanation_only_ablation": "evaluated",
+    "review_gate_only_ablation": "evaluated",
+    "calibration_claim_3_supported": false,
+    "calibration_reason": "Mean validation ECE increased from 0.218130 before calibration to 0.308689 after calibration; validation also contains zero Increase cases."
   },
   "external_evidence_still_required": [
     "Record the independent reviewer's actual review date and retain the signed or otherwise attributable review evidence.",

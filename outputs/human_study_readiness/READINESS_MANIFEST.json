@@ -1,9 +1,9 @@
 {
   "status": "approved_and_ready_for_participant_collection",
-  "generated_at": "2026-10-06T22:34:29+08:00",
-  "implementation_commit": "567ba3f18dbf8a981a192df449ed43dfa297ba55",
-  "freeze_tag": "fyp-human-study-ready-v1",
-  "model_evaluation_freeze": "fyp-code-freeze-v6",
+  "generated_at": "2026-10-07T13:22:28+08:00",
+  "implementation_commit": "c86c4a3ebce4358fb00d55aa6a3f2922ae23b8e3",
+  "freeze_tag": "fyp-human-study-ready-v2",
+  "model_evaluation_freeze": "fyp-code-freeze-v7",
   "ethics": {
     "authority": "TAR UMT Ethics Committee",
     "document": "Ethics Committee Checklist",
@@ -26,7 +26,7 @@
   },
   "verification": {
     "python_tests": {
-      "passed": 50,
+      "passed": 54,
       "failed": 0
     },
     "frontend_production_build": "passed",

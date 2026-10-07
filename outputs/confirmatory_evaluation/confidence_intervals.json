@@ -1,4 +1,30 @@
 {
+  "B0: Majority-Class Popularity": {
+    "Recommendation Accuracy": [
+      0.15789473684210525,
+      0.5789473684210527
+    ],
+    "Macro F1": [
+      0.06818181818181818,
+      0.2142857142857143
+    ],
+    "Top-2 Agreement": [
+      0.42105263157894735,
+      0.8421052631578947
+    ],
+    "Scenario-Fit Rate": [
+      1.0,
+      1.0
+    ],
+    "Logical Conflict Rate": [
+      0.0,
+      0.2631578947368421
+    ],
+    "Expected Calibration Error (ECE)": [
+      0.01088929219600726,
+      0.22141560798548093
+    ]
+  },
   "Supervisor Baseline - Intent-Only Deterministic": {
     "Recommendation Accuracy": [
       0.47368421052631576,
@@ -335,6 +361,58 @@
     "Expected Calibration Error (ECE)": [
       0.10147368421052634,
       0.44720350877192977
+    ]
+  },
+  "Proposed Ablation - Without Structured Explanation": {
+    "Recommendation Accuracy": [
+      0.6315789473684211,
+      0.9824561403508771
+    ],
+    "Macro F1": [
+      0.6034255599472992,
+      0.9694444444444444
+    ],
+    "Top-2 Agreement": [
+      0.7368421052631579,
+      1.0
+    ],
+    "Scenario-Fit Rate": [
+      1.0,
+      1.0
+    ],
+    "Logical Conflict Rate": [
+      0.0,
+      0.0
+    ],
+    "Expected Calibration Error (ECE)": [
+      0.37699824561403505,
+      0.6157157894736842
+    ]
+  },
+  "Proposed Ablation - Without Review Gate": {
+    "Recommendation Accuracy": [
+      0.6315789473684211,
+      0.9824561403508771
+    ],
+    "Macro F1": [
+      0.6034255599472992,
+      0.9694444444444444
+    ],
+    "Top-2 Agreement": [
+      0.7368421052631579,
+      1.0
+    ],
+    "Scenario-Fit Rate": [
+      1.0,
+      1.0
+    ],
+    "Logical Conflict Rate": [
+      0.0,
+      0.0
+    ],
+    "Expected Calibration Error (ECE)": [
+      0.37699824561403505,
+      0.6157157894736842
     ]
   },
   "B4: Integrated Learned Backbone": {

@@ -1,0 +1,39 @@
+﻿Partition,Campaign_ID,Intent,Coverage_Status,Coverage_Reasons,Decision_Status,Recommended_Action
+Validation,NY-CMP-35686,Retention,IN_SCOPE,,HUMAN REVIEW REQUIRED,Investigate
+Validation,NY-CMP-28282,Survival,IN_SCOPE,,RECOMMEND,Reduce
+Validation,NY-CMP-31694,Retention,IN_SCOPE,,HUMAN REVIEW REQUIRED,Investigate
+Validation,NY-CMP-34272,Retention,IN_SCOPE,,RECOMMEND,Maintain
+Validation,NY-CMP-2241,Retention,IN_SCOPE,,HUMAN REVIEW REQUIRED,Investigate
+Validation,NY-CMP-35419,Growth,IN_SCOPE,,RECOMMEND,Maintain
+Validation,NY-CMP-27615,Retention,IN_SCOPE,,HUMAN REVIEW REQUIRED,Investigate
+Validation,NY-CMP-3967,Growth,OUT_OF_BENCHMARK_COVERAGE,"Outside the training benchmark range: Impressions, Clicks.",HUMAN REVIEW REQUIRED,Maintain
+Validation,NY-CMP-12485,Survival,IN_SCOPE,,HUMAN REVIEW REQUIRED,Investigate
+Validation,NY-CMP-14038,Growth,OUT_OF_BENCHMARK_COVERAGE,Outside the training benchmark range: lead_to_conversion.,HUMAN REVIEW REQUIRED,Maintain
+Validation,NY-CMP-56261,Survival,OUT_OF_BENCHMARK_COVERAGE,Outside the training benchmark range: Impressions.,HUMAN REVIEW REQUIRED,Reduce
+Validation,NY-CMP-32318,Retention,IN_SCOPE,,NO SAFE RECOMMENDATION,Investigate
+Validation,NY-CMP-33366,Survival,IN_SCOPE,,RECOMMEND,Reduce
+Validation,NY-CMP-56286,Retention,IN_SCOPE,,HUMAN REVIEW REQUIRED,Investigate
+Validation,NY-CMP-32021,Retention,IN_SCOPE,,RECOMMEND,Maintain
+Validation,NY-CMP-21428,Retention,IN_SCOPE,,HUMAN REVIEW REQUIRED,Investigate
+Validation,NY-CMP-7511,Survival,IN_SCOPE,,NO SAFE RECOMMENDATION,Investigate
+Validation,NY-CMP-37834,Growth,IN_SCOPE,,HUMAN REVIEW REQUIRED,Increase
+Validation,NY-CMP-19195,Survival,IN_SCOPE,,RECOMMEND,Reduce
+Test,NY-CMP-36411,Retention,IN_SCOPE,,RECOMMEND,Maintain
+Test,NY-CMP-50598,Survival,IN_SCOPE,,RECOMMEND,Reduce
+Test,NY-CMP-28883,Retention,IN_SCOPE,,RECOMMEND,Maintain
+Test,NY-CMP-10185,Retention,IN_SCOPE,,HUMAN REVIEW REQUIRED,Investigate
+Test,NY-CMP-36230,Retention,IN_SCOPE,,HUMAN REVIEW REQUIRED,Investigate
+Test,NY-CMP-8294,Growth,IN_SCOPE,,CHECK ADVISED,Maintain
+Test,NY-CMP-18730,Growth,IN_SCOPE,,RECOMMEND,Maintain
+Test,NY-CMP-24871,Growth,IN_SCOPE,,HUMAN REVIEW REQUIRED,Increase
+Test,NY-CMP-35135,Retention,IN_SCOPE,,HUMAN REVIEW REQUIRED,Investigate
+Test,NY-CMP-43265,Growth,IN_SCOPE,,RECOMMEND,Maintain
+Test,NY-CMP-38649,Retention,IN_SCOPE,,HUMAN REVIEW REQUIRED,Investigate
+Test,NY-CMP-11980,Survival,OUT_OF_BENCHMARK_COVERAGE,"Outside the training benchmark range: Acquisition_Cost, Engagement_Score, ctr.",HUMAN REVIEW REQUIRED,Investigate
+Test,NY-CMP-11348,Survival,IN_SCOPE,,RECOMMEND,Reduce
+Test,NY-CMP-20926,Retention,IN_SCOPE,,NO SAFE RECOMMENDATION,Investigate
+Test,NY-CMP-3704,Retention,IN_SCOPE,,RECOMMEND,Maintain
+Test,NY-CMP-55748,Survival,IN_SCOPE,,HUMAN REVIEW REQUIRED,Investigate
+Test,NY-CMP-1119,Retention,IN_SCOPE,,RECOMMEND,Maintain
+Test,NY-CMP-50131,Survival,IN_SCOPE,,RECOMMEND,Reduce
+Test,NY-CMP-33194,Growth,IN_SCOPE,,HUMAN REVIEW REQUIRED,Increase

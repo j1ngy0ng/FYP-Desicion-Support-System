@@ -1,0 +1,4 @@
+﻿Configuration,Cases,Recommendation_Accuracy,Explanation_Presence_Rate,Automatic_Coverage,Accepted_Accuracy,Accepted_Conflict_Rate,No_Safe_Cases,Out_Of_Coverage_Cases
+P: Full Proposed Method,19,0.789474,1.0,0.473684,1.0,0.0,1,1
+A4: Full Method without Structured Explanation,19,0.789474,0.0,0.473684,1.0,0.0,1,1
+A5: Full Method without Review Gate,19,0.789474,1.0,0.526316,0.9,0.0,1,1
