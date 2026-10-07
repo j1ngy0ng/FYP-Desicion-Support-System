@@ -35,6 +35,7 @@ from baseline_evaluation import (
     fit_centroid_model,
     intent_only_predict,
     logical_conflict_rate,
+    majority_class_predict,
     macro_f1_score,
     recommendation_accuracy,
     scenario_fit_rate,
@@ -59,6 +60,8 @@ VARIANTS = {
     "Proposed Ablation - Without Intent": "without_intent",
     "Proposed Ablation - Without Rules": "without_rules",
     "Proposed Ablation - Without Calibration": "without_calibration",
+    "Proposed Ablation - Without Structured Explanation": "without_explanation",
+    "Proposed Ablation - Without Review Gate": "without_review_gate",
     "B4: Integrated Learned Backbone": "backbone",
 }
 SEEDS = (42, 52, 62)
@@ -315,6 +318,7 @@ def main() -> None:
     centroid = fit_centroid_model(train_rows)
     channel_attribution = build_channel_attribution(train_rows)
     deterministic = [
+        majority_class_predict(train_rows, test_rows),
         intent_only_predict(test_rows),
         weighted_deterministic_predict(test_rows),
         baseline_a_predict(test_rows),
@@ -372,6 +376,34 @@ def main() -> None:
                 name, seed, *[f"{values[metric]:.6f}" for metric in metric_names],
             ])
     write_csv(args.output_dir / "seed_metrics.csv", seed_rows)
+
+    per_intent_rows: list[list[object]] = [["System", "Seed", "Intent", "Cases", *metric_names]]
+    for name, results in results_by_system.items():
+        for result_index, result in enumerate(results):
+            seed = "deterministic" if len(results) == 1 else SEEDS[result_index]
+            for intent in ("Growth", "Retention", "Survival"):
+                indices = [index for index, row in enumerate(test_rows) if row["Intent"] == intent]
+                intent_rows = [test_rows[index] for index in indices]
+                intent_result = BaselineResult(
+                    result.name,
+                    [result.predictions[index] for index in indices],
+                    [result.confidences[index] for index in indices],
+                    [result.explanations[index] for index in indices],
+                    result.latency_ms,
+                    [result.top2_predictions[index] for index in indices],
+                    [result.case_latencies_ms[index] for index in indices],
+                )
+                values = evaluate_baseline(
+                    intent_result,
+                    intent_rows,
+                    [row["label"] for row in intent_rows],
+                    args.ece_bins,
+                )
+                per_intent_rows.append([
+                    name, seed, intent, len(intent_rows),
+                    *[f"{values[metric]:.6f}" for metric in metric_names],
+                ])
+    write_csv(args.output_dir / "per_intent_metrics.csv", per_intent_rows)
 
     prediction_rows: list[list[object]] = [[
         "Campaign_ID", "Date", "Intent", "Reference_Action", "System", "Seed",

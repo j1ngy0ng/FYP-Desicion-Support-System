@@ -47,6 +47,8 @@ class ApiTests(unittest.TestCase):
             "RECOMMEND", "CHECK ADVISED", "HUMAN REVIEW REQUIRED",
         })
         self.assertEqual(body["decision_status"], body["evidence"]["decision_status"])
+        self.assertEqual(body["coverage_status"], body["evidence"]["coverage_status"])
+        self.assertIn(body["coverage_status"], {"IN_SCOPE", "OUT_OF_BENCHMARK_COVERAGE"})
         details = self.client.get(
             f"/api/recommendations/{body['numeric_id']}", headers=self.headers
         )
@@ -239,8 +241,9 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(body["target_records"], 125)
         self.assertEqual(body["human_provided_development_records"], 55555)
         self.assertEqual(body["development_annotation_status"], "audited_human_benchmark")
-        self.assertEqual(len(body["baselines"]), 7)
+        self.assertEqual(len(body["baselines"]), 8)
         self.assertTrue({
+            "B0: Majority-Class Popularity",
             "B1: Heuristic Scorecard",
             "B2: Predictive Only",
             "B3: Predictive plus Channel Evidence",

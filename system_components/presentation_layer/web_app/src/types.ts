@@ -10,13 +10,15 @@ export type Explanation = { driver: string; implication: string; action: string;
 export type Recommendation = {
   id: string; numeric_id: number; campaign_id: string; campaign: string; intent: string; action: string;
   confidence: number; raw_confidence: number; performance_score: number; explanation: Explanation;
-  evidence: { attribution: { feature: string; contribution: number }[]; channels: { channel: string; contribution: number }[]; confidence_level: string; action_evidence_status: string; decision_status: string; decision_reasons: string[]; feasible_actions: string[]; hard_rejected_actions: string[] };
+  evidence: { attribution: { feature: string; contribution: number }[]; channels: { channel: string; contribution: number }[]; confidence_level: string; action_evidence_status: string; decision_status: string; decision_reasons: string[]; feasible_actions: string[]; hard_rejected_actions: string[]; coverage_status: string; coverage_reasons: string[] };
   ranked_actions: { action: string; score: number }[]; latency_ms: number; status: string; date: string;
   rules?: { name: string; triggered: boolean; score: number }[];
   calibration_status: 'calibrated' | 'pending_human_annotations' | 'uncalibrated_ablation' | 'legacy_unknown';
   action_evidence_status: 'audited_actionnet' | 'development_actionnet' | 'campaignnet_only_fallback' | 'legacy_unknown';
   decision_status: 'RECOMMEND' | 'CHECK ADVISED' | 'HUMAN REVIEW REQUIRED' | 'NO SAFE RECOMMENDATION' | 'legacy_unknown';
   decision_reasons: string[];
+  coverage_status: 'IN_SCOPE' | 'OUT_OF_BENCHMARK_COVERAGE' | 'legacy_unknown';
+  coverage_reasons: string[];
 }
 export type Intervals = Record<string, [number, number]>
 export type MetricRow = Record<string, string | number | Intervals>

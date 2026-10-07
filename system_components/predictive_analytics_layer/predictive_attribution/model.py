@@ -112,7 +112,9 @@ class PredictiveAttribution:
         return probabilities.detach().numpy(), attribution[:5]
 
     def channels(self, case: dict[str, Any]) -> list[dict[str, float | str]]:
-        names = [name.strip() for name in str(case.get("channels", case.get("Channel_Used", ""))).split(",") if name.strip()]
+        value = case.get("channels", case.get("Channel_Used", ""))
+        items = value if isinstance(value, (list, tuple, set)) else str(value).split(",")
+        names = [str(name).strip() for name in items if str(name).strip()]
         return sorted(
             ({"channel": name, "contribution": round(self.channel_evidence.get(name, .5), 4)} for name in names),
             key=lambda item: item["contribution"],

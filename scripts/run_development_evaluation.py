@@ -22,6 +22,7 @@ from baseline_evaluation import (
     canonical_action,
     conflict_reasons,
     evaluate_baseline,
+    majority_class_predict,
     fit_centroid_model,
     split_channels,
 )
@@ -266,6 +267,7 @@ def main() -> None:
     centroid = fit_centroid_model(train_rows)
     channel_attribution = build_channel_attribution(train_rows)
     systems = [
+        majority_class_predict(train_rows, test_rows),
         baseline_a_predict(test_rows),
         baseline_b_predict(test_rows, centroid),
         baseline_c_predict(test_rows, centroid, channel_attribution),

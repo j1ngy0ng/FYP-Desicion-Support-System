@@ -33,6 +33,7 @@ class RecommendationEngineTests(unittest.TestCase):
         self.assertIn(result.decision_status, {
             "RECOMMEND", "CHECK ADVISED", "HUMAN REVIEW REQUIRED", "NO SAFE RECOMMENDATION",
         })
+        self.assertIn(result.coverage_status, {"IN_SCOPE", "OUT_OF_BENCHMARK_COVERAGE"})
 
     def test_selective_policy_exposes_all_four_states(self):
         ranked = [
@@ -73,6 +74,47 @@ class RecommendationEngineTests(unittest.TestCase):
             selective_decision_status("Increase", .8, ranked, [], None)[0],
             "HUMAN REVIEW REQUIRED",
         )
+        self.assertEqual(
+            selective_decision_status(
+                "Maintain", .8, ranked, [], 1000,
+                coverage_reasons=["Outside the training benchmark range: ROI."],
+            )[0],
+            "HUMAN REVIEW REQUIRED",
+        )
+
+    def test_training_envelope_detector_routes_out_of_coverage_case_to_review(self):
+        case = self.engine.test.iloc[0].to_dict()
+        case["Duration"] = self.engine.coverage_bounds["Duration"][1] + 1
+        result = self.engine.recommend(case, self.rules, "Growth")
+        self.assertEqual(result.coverage_status, "OUT_OF_BENCHMARK_COVERAGE")
+        self.assertIn("Duration", result.coverage_reasons[0])
+        self.assertEqual(result.decision_status, "HUMAN REVIEW REQUIRED")
+
+    def test_channel_evidence_accepts_csv_text_and_prepared_lists(self):
+        text = self.engine.predictive.channels({"Channel_Used": "Email, Facebook"})
+        prepared = self.engine.predictive.channels({"channels": ["Email", "Facebook"]})
+        self.assertEqual(text, prepared)
+
+    def test_explanation_and_review_gate_ablations_are_isolated(self):
+        case = self.engine.test.iloc[0].to_dict()
+        full = self.engine.recommend(case, self.rules, "Growth")
+        without_explanation = self.engine.recommend(
+            case, self.rules, "Growth", ablation="without_explanation"
+        )
+        self.assertEqual(without_explanation.action, full.action)
+        self.assertEqual(without_explanation.ranked_actions, full.ranked_actions)
+        self.assertEqual(without_explanation.explanation, {})
+        for row in self.engine.validation.to_dict("records") + self.engine.test.to_dict("records"):
+            gated = self.engine.recommend(row, self.rules, "Growth")
+            if gated.decision_status == "CHECK ADVISED":
+                ungated = self.engine.recommend(
+                    row, self.rules, "Growth", ablation="without_review_gate"
+                )
+                self.assertEqual(ungated.action, gated.action)
+                self.assertEqual(ungated.decision_status, "RECOMMEND")
+                break
+        else:
+            self.fail("Expected at least one CHECK ADVISED case for the review-gate ablation")
 
     def test_backend_uses_architecture_component(self):
         self.assertIs(RecommendationEngine, ComponentEngine)

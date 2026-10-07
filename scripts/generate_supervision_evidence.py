@@ -16,6 +16,7 @@ from baseline_evaluation import (
     conflict_reasons,
     evaluate_baseline,
     intent_only_predict,
+    majority_class_predict,
     weighted_deterministic_predict,
 )
 from scripts.run_confirmatory_evaluation import (
@@ -176,10 +177,11 @@ def main() -> None:
     args = parse_args()
     args.output_dir.mkdir(parents=True, exist_ok=True)
     rows = load_rows(args.benchmark)
-    _, validation_rows, test_rows = split_rows(rows)
+    train_rows, validation_rows, test_rows = split_rows(rows)
     engine = RecommendationEngine(args.training_data, audited_benchmark=args.benchmark, seed=42)
 
     systems = [
+        majority_class_predict(train_rows, test_rows),
         intent_only_predict(test_rows),
         weighted_deterministic_predict(test_rows),
         proposed_predict(engine, test_rows, "Supervisor Baseline - Unconstrained AI", "without_rules"),
@@ -210,6 +212,8 @@ def main() -> None:
                 ),
                 "Decision_Status": result.decision_status,
                 "Decision_Reasons": "; ".join(result.decision_reasons),
+                "Coverage_Status": result.coverage_status,
+                "Coverage_Reasons": "; ".join(result.coverage_reasons),
                 "Correct": "Yes" if result.action == row["label"] else "No",
                 "Logical_Conflict": "Yes" if conflict_reasons(row, result.action) else "No",
             })
@@ -237,6 +241,9 @@ def main() -> None:
             "Check_Advised": status_counts["CHECK ADVISED"],
             "Human_Review_Required": status_counts["HUMAN REVIEW REQUIRED"],
             "No_Safe_Recommendation": status_counts["NO SAFE RECOMMENDATION"],
+            "Out_Of_Benchmark_Coverage": sum(
+                item["Coverage_Status"] != "IN_SCOPE" for item in audited
+            ),
             "Automatic_Coverage": round(len(recommended) / len(audited), 6),
             "Accepted_Recommendation_Accuracy": (
                 round(sum(item["Correct"] == "Yes" for item in recommended) / len(recommended), 6)

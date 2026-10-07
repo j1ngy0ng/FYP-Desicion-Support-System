@@ -7,6 +7,7 @@ from baseline_evaluation import (
     filter_conflicting_actions,
     fit_centroid_model,
     intent_only_predict,
+    majority_class_predict,
     rank_actions,
     row_has_conflict,
     weighted_deterministic_predict,
@@ -66,6 +67,17 @@ class ConflictRuleTests(unittest.TestCase):
         self.assertEqual(first.predictions, ["Increase", "Reduce"])
         self.assertEqual(first.predictions, second.predictions)
         self.assertEqual(first.confidences, second.confidences)
+
+    def test_majority_baseline_uses_training_labels_and_canonical_ties(self):
+        training = [sample_row(label="Maintain"), sample_row(label="Maintain"), sample_row(label="Reduce")]
+        result = majority_class_predict(training, [sample_row(), sample_row()])
+        self.assertEqual(result.predictions, ["Maintain", "Maintain"])
+        self.assertAlmostEqual(result.confidences[0], 2 / 3)
+        tied = majority_class_predict(
+            [sample_row(label=action) for action in ACTION_ORDER],
+            [sample_row()],
+        )
+        self.assertEqual(tied.predictions, ["Increase"])
 
     def test_every_baseline_uses_the_canonical_action_index_order(self):
         self.assertEqual(ACTION_ORDER, ("Increase", "Maintain", "Reduce", "Investigate"))

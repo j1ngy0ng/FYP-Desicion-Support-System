@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import time
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 import torch
 
-from system_components.data_management_layer.data_preprocessing import case_features, prepare_frame
+from system_components.data_management_layer.data_preprocessing import FEATURES, case_features, prepare_frame
 from system_components.neuro_symbolic_reasoning_layer.candidate_action_generation import ACTIONS, rank_actions, softmax
 from system_components.neuro_symbolic_reasoning_layer.intent_aware_decision import ALLOWED_ACTIONS, apply_intent
 from system_components.neuro_symbolic_reasoning_layer.weighted_soft_rule_reasoning import DEFAULT_RULES, apply_rules, evaluate_rule, hard_rejected_actions
@@ -53,6 +53,8 @@ class EngineResult:
     decision_reasons: list[str]
     feasible_actions: list[str]
     hard_rejected_actions: list[str]
+    coverage_status: str = "IN_SCOPE"
+    coverage_reasons: list[str] = field(default_factory=list)
 
 
 def selective_decision_status(
@@ -63,6 +65,7 @@ def selective_decision_status(
     budget: float | None,
     *,
     no_safe_action: bool = False,
+    coverage_reasons: list[str] | None = None,
 ) -> tuple[str, list[str]]:
     """Apply the frozen review policy without changing the recommended action."""
 
@@ -70,6 +73,8 @@ def selective_decision_status(
         return "NO SAFE RECOMMENDATION", [
             "No executable campaign action passed the hard safeguards; manual review is required."
         ]
+    if coverage_reasons:
+        return "HUMAN REVIEW REQUIRED", coverage_reasons
     if action == "Investigate":
         return "HUMAN REVIEW REQUIRED", ["The selected action is Investigate."]
     if action == "Increase" and budget is None:
@@ -102,6 +107,7 @@ class RecommendationEngine:
         self.train = self.data.iloc[:train_end].copy()
         self.validation = self.data.iloc[train_end:validation_end].copy()
         self.test = self.data.iloc[validation_end:].copy()
+        self._set_coverage_reference(self.train)
         self.predictive = PredictiveAttribution(self.train)
         self.action_supervision: SupervisedActionEvidence | None = None
         self.annotation_status = "none"
@@ -168,6 +174,7 @@ class RecommendationEngine:
                 "Adjudicated_Action": "Reviewer_Action",
             }
         )
+        self._set_coverage_reference(supervised_train)
         self.action_supervision = SupervisedActionEvidence(supervised_train)
         self.annotation_status = "audited_human_benchmark"
         validation = prepared.iloc[train_end:validation_end]
@@ -184,6 +191,37 @@ class RecommendationEngine:
             return
         self.temperature = fit_temperature(logits, labels)
         self.calibration_status = "calibrated"
+
+    def _set_coverage_reference(self, frame: pd.DataFrame) -> None:
+        self.coverage_bounds = {
+            feature: (float(frame[feature].min()), float(frame[feature].max()))
+            for feature in FEATURES
+        }
+        self.coverage_channels = {
+            channel.strip().casefold()
+            for value in frame["Channel_Used"].astype(str)
+            for channel in value.split(",")
+            if channel.strip()
+        }
+
+    def coverage_check(self, case: dict[str, Any]) -> tuple[str, list[str]]:
+        """Check whether a case lies inside the training-only benchmark envelope."""
+
+        features = case_features(case)
+        outside = [
+            feature for feature, value in features.items()
+            if not self.coverage_bounds[feature][0] <= value <= self.coverage_bounds[feature][1]
+        ]
+        channel_value = case.get("channels", case.get("Channel_Used", ""))
+        channel_items = channel_value if isinstance(channel_value, (list, tuple, set)) else str(channel_value).split(",")
+        channels = {str(channel).strip().casefold() for channel in channel_items if str(channel).strip()}
+        unseen = sorted(channels - self.coverage_channels)
+        reasons = []
+        if outside:
+            reasons.append("Outside the training benchmark range: " + ", ".join(outside) + ".")
+        if unseen:
+            reasons.append("Unseen campaign channel: " + ", ".join(unseen) + ".")
+        return ("OUT_OF_BENCHMARK_COVERAGE", reasons) if reasons else ("IN_SCOPE", [])
 
     def _score(self, case: dict[str, Any], rules: list[dict[str, Any]], intent: str, variant: str, parameters: ScoringParameters, explain: bool = False):
         features = case_features(case)
@@ -270,6 +308,7 @@ class RecommendationEngine:
             explanation["caveat"] = f"{existing} {fallback}".strip()
         budget_value = case.get("budget", case.get("Budget"))
         budget = None if budget_value in {None, ""} else float(budget_value)
+        coverage_status, coverage_reasons = self.coverage_check(case)
         decision_status, decision_reasons = selective_decision_status(
             selected,
             confidence,
@@ -277,7 +316,10 @@ class RecommendationEngine:
             rule_results,
             budget,
             no_safe_action=set(ACTIONS[:3]).issubset(hard_rejected_actions(rule_results)),
+            coverage_reasons=coverage_reasons,
         )
+        if ablation == "without_review_gate" and decision_status == "CHECK ADVISED":
+            decision_status, decision_reasons = "RECOMMEND", []
         rejected_actions = hard_rejected_actions(rule_results)
         feasible_actions = [action for action in ACTIONS if action not in rejected_actions]
         if decision_status == "NO SAFE RECOMMENDATION":
@@ -286,6 +328,8 @@ class RecommendationEngine:
                 "the displayed Investigate action is a manual-review fallback, not an execution instruction."
             )
             explanation["caveat"] = f"{explanation.get('caveat', '').strip()} {caveat}".strip()
+        if ablation == "without_explanation":
+            explanation = {}
         return EngineResult(
             selected, confidence, float(raw_probabilities[ACTIONS.index(selected)]), performance,
             "High" if confidence >= .75 else "Medium" if confidence >= .50 else "Low",
@@ -297,6 +341,8 @@ class RecommendationEngine:
             decision_reasons,
             feasible_actions,
             rejected_actions,
+            coverage_status,
+            coverage_reasons,
         )
 
 

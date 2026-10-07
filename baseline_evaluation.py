@@ -366,6 +366,26 @@ def weighted_deterministic_predict(rows: List[dict]) -> BaselineResult:
     )
 
 
+def majority_class_predict(train_rows: List[dict], test_rows: List[dict]) -> BaselineResult:
+    """Predict the training partition's most frequent action for every test case."""
+
+    counts = {action: 0 for action in ACTION_ORDER}
+    for row in train_rows:
+        counts[canonical_action(row["label"])] += 1
+    majority = max(ACTION_ORDER, key=lambda action: (counts[action], -ACTION_INDEX[action]))
+    confidence = counts[majority] / max(1, len(train_rows))
+    ranking = sorted(ACTION_ORDER, key=lambda action: (-counts[action], ACTION_INDEX[action]))
+    return BaselineResult(
+        "B0: Majority-Class Popularity",
+        [majority] * len(test_rows),
+        [confidence] * len(test_rows),
+        [f"Training-only majority action: {majority}." for _ in test_rows],
+        0.0,
+        [ranking[:2] for _ in test_rows],
+        [0.0] * len(test_rows),
+    )
+
+
 def fit_centroid_model(train_rows: List[dict]) -> Tuple[List[str], Dict[str, List[float]], List[float], List[float]]:
     observed = {row["label"] for row in train_rows}
     labels = [action for action in ACTION_ORDER if action in observed]

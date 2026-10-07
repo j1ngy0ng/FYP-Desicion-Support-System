@@ -688,6 +688,8 @@ def analysis(campaign_id: str, user: CurrentUser, db: Db) -> dict[str, Any]:
         "decision_reasons": result.decision_reasons,
         "feasible_actions": result.feasible_actions,
         "hard_rejected_actions": result.hard_rejected_actions,
+        "coverage_status": result.coverage_status,
+        "coverage_reasons": result.coverage_reasons,
     }
 
 
@@ -704,6 +706,8 @@ def recommendation_json(item: Recommendation) -> dict[str, Any]:
         "action_evidence_status": evidence.get("action_evidence_status", "legacy_unknown"),
         "decision_status": evidence.get("decision_status", "legacy_unknown"),
         "decision_reasons": evidence.get("decision_reasons", []),
+        "coverage_status": evidence.get("coverage_status", "legacy_unknown"),
+        "coverage_reasons": evidence.get("coverage_reasons", []),
         "latency_ms": item.latency_ms, "status": item.decision, "date": item.generated_at.strftime("%d %b %Y"),
     }
 
@@ -730,6 +734,8 @@ def generate(payload: GenerateInput, user: CurrentUser, db: Db) -> dict[str, Any
             "decision_reasons": result.decision_reasons,
             "feasible_actions": result.feasible_actions,
             "hard_rejected_actions": result.hard_rejected_actions,
+            "coverage_status": result.coverage_status,
+            "coverage_reasons": result.coverage_reasons,
         }),
         ranked_actions=json.dumps(result.ranked_actions), latency_ms=result.latency_ms,
     )
@@ -1370,7 +1376,7 @@ def evaluation_summary(_: CurrentUser, db: Db) -> dict[str, Any]:
         proposed_name = "Proposed System - Full Framework"
         baseline_names = [
             name for name in metrics
-            if name.startswith(("B1:", "B2:", "B3:", "B4:", "Post-hoc", "Supervisor Baseline"))
+            if name.startswith(("B0:", "B1:", "B2:", "B3:", "B4:", "Post-hoc", "Supervisor Baseline"))
         ]
         ablation_names = [name for name in metrics if name.startswith("Proposed Ablation")]
         runs, blocks = experiment_blocks(metrics, study_rows)

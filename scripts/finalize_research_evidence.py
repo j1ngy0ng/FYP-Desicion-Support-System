@@ -17,6 +17,10 @@ from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
 import torch
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 from baseline_evaluation import ACTION_ORDER, conflict_reasons
 from scripts.run_confirmatory_evaluation import SEEDS, load_rows, split_rows
@@ -308,8 +312,20 @@ def validate_action_sets(path: Path) -> tuple[list[dict], dict]:
     }
 
 
-def reliability_rows(engine: RecommendationEngine, rows: list[dict], partition: str, seed: int) -> tuple[list[dict], dict]:
-    outputs = [engine.recommend(row, engine.default_rules, row["Intent"]) for row in rows]
+def reliability_rows(
+    engine: RecommendationEngine,
+    rows: list[dict],
+    partition: str,
+    seed: int,
+    *,
+    variant: str = "full",
+    calibration: str = "Calibrated",
+    intent: str = "All",
+) -> tuple[list[dict], dict]:
+    outputs = [
+        engine.recommend(row, engine.default_rules, row["Intent"], ablation=variant)
+        for row in rows
+    ]
     confidences = [result.confidence for result in outputs]
     correct = [int(result.action == row["label"]) for result, row in zip(outputs, rows)]
     table = []
@@ -329,6 +345,8 @@ def reliability_rows(engine: RecommendationEngine, rows: list[dict], partition: 
         table.append({
             "Partition": partition,
             "Seed": seed,
+            "Intent": intent,
+            "Calibration": calibration,
             "Bin": index,
             "Interval": f"[{lower:.1f}, {upper:.1f}{']' if index == 5 else ')'}",
             "Eligible_Cases_n": count,
@@ -350,6 +368,8 @@ def reliability_rows(engine: RecommendationEngine, rows: list[dict], partition: 
     summary = {
         "Partition": partition,
         "Seed": seed,
+        "Intent": intent,
+        "Calibration": calibration,
         "Cases": len(rows),
         "ECE": round(ece, 6),
         "NLL": round(nll, 6),
@@ -364,6 +384,110 @@ def reliability_rows(engine: RecommendationEngine, rows: list[dict], partition: 
     return table, summary
 
 
+def reliability_plot(rows: list[dict], path: Path, *, per_intent: bool) -> None:
+    intents = ("Growth", "Retention", "Survival") if per_intent else ("All",)
+    partitions = ("Validation", "Test")
+    figure, axes = plt.subplots(
+        len(partitions), len(intents),
+        figsize=(4.2 * len(intents), 7.2),
+        squeeze=False,
+        sharex=True,
+        sharey=True,
+    )
+    for row_index, partition in enumerate(partitions):
+        for column_index, intent in enumerate(intents):
+            axis = axes[row_index][column_index]
+            axis.plot([0, 1], [0, 1], color="#777777", linestyle="--", linewidth=1, label="Perfect calibration")
+            for calibration, colour, marker in (
+                ("Raw", "#d97706", "s"),
+                ("Calibrated", "#166534", "o"),
+            ):
+                points = [
+                    row for row in rows
+                    if row["Partition"] == partition
+                    and row["Intent"] == intent
+                    and row["Calibration"] == calibration
+                    and row["Seed"] == 42
+                    and row["Mean_Confidence"] != ""
+                ]
+                axis.plot(
+                    [float(row["Mean_Confidence"]) for row in points],
+                    [float(row["Observed_Accuracy"]) for row in points],
+                    color=colour,
+                    marker=marker,
+                    linewidth=1.6,
+                    label=calibration,
+                )
+            axis.set_title(f"{partition} — {intent}" if per_intent else partition)
+            axis.set_xlim(0, 1)
+            axis.set_ylim(0, 1)
+            axis.grid(alpha=.2)
+            if row_index == len(partitions) - 1:
+                axis.set_xlabel("Mean confidence")
+            if column_index == 0:
+                axis.set_ylabel("Observed accuracy")
+    handles, labels = axes[0][0].get_legend_handles_labels()
+    figure.legend(handles, labels, loc="lower center", ncol=3, frameon=False)
+    figure.suptitle("Reliability diagram (seed 42; descriptive small-sample evidence)", fontsize=12)
+    figure.tight_layout(rect=(0, .06, 1, .96))
+    figure.savefig(path, dpi=300, bbox_inches="tight")
+    plt.close(figure)
+
+
+def coverage_audit(engine: RecommendationEngine, rows: list[dict], partition: str) -> list[dict]:
+    audited = []
+    for row in rows:
+        result = engine.recommend(row, engine.default_rules, row["Intent"])
+        audited.append({
+            "Partition": partition,
+            "Campaign_ID": row["Campaign_ID"],
+            "Intent": row["Intent"],
+            "Coverage_Status": result.coverage_status,
+            "Coverage_Reasons": "; ".join(result.coverage_reasons),
+            "Decision_Status": result.decision_status,
+            "Recommended_Action": result.action,
+        })
+    return audited
+
+
+def component_ablation_summary(engine: RecommendationEngine, rows: list[dict]) -> list[dict]:
+    variants = (
+        ("P: Full Proposed Method", "full"),
+        ("A4: Full Method without Structured Explanation", "without_explanation"),
+        ("A5: Full Method without Review Gate", "without_review_gate"),
+    )
+    summaries = []
+    for name, variant in variants:
+        outputs = [
+            engine.recommend(row, engine.default_rules, row["Intent"], ablation=variant)
+            for row in rows
+        ]
+        accepted = [
+            (row, result) for row, result in zip(rows, outputs)
+            if result.decision_status == "RECOMMEND"
+        ]
+        summaries.append({
+            "Configuration": name,
+            "Cases": len(rows),
+            "Recommendation_Accuracy": round(
+                sum(result.action == row["label"] for row, result in zip(rows, outputs)) / len(rows), 6
+            ),
+            "Explanation_Presence_Rate": round(
+                sum(bool(result.explanation) for result in outputs) / len(rows), 6
+            ),
+            "Automatic_Coverage": round(len(accepted) / len(rows), 6),
+            "Accepted_Accuracy": "" if not accepted else round(
+                sum(result.action == row["label"] for row, result in accepted) / len(accepted), 6
+            ),
+            "Accepted_Conflict_Rate": "" if not accepted else round(
+                sum(bool(conflict_reasons(row, result.action)) for row, result in accepted) / len(accepted), 6
+            ),
+            "No_Safe_Cases": sum(result.decision_status == "NO SAFE RECOMMENDATION" for result in outputs),
+            "Out_Of_Coverage_Cases": sum(result.coverage_status != "IN_SCOPE" for result in outputs),
+        })
+    return summaries
+
+
 def risk_coverage(engine: RecommendationEngine, rows: list[dict], partition: str) -> list[dict]:
     cases = []
     for row in rows:
@@ -372,6 +496,7 @@ def risk_coverage(engine: RecommendationEngine, rows: list[dict], partition: str
         base_eligible = (
             result.action != "Investigate"
             and result.decision_status != "NO SAFE RECOMMENDATION"
+            and result.coverage_status == "IN_SCOPE"
             and not (result.action == "Increase" and row.get("Budget") in {None, ""})
             and margin >= MIN_TOP_TWO_MARGIN
             and not any(
@@ -391,6 +516,7 @@ def risk_coverage(engine: RecommendationEngine, rows: list[dict], partition: str
             "Minimum_Top_Two_Margin": MIN_TOP_TWO_MARGIN,
             "Selected_Operating_Point": "Yes" if threshold == MIN_AUTO_CONFIDENCE else "No",
             "Accepted_Cases": len(accepted),
+            "Out_Of_Coverage_Cases": sum(item[1].coverage_status != "IN_SCOPE" for item in cases),
             "Coverage": round(len(accepted) / len(rows), 6),
             "Accepted_Accuracy": (
                 "" if not accepted else round(sum(result.action == row["label"] for row, result, _, _ in accepted) / len(accepted), 6)
@@ -432,18 +558,66 @@ def main() -> None:
     )
 
     reliability_table, reliability_summary = [], []
+    calibration_effect_summaries, calibration_effect_rows = [], []
+    per_intent_reliability, per_intent_summaries = [], []
     for seed in SEEDS:
         seeded = RecommendationEngine(TRAINING_DATA, audited_benchmark=BENCHMARK, seed=seed)
         for partition, partition_rows in (("Validation", validation_rows), ("Test", test_rows)):
-            table, summary = reliability_rows(seeded, partition_rows, partition, seed)
-            reliability_table.extend(table)
-            reliability_summary.append(summary)
+            summaries = {}
+            for calibration, variant in (("Raw", "without_calibration"), ("Calibrated", "full")):
+                table, summary = reliability_rows(
+                    seeded, partition_rows, partition, seed,
+                    variant=variant, calibration=calibration,
+                )
+                calibration_effect_rows.extend(table)
+                summaries[calibration] = summary
+                if calibration == "Calibrated":
+                    reliability_table.extend(table)
+                    reliability_summary.append(summary)
+            calibration_effect_summaries.append({
+                "Partition": partition,
+                "Seed": seed,
+                "Cases": len(partition_rows),
+                "Raw_ECE": summaries["Raw"]["ECE"],
+                "Calibrated_ECE": summaries["Calibrated"]["ECE"],
+                "ECE_Improvement_Raw_Minus_Calibrated": round(
+                    summaries["Raw"]["ECE"] - summaries["Calibrated"]["ECE"], 6
+                ),
+                "Raw_NLL": summaries["Raw"]["NLL"],
+                "Calibrated_NLL": summaries["Calibrated"]["NLL"],
+                "Raw_Brier": summaries["Raw"]["Brier_Score"],
+                "Calibrated_Brier": summaries["Calibrated"]["Brier_Score"],
+                "ECE_Improved": "Yes" if summaries["Calibrated"]["ECE"] < summaries["Raw"]["ECE"] else "No",
+            })
+            for intent in ("Growth", "Retention", "Survival"):
+                intent_rows = [row for row in partition_rows if row["Intent"] == intent]
+                for calibration, variant in (("Raw", "without_calibration"), ("Calibrated", "full")):
+                    table, summary = reliability_rows(
+                        seeded, intent_rows, partition, seed,
+                        variant=variant, calibration=calibration, intent=intent,
+                    )
+                    per_intent_reliability.extend(table)
+                    per_intent_summaries.append(summary)
     write_csv(OUTPUT / "reliability_table.csv", reliability_table)
     write_csv(OUTPUT / "calibration_summary.csv", reliability_summary)
+    write_csv(OUTPUT / "calibration_effect_summary.csv", calibration_effect_summaries)
+    write_csv(OUTPUT / "calibration_effect_reliability_table.csv", calibration_effect_rows)
+    write_csv(OUTPUT / "per_intent_calibration_summary.csv", per_intent_summaries)
+    write_csv(OUTPUT / "per_intent_reliability_table.csv", per_intent_reliability)
+    reliability_plot(calibration_effect_rows, OUTPUT / "reliability_plot.png", per_intent=False)
+    reliability_plot(per_intent_reliability, OUTPUT / "per_intent_reliability_plot.png", per_intent=True)
     write_csv(
         OUTPUT / "risk_coverage_curve.csv",
         risk_coverage(engine, validation_rows, "Validation") + risk_coverage(engine, test_rows, "Test"),
     )
+    coverage_rows = coverage_audit(engine, validation_rows, "Validation") + coverage_audit(engine, test_rows, "Test")
+    write_csv(OUTPUT / "benchmark_coverage_audit.csv", coverage_rows)
+    component_ablations = component_ablation_summary(engine, test_rows)
+    write_csv(OUTPUT / "component_ablation_summary.csv", component_ablations)
+    validation_calibration = [row for row in calibration_effect_summaries if row["Partition"] == "Validation"]
+    mean_raw_ece = statistics.fmean(row["Raw_ECE"] for row in validation_calibration)
+    mean_calibrated_ece = statistics.fmean(row["Calibrated_ECE"] for row in validation_calibration)
+    calibration_improved = mean_calibrated_ece < mean_raw_ece
 
     failures = []
     for row in test_rows:
@@ -523,7 +697,7 @@ def main() -> None:
         "cuda_device": torch.cuda.get_device_name(0) if torch.cuda.is_available() else None,
         "packages": {
             name: package_version(name)
-            for name in ("fastapi", "numpy", "pandas", "scikit-learn", "sqlalchemy", "pydantic")
+            for name in ("fastapi", "numpy", "pandas", "matplotlib", "scikit-learn", "sqlalchemy", "pydantic")
         },
     }
     (OUTPUT / "environment.json").write_text(
@@ -535,6 +709,7 @@ def main() -> None:
 - The recommendation unit is one operational action: Increase, Maintain, Reduce or Investigate. Channel selection is not the primary output.
 - Each case has exactly one declared primary intent: Survival, Retention or Growth. Mixed intent is outside the study scope and must be routed to human review.
 - The 19-case validation partition contains no Increase reference cases. Calibration is therefore aggregate, profile-specific descriptive evidence and does not establish Increase-class or population-level calibration.
+- Temperature scaling did not improve mean validation ECE in the frozen evaluation; Claim 3 is therefore not supported and calibration is reported as a negative result.
 - The held-out test partition contains 19 cases. Coverage, correctness, conflict and faithfulness findings are small-sample technical evidence.
 - The source benchmark does not provide complete business size, business maturity or prohibited-action fields. These are documented limitations and are not imputed or invented.
 - Formal TAR UMT ethics approval is recorded; human-reliance results remain unavailable until genuine participant responses are collected under that approved scope.
@@ -558,11 +733,34 @@ def main() -> None:
         "calibration": {
             "bins": list(BIN_EDGES),
             "summaries": reliability_summary,
+            "per_intent_summary_file": "per_intent_calibration_summary.csv",
+            "aggregate_reliability_plot": "reliability_plot.png",
+            "per_intent_reliability_plot": "per_intent_reliability_plot.png",
+            "mean_raw_validation_ece": round(mean_raw_ece, 6),
+            "mean_calibrated_validation_ece": round(mean_calibrated_ece, 6),
+            "claim_3_supported": calibration_improved,
             "zero_increase_validation_limitation": True,
         },
         "selective_policy": {
             "confidence_threshold": MIN_AUTO_CONFIDENCE,
             "top_two_margin_threshold": MIN_TOP_TWO_MARGIN,
+            "coverage_detector": "training-only audited-benchmark feature envelope plus observed-channel membership",
+            "out_of_coverage_validation_cases": sum(
+                row["Partition"] == "Validation" and row["Coverage_Status"] != "IN_SCOPE"
+                for row in coverage_rows
+            ),
+            "out_of_coverage_test_cases": sum(
+                row["Partition"] == "Test" and row["Coverage_Status"] != "IN_SCOPE"
+                for row in coverage_rows
+            ),
+        },
+        "recommendation_quality": {
+            "majority_baseline": "B0: Majority-Class Popularity",
+            "per_intent_metrics_file": "../confirmatory_evaluation/per_intent_metrics.csv"
+        },
+        "additional_ablations": {
+            "summary_file": "component_ablation_summary.csv",
+            "configurations": [row["Configuration"] for row in component_ablations],
         },
         "set_based_safeguard_interventions": len(intervention_rows),
         "ethics_approval": {
