@@ -1,8 +1,8 @@
 {
   "status": "approved_and_ready_for_participant_collection",
-  "generated_at": "2026-10-07T13:22:28+08:00",
-  "implementation_commit": "c86c4a3ebce4358fb00d55aa6a3f2922ae23b8e3",
-  "freeze_tag": "fyp-human-study-ready-v2",
+  "generated_at": "2026-10-08T17:02:02+08:00",
+  "implementation_commit": "20b17ef2dc65a8d09f1f34baccc6526ef7f3a6c9",
+  "freeze_tag": "fyp-human-study-ready-v3",
   "model_evaluation_freeze": "fyp-code-freeze-v7",
   "ethics": {
     "authority": "TAR UMT Ethics Committee",
@@ -17,6 +17,8 @@
     "backend_url": "http://127.0.0.1:8010",
     "response_database": "human_study.db",
     "database_separate_from_operational_prototype": true,
+    "ethics_reference_persisted": true,
+    "administrator_evaluation_contains_collection_form": false,
     "cases_per_participant": 9,
     "pseudonymous_codes_only": true,
     "participant_role": "participant",
@@ -27,7 +29,8 @@
   "verification": {
     "python_tests": {
       "passed": 54,
-      "failed": 0
+      "failed": 0,
+      "command": ".venv\\Scripts\\python.exe -m unittest backend.tests.test_engine backend.tests.test_api tests.test_three_layer_data tests.test_human_provided_dataset tests.test_baseline_evaluation tests.test_final_research_evidence tests.test_synthetic_annotations"
     },
     "frontend_production_build": "passed",
     "runtime_health": "ok",
