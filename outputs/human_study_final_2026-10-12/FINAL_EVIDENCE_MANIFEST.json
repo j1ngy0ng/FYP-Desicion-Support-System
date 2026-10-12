@@ -1,0 +1,81 @@
+{
+  "package_created": "2026-10-12",
+  "timezone": "Asia/Kuala_Lumpur",
+  "analysis_source_commit": "117ec21c242293827c21995740c91c4806fb3bc3",
+  "evidence_package_tag": "fyp-human-study-results-v1",
+  "study": {
+    "responses": 162,
+    "participants": 18,
+    "complete_participants": 18,
+    "trials_per_participant": 9,
+    "consent_confirmed_responses": 162,
+    "missing_required_values": 0,
+    "duplicate_participant_cases": 0,
+    "bootstrap_seed": 42,
+    "participant_clustered_bootstrap_replicates": 10000,
+    "status": "provisional_pending_recruitment_and_provenance_verification"
+  },
+  "verification": {
+    "python_tests": "57 passed",
+    "python_test_exit_code": 0,
+    "frontend": "TypeScript check and Vite production build passed",
+    "frontend_build_exit_code": 0,
+    "word_comments_retained": 14,
+    "word_render_pages": 151,
+    "workbook_formula_error_matches": 0
+  },
+  "protocol_deviations": [
+    "All 18 database records identify the participant group as Non-practitioner; the planned practitioner quota was not demonstrated.",
+    "Counterbalancing was uneven and CB-3 had no participant.",
+    "Two complete participant blocks pre-date the main October collection period and require recruitment-log verification.",
+    "Thirteen participants recorded less than 120 seconds across nine trials.",
+    "The largest identical seven-rating-and-decision response vector occurred 24 times within one condition.",
+    "No free-text comment was submitted."
+  ],
+  "interpretation_boundary": "All human-study comparisons are descriptive. No practitioner-specific, causal or population-level effectiveness claim is made, and H6 does not support an unrestricted appropriate-reliance claim.",
+  "artifacts": [
+    {
+      "path": "outputs/human_study_final_2026-10-12/Human_Study_Final_Analysis.xlsx",
+      "bytes": 45938,
+      "sha256": "119d51dc33334271c9ecf28aaf393c611247d3f8a12db820efba228d276cbf7f"
+    },
+    {
+      "path": "outputs/human_study_final_2026-10-12/analysis_ready_responses.csv",
+      "bytes": 34707,
+      "sha256": "fa9421e73f4beb614f8d9061a024c77a5dbfdb3a1a999d6162f0748cdd63d601"
+    },
+    {
+      "path": "outputs/human_study_final_2026-10-12/human_study_results.json",
+      "bytes": 51618,
+      "sha256": "619f67352c093f0c5838776d0295eeba4ed00750fd505deac0ab972bbd8fd2f6"
+    },
+    {
+      "path": "outputs/human_study_final_2026-10-12/python_tests.txt",
+      "bytes": 9331,
+      "sha256": "903482a9549596854d022a3159652a1dfaa1286a30e3c7e8633dcbfd5dd231e0"
+    },
+    {
+      "path": "outputs/human_study_final_2026-10-12/frontend_build.txt",
+      "bytes": 392,
+      "sha256": "7f1af64afd9fe998e4736a40533d599f247772e84a7fc59630d4edd306ea14cf"
+    },
+    {
+      "path": "C:/Users/user/Desktop/FYP/Template (Project 1_2)/RSW_NgJingYong_FullText_Human_Study_Results_2026-10-12.docx",
+      "bytes": 2494239,
+      "sha256": "8694de5a85842f51d981ef581af1ad83d518d2c7f29f394c474de07cc731d2a5",
+      "repository_status": "external final thesis artifact"
+    },
+    {
+      "path": "C:/Users/user/Desktop/FYP Study Secure/2026-10-12/marketsense_human_study_frozen_2026-10-12.db",
+      "bytes": 135168,
+      "sha256": "0bb0bb1110d253c20278fa3fe8cc269f30ce5775ff20fb7e2015cbb214e04f9c",
+      "repository_status": "external restricted raw-data freeze"
+    },
+    {
+      "path": "C:/Users/user/Desktop/FYP Study Secure/2026-10-12/human_study_responses_pseudonymous_raw.csv",
+      "bytes": 28058,
+      "sha256": "36b752eb8365c81cc0a161ebfe53ab52b12649b6fef64f9428710f76499d040f",
+      "repository_status": "external restricted raw-data export"
+    }
+  ]
+}
