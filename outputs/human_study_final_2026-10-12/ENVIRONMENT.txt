@@ -1,0 +1,16 @@
+Captured: 2026-10-12 (Asia/Kuala_Lumpur)
+Operating system: Windows 10.0.26200, 64-bit
+Python: 3.11.9
+NumPy: 1.26.4
+pandas: 2.1.4
+FastAPI: 0.139.0
+PyTorch: 2.7.1+cu118
+scikit-learn: 1.7.2
+Node.js: 24.18.0
+pnpm: 11.16.0
+Git: 2.51.2.windows.1
+
+Human-study analysis seed: 42
+Participant-clustered bootstrap replicates: 10,000
+Python test result: 57 tests passed
+Frontend result: TypeScript check and Vite production build passed

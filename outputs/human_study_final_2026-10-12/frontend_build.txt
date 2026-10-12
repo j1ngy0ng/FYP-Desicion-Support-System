@@ -1,0 +1,11 @@
+$ tsc --noEmit && vite build
+vite v8.1.4 building client environment for production...
+[2K
+transforming...✓ 21 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.46 kB │ gzip:  0.30 kB
+dist/assets/index-BPUchAIR.css   12.36 kB │ gzip:  3.61 kB
+dist/assets/index-B5Wqk9ul.js   263.13 kB │ gzip: 76.54 kB
+
+✓ built in 139ms

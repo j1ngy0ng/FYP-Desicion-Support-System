@@ -1,0 +1,18 @@
+﻿condition_label,decision,count,within_condition_rate
+H1: Raw-Uncalibrated,Modify before accepting,2,0.08
+H1: Raw-Uncalibrated,Reject,1,0.04
+H1: Raw-Uncalibrated,Verify before accepting,22,0.88
+H2: Calibrated-Confidence Only,Modify before accepting,1,0.034482758620689655
+H2: Calibrated-Confidence Only,Reject,26,0.896551724137931
+H2: Calibrated-Confidence Only,Verify before accepting,2,0.06896551724137931
+H3: Structured-Uncalibrated,Accept without checking,4,0.14814814814814814
+H3: Structured-Uncalibrated,Modify before accepting,1,0.037037037037037035
+H3: Structured-Uncalibrated,Verify before accepting,22,0.8148148148148148
+H4: Terse-Calibrated,Modify before accepting,1,0.034482758620689655
+H4: Terse-Calibrated,Reject,24,0.8275862068965517
+H4: Terse-Calibrated,Verify before accepting,4,0.13793103448275862
+H5: Structured-Calibrated No Caveat,Modify before accepting,2,0.08
+H5: Structured-Calibrated No Caveat,Verify before accepting,23,0.92
+H6: Complete Calibrated DIAC,Accept without checking,24,0.8888888888888888
+H6: Complete Calibrated DIAC,Modify before accepting,2,0.07407407407407407
+H6: Complete Calibrated DIAC,Verify before accepting,1,0.037037037037037035

@@ -1,0 +1,64 @@
+﻿contrast,left_condition,right_condition,metric,mean_paired_difference,cluster_bootstrap_ci_low,cluster_bootstrap_ci_high,participants,interpretation
+H2-H1,H2: Calibrated-Confidence Only,H1: Raw-Uncalibrated,actionability,-1.6666666666666667,-1.9444444444444444,-1.3055555555555556,18,descriptive; positive favours left condition
+H2-H1,H2: Calibrated-Confidence Only,H1: Raw-Uncalibrated,specificity,-1.7777777777777777,-1.9444444444444444,-1.5555555555555556,18,descriptive; positive favours left condition
+H2-H1,H2: Calibrated-Confidence Only,H1: Raw-Uncalibrated,feasibility,-1.5555555555555556,-1.8888888888888888,-1.1111111111111112,18,descriptive; positive favours left condition
+H2-H1,H2: Calibrated-Confidence Only,H1: Raw-Uncalibrated,explanation_usefulness,-1.8611111111111112,-2.2222222222222223,-1.5555555555555556,18,descriptive; positive favours left condition
+H2-H1,H2: Calibrated-Confidence Only,H1: Raw-Uncalibrated,reliance,-1.75,-2.0,-1.4166666666666667,18,descriptive; positive favours left condition
+H2-H1,H2: Calibrated-Confidence Only,H1: Raw-Uncalibrated,willingness_to_review,1.4444444444444444,1.1388888888888888,1.7222222222222223,18,descriptive; positive favours left condition
+H2-H1,H2: Calibrated-Confidence Only,H1: Raw-Uncalibrated,user_acceptance,-1.6666666666666667,-1.9166666666666667,-1.3611111111111112,18,descriptive; positive favours left condition
+H2-H1,H2: Calibrated-Confidence Only,H1: Raw-Uncalibrated,trust_alignment,-0.2986111111111111,-0.4305555555555556,-0.16666666666666666,18,descriptive; positive favours left condition
+H2-H1,H2: Calibrated-Confidence Only,H1: Raw-Uncalibrated,decision_time_seconds,6.652694444444445,-2.2788861111111114,21.73306875,18,descriptive; positive favours left condition
+H3-H1,H3: Structured-Uncalibrated,H1: Raw-Uncalibrated,actionability,1.2222222222222223,0.9444444444444444,1.5,18,descriptive; positive favours left condition
+H3-H1,H3: Structured-Uncalibrated,H1: Raw-Uncalibrated,specificity,1.1111111111111112,0.6944444444444444,1.5,18,descriptive; positive favours left condition
+H3-H1,H3: Structured-Uncalibrated,H1: Raw-Uncalibrated,feasibility,1.1944444444444444,0.8888888888888888,1.5,18,descriptive; positive favours left condition
+H3-H1,H3: Structured-Uncalibrated,H1: Raw-Uncalibrated,explanation_usefulness,0.7222222222222222,0.05555555555555555,1.3055555555555556,18,descriptive; positive favours left condition
+H3-H1,H3: Structured-Uncalibrated,H1: Raw-Uncalibrated,reliance,1.0833333333333333,0.5833333333333334,1.5277777777777777,18,descriptive; positive favours left condition
+H3-H1,H3: Structured-Uncalibrated,H1: Raw-Uncalibrated,willingness_to_review,-1.0833333333333333,-1.4444444444444444,-0.6944444444444444,18,descriptive; positive favours left condition
+H3-H1,H3: Structured-Uncalibrated,H1: Raw-Uncalibrated,user_acceptance,1.1388888888888888,0.8611111111111112,1.4444444444444444,18,descriptive; positive favours left condition
+H3-H1,H3: Structured-Uncalibrated,H1: Raw-Uncalibrated,trust_alignment,0.13194444444444445,-0.034722222222222224,0.2777777777777778,18,descriptive; positive favours left condition
+H3-H1,H3: Structured-Uncalibrated,H1: Raw-Uncalibrated,decision_time_seconds,7.358583333333333,2.922215277777778,14.103291666666664,18,descriptive; positive favours left condition
+H6-H3,H6: Complete Calibrated DIAC,H3: Structured-Uncalibrated,actionability,0.6111111111111112,0.3055555555555556,0.8611111111111112,18,descriptive; positive favours left condition
+H6-H3,H6: Complete Calibrated DIAC,H3: Structured-Uncalibrated,specificity,0.6944444444444444,0.3611111111111111,0.9722222222222222,18,descriptive; positive favours left condition
+H6-H3,H6: Complete Calibrated DIAC,H3: Structured-Uncalibrated,feasibility,0.7222222222222222,0.5277777777777778,0.8888888888888888,18,descriptive; positive favours left condition
+H6-H3,H6: Complete Calibrated DIAC,H3: Structured-Uncalibrated,explanation_usefulness,0.8055555555555556,0.3888888888888889,1.2777777777777777,18,descriptive; positive favours left condition
+H6-H3,H6: Complete Calibrated DIAC,H3: Structured-Uncalibrated,reliance,0.6944444444444444,0.4444444444444444,0.8888888888888888,18,descriptive; positive favours left condition
+H6-H3,H6: Complete Calibrated DIAC,H3: Structured-Uncalibrated,willingness_to_review,-0.9166666666666666,-1.2222222222222223,-0.5833333333333334,18,descriptive; positive favours left condition
+H6-H3,H6: Complete Calibrated DIAC,H3: Structured-Uncalibrated,user_acceptance,0.7777777777777778,0.5555555555555556,0.9444444444444444,18,descriptive; positive favours left condition
+H6-H3,H6: Complete Calibrated DIAC,H3: Structured-Uncalibrated,trust_alignment,0.2569444444444444,0.1527777777777778,0.375,18,descriptive; positive favours left condition
+H6-H3,H6: Complete Calibrated DIAC,H3: Structured-Uncalibrated,decision_time_seconds,-4.007333333333333,-6.549261805555556,-1.5786687499999998,18,descriptive; positive favours left condition
+H6-H2,H6: Complete Calibrated DIAC,H2: Calibrated-Confidence Only,actionability,3.5,2.75,4.0,18,descriptive; positive favours left condition
+H6-H2,H6: Complete Calibrated DIAC,H2: Calibrated-Confidence Only,specificity,3.5833333333333335,2.9166666666666665,4.0,18,descriptive; positive favours left condition
+H6-H2,H6: Complete Calibrated DIAC,H2: Calibrated-Confidence Only,feasibility,3.4722222222222223,2.7777777777777777,4.0,18,descriptive; positive favours left condition
+H6-H2,H6: Complete Calibrated DIAC,H2: Calibrated-Confidence Only,explanation_usefulness,3.388888888888889,2.4444444444444446,4.0,18,descriptive; positive favours left condition
+H6-H2,H6: Complete Calibrated DIAC,H2: Calibrated-Confidence Only,reliance,3.5277777777777777,2.75,4.0,18,descriptive; positive favours left condition
+H6-H2,H6: Complete Calibrated DIAC,H2: Calibrated-Confidence Only,willingness_to_review,-3.4444444444444446,-4.0,-2.7777777777777777,18,descriptive; positive favours left condition
+H6-H2,H6: Complete Calibrated DIAC,H2: Calibrated-Confidence Only,user_acceptance,3.5833333333333335,2.9444444444444446,4.0,18,descriptive; positive favours left condition
+H6-H2,H6: Complete Calibrated DIAC,H2: Calibrated-Confidence Only,trust_alignment,0.6875,0.5069444444444444,0.8472222222222222,18,descriptive; positive favours left condition
+H6-H2,H6: Complete Calibrated DIAC,H2: Calibrated-Confidence Only,decision_time_seconds,-3.301444444444444,-12.761074999999996,2.786460416666664,18,descriptive; positive favours left condition
+H5-H4,H5: Structured-Calibrated No Caveat,H4: Terse-Calibrated,actionability,1.25,0.8611111111111112,1.5833333333333333,18,descriptive; positive favours left condition
+H5-H4,H5: Structured-Calibrated No Caveat,H4: Terse-Calibrated,specificity,1.2222222222222223,0.7777777777777778,1.5840277777777676,18,descriptive; positive favours left condition
+H5-H4,H5: Structured-Calibrated No Caveat,H4: Terse-Calibrated,feasibility,1.3333333333333333,1.0555555555555556,1.5833333333333333,18,descriptive; positive favours left condition
+H5-H4,H5: Structured-Calibrated No Caveat,H4: Terse-Calibrated,explanation_usefulness,1.2222222222222223,0.75,1.6111111111111112,18,descriptive; positive favours left condition
+H5-H4,H5: Structured-Calibrated No Caveat,H4: Terse-Calibrated,reliance,1.1111111111111112,0.5833333333333334,1.5277777777777777,18,descriptive; positive favours left condition
+H5-H4,H5: Structured-Calibrated No Caveat,H4: Terse-Calibrated,willingness_to_review,-2.0,-2.388888888888889,-1.5833333333333333,18,descriptive; positive favours left condition
+H5-H4,H5: Structured-Calibrated No Caveat,H4: Terse-Calibrated,user_acceptance,1.2777777777777777,1.0,1.5555555555555556,18,descriptive; positive favours left condition
+H5-H4,H5: Structured-Calibrated No Caveat,H4: Terse-Calibrated,trust_alignment,0.2638888888888889,0.1317708333333335,0.3888888888888889,18,descriptive; positive favours left condition
+H5-H4,H5: Structured-Calibrated No Caveat,H4: Terse-Calibrated,decision_time_seconds,-3.1270555555555544,-15.841398611111106,5.15797986111111,18,descriptive; positive favours left condition
+H6-H5,H6: Complete Calibrated DIAC,H5: Structured-Calibrated No Caveat,actionability,1.3888888888888888,1.0555555555555556,1.6666666666666667,18,descriptive; positive favours left condition
+H6-H5,H6: Complete Calibrated DIAC,H5: Structured-Calibrated No Caveat,specificity,1.4444444444444444,1.1111111111111112,1.7222222222222223,18,descriptive; positive favours left condition
+H6-H5,H6: Complete Calibrated DIAC,H5: Structured-Calibrated No Caveat,feasibility,1.4166666666666667,1.1388888888888888,1.6666666666666667,18,descriptive; positive favours left condition
+H6-H5,H6: Complete Calibrated DIAC,H5: Structured-Calibrated No Caveat,explanation_usefulness,1.3611111111111112,1.0555555555555556,1.6666666666666667,18,descriptive; positive favours left condition
+H6-H5,H6: Complete Calibrated DIAC,H5: Structured-Calibrated No Caveat,reliance,1.5555555555555556,1.3055555555555556,1.7777777777777777,18,descriptive; positive favours left condition
+H6-H5,H6: Complete Calibrated DIAC,H5: Structured-Calibrated No Caveat,willingness_to_review,-1.5,-1.8888888888888888,-1.0555555555555556,18,descriptive; positive favours left condition
+H6-H5,H6: Complete Calibrated DIAC,H5: Structured-Calibrated No Caveat,user_acceptance,1.5,1.2222222222222223,1.75,18,descriptive; positive favours left condition
+H6-H5,H6: Complete Calibrated DIAC,H5: Structured-Calibrated No Caveat,trust_alignment,0.3333333333333333,0.19444444444444445,0.4513888888888889,18,descriptive; positive favours left condition
+H6-H5,H6: Complete Calibrated DIAC,H5: Structured-Calibrated No Caveat,decision_time_seconds,3.062416666666666,-4.939613194444444,15.03784861111111,18,descriptive; positive favours left condition
+H6-H4,H6: Complete Calibrated DIAC,H4: Terse-Calibrated,actionability,2.638888888888889,2.0833333333333335,3.0,18,descriptive; positive favours left condition
+H6-H4,H6: Complete Calibrated DIAC,H4: Terse-Calibrated,specificity,2.6666666666666665,2.0555555555555554,3.0555555555555554,18,descriptive; positive favours left condition
+H6-H4,H6: Complete Calibrated DIAC,H4: Terse-Calibrated,feasibility,2.75,2.3333333333333335,3.0277777777777777,18,descriptive; positive favours left condition
+H6-H4,H6: Complete Calibrated DIAC,H4: Terse-Calibrated,explanation_usefulness,2.5833333333333335,1.9166666666666667,3.0555555555555554,18,descriptive; positive favours left condition
+H6-H4,H6: Complete Calibrated DIAC,H4: Terse-Calibrated,reliance,2.6666666666666665,2.0555555555555554,3.0555555555555554,18,descriptive; positive favours left condition
+H6-H4,H6: Complete Calibrated DIAC,H4: Terse-Calibrated,willingness_to_review,-3.5,-4.0,-2.7777777777777777,18,descriptive; positive favours left condition
+H6-H4,H6: Complete Calibrated DIAC,H4: Terse-Calibrated,user_acceptance,2.7777777777777777,2.388888888888889,3.0,18,descriptive; positive favours left condition
+H6-H4,H6: Complete Calibrated DIAC,H4: Terse-Calibrated,trust_alignment,0.5972222222222222,0.4513888888888889,0.7152777777777778,18,descriptive; positive favours left condition
+H6-H4,H6: Complete Calibrated DIAC,H4: Terse-Calibrated,decision_time_seconds,-0.06463888888888795,-2.645328472222221,2.76231736111111,18,descriptive; positive favours left condition

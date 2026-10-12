@@ -1,0 +1,7 @@
+﻿condition,condition_label,trials,participants,correct_trials,incorrect_trials,incorrect_accepted_without_checking
+raw_uncalibrated,H1: Raw-Uncalibrated,25,18,22,3,0
+calibrated_confidence,H2: Calibrated-Confidence Only,29,18,23,6,0
+structured_uncalibrated,H3: Structured-Uncalibrated,27,18,24,3,2
+terse_calibrated,H4: Terse-Calibrated,29,18,26,3,0
+structured_calibrated,H5: Structured-Calibrated No Caveat,25,18,23,2,0
+full_framework,H6: Complete Calibrated DIAC,27,18,26,1,1

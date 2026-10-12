@@ -1,0 +1,35 @@
+{
+  "source_database_sha256": "0bb0bb1110d253c20278fa3fe8cc269f30ce5775ff20fb7e2015cbb214e04f9c",
+  "responses": 162,
+  "participants": 18,
+  "complete_participants": 18,
+  "consent_confirmed_responses": 162,
+  "missing_required_values": 0,
+  "duplicate_participant_cases": 0,
+  "participant_groups": {
+    "Non-practitioner": 18
+  },
+  "counterbalance_groups": {
+    "CB-1": 4,
+    "CB-2": 5,
+    "CB-4": 6,
+    "CB-5": 1,
+    "CB-6": 2
+  },
+  "condition_trials": {
+    "calibrated_confidence": 29,
+    "terse_calibrated": 29,
+    "structured_uncalibrated": 27,
+    "full_framework": 27,
+    "structured_calibrated": 25,
+    "raw_uncalibrated": 25
+  },
+  "earlier_collection_participants": 2,
+  "median_recorded_total_seconds": 96.144,
+  "participants_under_120_seconds": 13,
+  "largest_identical_response_vector": 24,
+  "comments_present": 0,
+  "bootstrap_seed": 42,
+  "bootstrap_iterations": 10000,
+  "analysis_status": "provisional_pending_recruitment_and_provenance_verification"
+}
