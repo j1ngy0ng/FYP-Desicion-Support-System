@@ -21,7 +21,7 @@
     "frontend": "TypeScript check and Vite production build passed",
     "frontend_build_exit_code": 0,
     "word_comments_retained": 14,
-    "word_render_pages": 151,
+    "word_render_pages": 150,
     "workbook_formula_error_matches": 0
   },
   "protocol_deviations": [
