@@ -20,8 +20,8 @@
     "python_test_exit_code": 0,
     "frontend": "TypeScript check and Vite production build passed",
     "frontend_build_exit_code": 0,
-    "word_comments_retained": 14,
-    "word_render_pages": 150,
+    "word_comments_retained": 16,
+    "word_render_pages": 152,
     "workbook_formula_error_matches": 0
   },
   "protocol_deviations": [
@@ -61,8 +61,8 @@
     },
     {
       "path": "C:/Users/user/Desktop/FYP/Template (Project 1_2)/RSW_NgJingYong_FullText_Human_Study_Results_2026-10-12.docx",
-      "bytes": 2494621,
-      "sha256": "bda4c9e6e1f157b608308acb02dd3529acad33fe0739e2f16c93bf17fd08d306",
+      "bytes": 2497049,
+      "sha256": "75db33d3166e8e944f400480c8aab9b52d83b5145bcaa6d0b66ff5974741e48b",
       "repository_status": "external final thesis artifact"
     },
     {
