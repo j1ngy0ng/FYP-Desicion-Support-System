@@ -1381,7 +1381,19 @@ def evaluation_summary(_: CurrentUser, db: Db) -> dict[str, Any]:
         proposed_name = "Proposed System - Full Framework"
         baseline_names = [
             name for name in metrics
-            if name.startswith(("B0:", "B1:", "B2:", "B3:", "B4:", "Post-hoc", "Supervisor Baseline"))
+            if name.startswith(
+                (
+                    "B0:",
+                    "B1:",
+                    "B2:",
+                    "B3:",
+                    "B4:",
+                    "Post-hoc",
+                    "Intent-Only Deterministic",
+                    "Weighted Deterministic",
+                    "Unconstrained AI",
+                )
+            )
         ]
         ablation_names = [name for name in metrics if name.startswith("Proposed Ablation")]
         runs, blocks = experiment_blocks(metrics, study_rows)

@@ -1,9 +1,9 @@
 {
-  "run_id": "R002-20261007T131827+0800",
-  "timestamp": "2026-10-07T13:18:27+08:00",
-  "source_commit": "c86c4a3ebce4358fb00d55aa6a3f2922ae23b8e3",
+  "run_id": "R002-20261013T202707+0800",
+  "timestamp": "2026-10-13T20:27:07+08:00",
+  "source_commit": "867c3d0c454a09ebf2e200dc652fffa952017f54",
   "source_tags": [
-    "fyp-code-freeze-v7"
+    "fyp-human-study-results-v1"
   ],
   "evaluation_type": "confirmatory_technical_evaluation",
   "dataset": "data\\benchmark_audited.csv",

@@ -241,7 +241,7 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(body["target_records"], 125)
         self.assertEqual(body["human_provided_development_records"], 55555)
         self.assertEqual(body["development_annotation_status"], "audited_human_benchmark")
-        self.assertEqual(len(body["baselines"]), 8)
+        self.assertEqual(len(body["baselines"]), 9)
         self.assertTrue({
             "B0: Majority-Class Popularity",
             "B1: Heuristic Scorecard",
@@ -251,8 +251,9 @@ class ApiTests(unittest.TestCase):
             "Post-hoc Hard-Rule Filter",
         }.issubset({row["Baseline"] for row in body["baselines"]}))
         self.assertTrue({
-            "Supervisor Baseline - Intent-Only Deterministic",
-            "Supervisor Baseline - Weighted Deterministic",
+            "Intent-Only Deterministic Baseline",
+            "Weighted Deterministic Baseline",
+            "Unconstrained AI Baseline",
         }.issubset({row["Baseline"] for row in body["baselines"]}))
         self.assertIn("Macro F1", body["proposed"])
         self.assertEqual(body["calibration_status"], "calibrated")

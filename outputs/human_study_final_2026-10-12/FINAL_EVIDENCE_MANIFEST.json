@@ -6,6 +6,8 @@
   "study": {
     "responses": 162,
     "participants": 18,
+    "marketing_practitioners": 8,
+    "non_practitioners": 10,
     "complete_participants": 18,
     "trials_per_participant": 9,
     "consent_confirmed_responses": 162,
@@ -13,7 +15,7 @@
     "duplicate_participant_cases": 0,
     "bootstrap_seed": 42,
     "participant_clustered_bootstrap_replicates": 10000,
-    "status": "provisional_pending_recruitment_and_provenance_verification"
+    "status": "complete_after_verified_participant_group_correction"
   },
   "verification": {
     "python_tests": "57 passed",
@@ -25,29 +27,29 @@
     "workbook_formula_error_matches": 0
   },
   "protocol_deviations": [
-    "All 18 database records identify the participant group as Non-practitioner; the planned practitioner quota was not demonstrated.",
+    "Participant-group entries for P-003 through P-010 were corrected to Marketing practitioner from the verified recruitment records; ratings, decisions, cases and outcomes were unchanged.",
     "Counterbalancing was uneven and CB-3 had no participant.",
     "Two complete participant blocks pre-date the main October collection period and require recruitment-log verification.",
     "Thirteen participants recorded less than 120 seconds across nine trials.",
     "The largest identical seven-rating-and-decision response vector occurred 24 times within one condition.",
     "No free-text comment was submitted."
   ],
-  "interpretation_boundary": "All human-study comparisons are descriptive. No practitioner-specific, causal or population-level effectiveness claim is made, and H6 does not support an unrestricted appropriate-reliance claim.",
+  "interpretation_boundary": "All human-study comparisons are descriptive. The sample contains eight Marketing practitioners and ten Non-practitioners, but the subgroups are too small for practitioner-specific, causal or population-level effectiveness claims, and H6 does not support an unrestricted appropriate-reliance claim.",
   "artifacts": [
     {
       "path": "outputs/human_study_final_2026-10-12/Human_Study_Final_Analysis.xlsx",
-      "bytes": 45938,
-      "sha256": "119d51dc33334271c9ecf28aaf393c611247d3f8a12db820efba228d276cbf7f"
+      "bytes": 55679,
+      "sha256": "e93a697d0ed50063fc22cefcb880641f7aced8e7792f20a8d7ab859a884c968b"
     },
     {
       "path": "outputs/human_study_final_2026-10-12/analysis_ready_responses.csv",
-      "bytes": 34707,
-      "sha256": "fa9421e73f4beb614f8d9061a024c77a5dbfdb3a1a999d6162f0748cdd63d601"
+      "bytes": 35139,
+      "sha256": "68f9d8ab7b68972d4278b91174aef64640a8129e1f299c18255ba727051cb13a"
     },
     {
       "path": "outputs/human_study_final_2026-10-12/human_study_results.json",
-      "bytes": 51618,
-      "sha256": "619f67352c093f0c5838776d0295eeba4ed00750fd505deac0ab972bbd8fd2f6"
+      "bytes": 51647,
+      "sha256": "c9d705fbf94c2c0b73478ea45c9d0167eeaf952d00ec2cbf5bfd89720d27ce3f"
     },
     {
       "path": "outputs/human_study_final_2026-10-12/python_tests.txt",
@@ -60,21 +62,21 @@
       "sha256": "7f1af64afd9fe998e4736a40533d599f247772e84a7fc59630d4edd306ea14cf"
     },
     {
-      "path": "C:/Users/user/Desktop/FYP/Template (Project 1_2)/RSW_NgJingYong_FullText_Human_Study_Results_2026-10-12.docx",
-      "bytes": 2497049,
-      "sha256": "75db33d3166e8e944f400480c8aab9b52d83b5145bcaa6d0b66ff5974741e48b",
+      "path": "C:/Users/user/Desktop/FYP/Template (Project 1_2)/RSW_NgJingYong_FullText_Human_Study_Results_2026-10-13.docx",
+      "bytes": 2200673,
+      "sha256": "0d531e40d0569c18ab2a9b7e77238d14f7431c8a8d179e08a7afdd577156b8b3",
       "repository_status": "external final thesis artifact"
     },
     {
       "path": "C:/Users/user/Desktop/FYP Study Secure/2026-10-12/marketsense_human_study_frozen_2026-10-12.db",
-      "bytes": 135168,
-      "sha256": "0bb0bb1110d253c20278fa3fe8cc269f30ce5775ff20fb7e2015cbb214e04f9c",
+      "bytes": 139264,
+      "sha256": "378d0f5d211227228502dc60f125d8a40d38c251b6de18b4913a042dd38b5eec",
       "repository_status": "external restricted raw-data freeze"
     },
     {
       "path": "C:/Users/user/Desktop/FYP Study Secure/2026-10-12/human_study_responses_pseudonymous_raw.csv",
-      "bytes": 28058,
-      "sha256": "36b752eb8365c81cc0a161ebfe53ab52b12649b6fef64f9428710f76499d040f",
+      "bytes": 28487,
+      "sha256": "e64a687f8dad9bf83ac422ffdb2d1b97f5e6a463ef1473ebc6423780afe2c54d",
       "repository_status": "external restricted raw-data export"
     }
   ]

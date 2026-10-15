@@ -54,6 +54,7 @@ from system_components.neuro_symbolic_reasoning_layer.engine import (
 
 VARIANTS = {
     "Proposed System - Full Framework": "full",
+    "Unconstrained AI Baseline": "without_rules",
     "Branch Ablation - CampaignNet Only": "campaignnet_only",
     "Branch Ablation - ActionNet Only": "actionnet_only",
     "Branch Ablation - Fused CampaignNet-ActionNet": "fused_evidence",

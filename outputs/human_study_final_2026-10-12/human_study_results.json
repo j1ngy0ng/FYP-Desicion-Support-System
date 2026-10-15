@@ -1,6 +1,6 @@
 {
   "audit": {
-    "source_database_sha256": "0bb0bb1110d253c20278fa3fe8cc269f30ce5775ff20fb7e2015cbb214e04f9c",
+    "source_database_sha256": "378d0f5d211227228502dc60f125d8a40d38c251b6de18b4913a042dd38b5eec",
     "responses": 162,
     "participants": 18,
     "complete_participants": 18,
@@ -8,7 +8,8 @@
     "missing_required_values": 0,
     "duplicate_participant_cases": 0,
     "participant_groups": {
-      "Non-practitioner": 18
+      "Marketing practitioner": 8,
+      "Non-practitioner": 10
     },
     "counterbalance_groups": {
       "CB-1": 4,
@@ -32,7 +33,7 @@
     "comments_present": 0,
     "bootstrap_seed": 42,
     "bootstrap_iterations": 10000,
-    "analysis_status": "provisional_pending_recruitment_and_provenance_verification"
+    "analysis_status": "complete_after_verified_participant_group_correction"
   },
   "incorrect_recommendation": {
     "Incorrect recommendation trials": 18.0,

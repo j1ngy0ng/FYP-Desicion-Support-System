@@ -299,7 +299,7 @@ def intent_only_predict(rows: List[dict]) -> BaselineResult:
         top2.append([action, alternatives[0]])
         latencies.append((time.perf_counter() - case_started) * 1000)
     return BaselineResult(
-        "Supervisor Baseline - Intent-Only Deterministic",
+        "Intent-Only Deterministic Baseline",
         predictions,
         confidences,
         explanations,
@@ -356,7 +356,7 @@ def weighted_deterministic_predict(rows: List[dict]) -> BaselineResult:
         top2.append(ranked[:2])
         latencies.append((time.perf_counter() - case_started) * 1000)
     return BaselineResult(
-        "Supervisor Baseline - Weighted Deterministic",
+        "Weighted Deterministic Baseline",
         predictions,
         confidences,
         explanations,

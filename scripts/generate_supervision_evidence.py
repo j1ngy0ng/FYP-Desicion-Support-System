@@ -184,7 +184,7 @@ def main() -> None:
         majority_class_predict(train_rows, test_rows),
         intent_only_predict(test_rows),
         weighted_deterministic_predict(test_rows),
-        proposed_predict(engine, test_rows, "Supervisor Baseline - Unconstrained AI", "without_rules"),
+        proposed_predict(engine, test_rows, "Unconstrained AI Baseline", "without_rules"),
         proposed_predict(engine, test_rows, "Proposed Logic-Constrained Method", "full"),
     ]
     metric_rows = []
@@ -455,8 +455,8 @@ The current diagnostic run may contain fewer than 10 candidates. If so, create t
     (args.output_dir / "independent_review_instructions.md").write_text(instructions, encoding="utf-8")
 
     metric_lookup = {row["System"]: row for row in metric_rows}
-    weighted = metric_lookup["Supervisor Baseline - Weighted Deterministic"]
-    unconstrained = metric_lookup["Supervisor Baseline - Unconstrained AI"]
+    weighted = metric_lookup["Weighted Deterministic Baseline"]
+    unconstrained = metric_lookup["Unconstrained AI Baseline"]
     proposed = metric_lookup["Proposed Logic-Constrained Method"]
     questions = f"""# Next Meeting Questions and Evidence Based Answers
 

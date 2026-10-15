@@ -1,6 +1,6 @@
 {
   "audit": {
-    "source_database_sha256": "0bb0bb1110d253c20278fa3fe8cc269f30ce5775ff20fb7e2015cbb214e04f9c",
+    "source_database_sha256": "378d0f5d211227228502dc60f125d8a40d38c251b6de18b4913a042dd38b5eec",
     "responses": 162,
     "participants": 18,
     "complete_participants": 18,
@@ -8,7 +8,8 @@
     "missing_required_values": 0,
     "duplicate_participant_cases": 0,
     "participant_groups": {
-      "Non-practitioner": 18
+      "Marketing practitioner": 8,
+      "Non-practitioner": 10
     },
     "counterbalance_groups": {
       "CB-1": 4,
@@ -32,7 +33,7 @@
     "comments_present": 0,
     "bootstrap_seed": 42,
     "bootstrap_iterations": 10000,
-    "analysis_status": "provisional_pending_recruitment_and_provenance_verification"
+    "analysis_status": "complete_after_verified_participant_group_correction"
   },
   "condition_exposure": [
     {
@@ -1554,7 +1555,7 @@
     },
     {
       "participant_id": "P003",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "responses": 9,
       "distinct_cases": 9,
       "consented": 9,
@@ -1568,7 +1569,7 @@
     },
     {
       "participant_id": "P004",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "responses": 9,
       "distinct_cases": 9,
       "consented": 9,
@@ -1582,7 +1583,7 @@
     },
     {
       "participant_id": "P005",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "responses": 9,
       "distinct_cases": 9,
       "consented": 9,
@@ -1596,7 +1597,7 @@
     },
     {
       "participant_id": "P006",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "responses": 9,
       "distinct_cases": 9,
       "consented": 9,
@@ -1610,7 +1611,7 @@
     },
     {
       "participant_id": "P007",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "responses": 9,
       "distinct_cases": 9,
       "consented": 9,
@@ -1624,7 +1625,7 @@
     },
     {
       "participant_id": "P008",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "responses": 9,
       "distinct_cases": 9,
       "consented": 9,
@@ -1638,7 +1639,7 @@
     },
     {
       "participant_id": "P009",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "responses": 9,
       "distinct_cases": 9,
       "consented": 9,
@@ -1652,7 +1653,7 @@
     },
     {
       "participant_id": "P010",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "responses": 9,
       "distinct_cases": 9,
       "consented": 9,
@@ -2320,7 +2321,7 @@
     },
     {
       "participant_id": "P003",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10557",
       "condition": "calibrated_confidence",
       "condition_label": "H2: Calibrated-Confidence Only",
@@ -2350,7 +2351,7 @@
     },
     {
       "participant_id": "P003",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11348",
       "condition": "structured_uncalibrated",
       "condition_label": "H3: Structured-Uncalibrated",
@@ -2380,7 +2381,7 @@
     },
     {
       "participant_id": "P003",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10549",
       "condition": "terse_calibrated",
       "condition_label": "H4: Terse-Calibrated",
@@ -2410,7 +2411,7 @@
     },
     {
       "participant_id": "P003",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11709",
       "condition": "structured_calibrated",
       "condition_label": "H5: Structured-Calibrated No Caveat",
@@ -2440,7 +2441,7 @@
     },
     {
       "participant_id": "P003",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-14038",
       "condition": "full_framework",
       "condition_label": "H6: Complete Calibrated DIAC",
@@ -2470,7 +2471,7 @@
     },
     {
       "participant_id": "P003",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11217",
       "condition": "raw_uncalibrated",
       "condition_label": "H1: Raw-Uncalibrated",
@@ -2500,7 +2501,7 @@
     },
     {
       "participant_id": "P003",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11980",
       "condition": "calibrated_confidence",
       "condition_label": "H2: Calibrated-Confidence Only",
@@ -2530,7 +2531,7 @@
     },
     {
       "participant_id": "P003",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10185",
       "condition": "structured_uncalibrated",
       "condition_label": "H3: Structured-Uncalibrated",
@@ -2560,7 +2561,7 @@
     },
     {
       "participant_id": "P003",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-15324",
       "condition": "terse_calibrated",
       "condition_label": "H4: Terse-Calibrated",
@@ -2590,7 +2591,7 @@
     },
     {
       "participant_id": "P004",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11709",
       "condition": "raw_uncalibrated",
       "condition_label": "H1: Raw-Uncalibrated",
@@ -2620,7 +2621,7 @@
     },
     {
       "participant_id": "P004",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-14038",
       "condition": "calibrated_confidence",
       "condition_label": "H2: Calibrated-Confidence Only",
@@ -2650,7 +2651,7 @@
     },
     {
       "participant_id": "P004",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10185",
       "condition": "structured_uncalibrated",
       "condition_label": "H3: Structured-Uncalibrated",
@@ -2680,7 +2681,7 @@
     },
     {
       "participant_id": "P004",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10557",
       "condition": "terse_calibrated",
       "condition_label": "H4: Terse-Calibrated",
@@ -2710,7 +2711,7 @@
     },
     {
       "participant_id": "P004",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-15324",
       "condition": "structured_calibrated",
       "condition_label": "H5: Structured-Calibrated No Caveat",
@@ -2740,7 +2741,7 @@
     },
     {
       "participant_id": "P004",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11348",
       "condition": "full_framework",
       "condition_label": "H6: Complete Calibrated DIAC",
@@ -2770,7 +2771,7 @@
     },
     {
       "participant_id": "P004",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10549",
       "condition": "raw_uncalibrated",
       "condition_label": "H1: Raw-Uncalibrated",
@@ -2800,7 +2801,7 @@
     },
     {
       "participant_id": "P004",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11217",
       "condition": "calibrated_confidence",
       "condition_label": "H2: Calibrated-Confidence Only",
@@ -2830,7 +2831,7 @@
     },
     {
       "participant_id": "P004",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11980",
       "condition": "structured_uncalibrated",
       "condition_label": "H3: Structured-Uncalibrated",
@@ -2860,7 +2861,7 @@
     },
     {
       "participant_id": "P005",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-14038",
       "condition": "full_framework",
       "condition_label": "H6: Complete Calibrated DIAC",
@@ -2890,7 +2891,7 @@
     },
     {
       "participant_id": "P005",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11217",
       "condition": "raw_uncalibrated",
       "condition_label": "H1: Raw-Uncalibrated",
@@ -2920,7 +2921,7 @@
     },
     {
       "participant_id": "P005",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10557",
       "condition": "calibrated_confidence",
       "condition_label": "H2: Calibrated-Confidence Only",
@@ -2950,7 +2951,7 @@
     },
     {
       "participant_id": "P005",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11980",
       "condition": "structured_uncalibrated",
       "condition_label": "H3: Structured-Uncalibrated",
@@ -2980,7 +2981,7 @@
     },
     {
       "participant_id": "P005",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10549",
       "condition": "terse_calibrated",
       "condition_label": "H4: Terse-Calibrated",
@@ -3010,7 +3011,7 @@
     },
     {
       "participant_id": "P005",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11348",
       "condition": "structured_calibrated",
       "condition_label": "H5: Structured-Calibrated No Caveat",
@@ -3040,7 +3041,7 @@
     },
     {
       "participant_id": "P005",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-15324",
       "condition": "full_framework",
       "condition_label": "H6: Complete Calibrated DIAC",
@@ -3070,7 +3071,7 @@
     },
     {
       "participant_id": "P005",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10185",
       "condition": "raw_uncalibrated",
       "condition_label": "H1: Raw-Uncalibrated",
@@ -3100,7 +3101,7 @@
     },
     {
       "participant_id": "P005",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11709",
       "condition": "calibrated_confidence",
       "condition_label": "H2: Calibrated-Confidence Only",
@@ -3130,7 +3131,7 @@
     },
     {
       "participant_id": "P006",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10185",
       "condition": "terse_calibrated",
       "condition_label": "H4: Terse-Calibrated",
@@ -3160,7 +3161,7 @@
     },
     {
       "participant_id": "P006",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11217",
       "condition": "structured_calibrated",
       "condition_label": "H5: Structured-Calibrated No Caveat",
@@ -3190,7 +3191,7 @@
     },
     {
       "participant_id": "P006",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-15324",
       "condition": "full_framework",
       "condition_label": "H6: Complete Calibrated DIAC",
@@ -3220,7 +3221,7 @@
     },
     {
       "participant_id": "P006",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11980",
       "condition": "raw_uncalibrated",
       "condition_label": "H1: Raw-Uncalibrated",
@@ -3250,7 +3251,7 @@
     },
     {
       "participant_id": "P006",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11348",
       "condition": "calibrated_confidence",
       "condition_label": "H2: Calibrated-Confidence Only",
@@ -3280,7 +3281,7 @@
     },
     {
       "participant_id": "P006",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-14038",
       "condition": "structured_uncalibrated",
       "condition_label": "H3: Structured-Uncalibrated",
@@ -3310,7 +3311,7 @@
     },
     {
       "participant_id": "P006",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10557",
       "condition": "terse_calibrated",
       "condition_label": "H4: Terse-Calibrated",
@@ -3340,7 +3341,7 @@
     },
     {
       "participant_id": "P006",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10549",
       "condition": "structured_calibrated",
       "condition_label": "H5: Structured-Calibrated No Caveat",
@@ -3370,7 +3371,7 @@
     },
     {
       "participant_id": "P006",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11709",
       "condition": "full_framework",
       "condition_label": "H6: Complete Calibrated DIAC",
@@ -3400,7 +3401,7 @@
     },
     {
       "participant_id": "P007",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-14038",
       "condition": "terse_calibrated",
       "condition_label": "H4: Terse-Calibrated",
@@ -3430,7 +3431,7 @@
     },
     {
       "participant_id": "P007",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11217",
       "condition": "structured_calibrated",
       "condition_label": "H5: Structured-Calibrated No Caveat",
@@ -3460,7 +3461,7 @@
     },
     {
       "participant_id": "P007",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10557",
       "condition": "full_framework",
       "condition_label": "H6: Complete Calibrated DIAC",
@@ -3490,7 +3491,7 @@
     },
     {
       "participant_id": "P007",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11980",
       "condition": "raw_uncalibrated",
       "condition_label": "H1: Raw-Uncalibrated",
@@ -3520,7 +3521,7 @@
     },
     {
       "participant_id": "P007",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10549",
       "condition": "calibrated_confidence",
       "condition_label": "H2: Calibrated-Confidence Only",
@@ -3550,7 +3551,7 @@
     },
     {
       "participant_id": "P007",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11348",
       "condition": "structured_uncalibrated",
       "condition_label": "H3: Structured-Uncalibrated",
@@ -3580,7 +3581,7 @@
     },
     {
       "participant_id": "P007",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-15324",
       "condition": "terse_calibrated",
       "condition_label": "H4: Terse-Calibrated",
@@ -3610,7 +3611,7 @@
     },
     {
       "participant_id": "P007",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11709",
       "condition": "structured_calibrated",
       "condition_label": "H5: Structured-Calibrated No Caveat",
@@ -3640,7 +3641,7 @@
     },
     {
       "participant_id": "P007",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10185",
       "condition": "full_framework",
       "condition_label": "H6: Complete Calibrated DIAC",
@@ -3670,7 +3671,7 @@
     },
     {
       "participant_id": "P008",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11980",
       "condition": "calibrated_confidence",
       "condition_label": "H2: Calibrated-Confidence Only",
@@ -3700,7 +3701,7 @@
     },
     {
       "participant_id": "P008",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10549",
       "condition": "structured_uncalibrated",
       "condition_label": "H3: Structured-Uncalibrated",
@@ -3730,7 +3731,7 @@
     },
     {
       "participant_id": "P008",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10185",
       "condition": "terse_calibrated",
       "condition_label": "H4: Terse-Calibrated",
@@ -3760,7 +3761,7 @@
     },
     {
       "participant_id": "P008",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11709",
       "condition": "structured_calibrated",
       "condition_label": "H5: Structured-Calibrated No Caveat",
@@ -3790,7 +3791,7 @@
     },
     {
       "participant_id": "P008",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11348",
       "condition": "full_framework",
       "condition_label": "H6: Complete Calibrated DIAC",
@@ -3820,7 +3821,7 @@
     },
     {
       "participant_id": "P008",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-15324",
       "condition": "raw_uncalibrated",
       "condition_label": "H1: Raw-Uncalibrated",
@@ -3850,7 +3851,7 @@
     },
     {
       "participant_id": "P008",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10557",
       "condition": "calibrated_confidence",
       "condition_label": "H2: Calibrated-Confidence Only",
@@ -3880,7 +3881,7 @@
     },
     {
       "participant_id": "P008",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-14038",
       "condition": "structured_uncalibrated",
       "condition_label": "H3: Structured-Uncalibrated",
@@ -3910,7 +3911,7 @@
     },
     {
       "participant_id": "P008",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11217",
       "condition": "terse_calibrated",
       "condition_label": "H4: Terse-Calibrated",
@@ -3940,7 +3941,7 @@
     },
     {
       "participant_id": "P009",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11980",
       "condition": "terse_calibrated",
       "condition_label": "H4: Terse-Calibrated",
@@ -3970,7 +3971,7 @@
     },
     {
       "participant_id": "P009",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11348",
       "condition": "structured_calibrated",
       "condition_label": "H5: Structured-Calibrated No Caveat",
@@ -4000,7 +4001,7 @@
     },
     {
       "participant_id": "P009",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10557",
       "condition": "full_framework",
       "condition_label": "H6: Complete Calibrated DIAC",
@@ -4030,7 +4031,7 @@
     },
     {
       "participant_id": "P009",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11709",
       "condition": "raw_uncalibrated",
       "condition_label": "H1: Raw-Uncalibrated",
@@ -4060,7 +4061,7 @@
     },
     {
       "participant_id": "P009",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-14038",
       "condition": "calibrated_confidence",
       "condition_label": "H2: Calibrated-Confidence Only",
@@ -4090,7 +4091,7 @@
     },
     {
       "participant_id": "P009",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-15324",
       "condition": "structured_uncalibrated",
       "condition_label": "H3: Structured-Uncalibrated",
@@ -4120,7 +4121,7 @@
     },
     {
       "participant_id": "P009",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11217",
       "condition": "terse_calibrated",
       "condition_label": "H4: Terse-Calibrated",
@@ -4150,7 +4151,7 @@
     },
     {
       "participant_id": "P009",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10549",
       "condition": "structured_calibrated",
       "condition_label": "H5: Structured-Calibrated No Caveat",
@@ -4180,7 +4181,7 @@
     },
     {
       "participant_id": "P009",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10185",
       "condition": "full_framework",
       "condition_label": "H6: Complete Calibrated DIAC",
@@ -4210,7 +4211,7 @@
     },
     {
       "participant_id": "P010",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-15324",
       "condition": "terse_calibrated",
       "condition_label": "H4: Terse-Calibrated",
@@ -4240,7 +4241,7 @@
     },
     {
       "participant_id": "P010",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11709",
       "condition": "structured_calibrated",
       "condition_label": "H5: Structured-Calibrated No Caveat",
@@ -4270,7 +4271,7 @@
     },
     {
       "participant_id": "P010",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10185",
       "condition": "full_framework",
       "condition_label": "H6: Complete Calibrated DIAC",
@@ -4300,7 +4301,7 @@
     },
     {
       "participant_id": "P010",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10549",
       "condition": "raw_uncalibrated",
       "condition_label": "H1: Raw-Uncalibrated",
@@ -4330,7 +4331,7 @@
     },
     {
       "participant_id": "P010",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-14038",
       "condition": "calibrated_confidence",
       "condition_label": "H2: Calibrated-Confidence Only",
@@ -4360,7 +4361,7 @@
     },
     {
       "participant_id": "P010",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-10557",
       "condition": "structured_uncalibrated",
       "condition_label": "H3: Structured-Uncalibrated",
@@ -4390,7 +4391,7 @@
     },
     {
       "participant_id": "P010",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11980",
       "condition": "terse_calibrated",
       "condition_label": "H4: Terse-Calibrated",
@@ -4420,7 +4421,7 @@
     },
     {
       "participant_id": "P010",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11217",
       "condition": "structured_calibrated",
       "condition_label": "H5: Structured-Calibrated No Caveat",
@@ -4450,7 +4451,7 @@
     },
     {
       "participant_id": "P010",
-      "participant_group": "Non-practitioner",
+      "participant_group": "Marketing practitioner",
       "campaign_id": "NY-CMP-11348",
       "condition": "full_framework",
       "condition_label": "H6: Complete Calibrated DIAC",

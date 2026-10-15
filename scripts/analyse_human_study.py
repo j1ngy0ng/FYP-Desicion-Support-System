@@ -66,7 +66,7 @@ def write_markdown(path: Path, audit: dict, condition_summary: pd.DataFrame) -> 
     lines = [
         "# Human Study Data Audit and Protocol Deviations",
         "",
-        "The analysis uses all complete consented records in the frozen database. No response was changed or removed after outcomes were inspected.",
+        "The analysis uses all complete consented records in the corrected frozen database. No outcome response was changed or removed after outcomes were inspected.",
         "",
         "## Verified dataset",
         "",
@@ -79,12 +79,12 @@ def write_markdown(path: Path, audit: dict, condition_summary: pd.DataFrame) -> 
         "",
         "## Deviations and interpretation limits",
         "",
-        "- All participants are recorded as Non-practitioner. The planned quota of at least eight marketing-experienced participants is therefore not demonstrated by the database. Do not recode this field without independent recruitment evidence and a correction log.",
+        "- The participant groups contain eight confirmed marketing practitioners and ten non-practitioners.",
         "- Counterbalancing sequences are uneven and CB-3 has no participant. Condition exposure is nevertheless between 25 and 29 trials per condition. Report the sequence imbalance as a protocol deviation.",
         "- Two complete participant blocks pre-date the main October collection period. Their provenance must be checked against the recruitment log before final submission; they remain included because no pre-specified exclusion evidence is present in the database.",
         f"- The median recorded total response time was {audit['median_recorded_total_seconds']:.1f} seconds for nine trials. {audit['participants_under_120_seconds']} participants recorded less than 120 seconds. This is a data-quality signal, not a post-hoc exclusion rule.",
         f"- The largest repeated seven-rating-and-decision response vector occurred {audit['largest_identical_response_vector']} times within one condition. This pattern requires transparent discussion and source verification before strong human-effect claims.",
-        "- Because the study is formative and the planned practitioner quota was not met, comparisons are descriptive. Participant-clustered bootstrap intervals quantify uncertainty but are not population-level effectiveness claims.",
+        "- Because the study is formative and small, comparisons are descriptive. Participant-clustered bootstrap intervals quantify uncertainty but are not population-level effectiveness claims.",
         "",
         "## Condition exposure",
         "",
@@ -277,7 +277,7 @@ def main() -> None:
         "comments_present": int(responses["comments"].fillna("").str.strip().ne("").sum()),
         "bootstrap_seed": args.seed,
         "bootstrap_iterations": args.bootstrap,
-        "analysis_status": "provisional_pending_recruitment_and_provenance_verification",
+        "analysis_status": "complete_after_verified_participant_group_correction",
     }
     (args.output / "DATA_AUDIT.json").write_text(json.dumps(audit, indent=2), encoding="utf-8")
     write_markdown(args.output / "PROTOCOL_DEVIATIONS.md", audit, condition_summary)

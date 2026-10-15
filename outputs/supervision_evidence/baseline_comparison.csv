@@ -1,6 +1,6 @@
 ﻿System,Recommendation Accuracy,Macro F1,Top-2 Agreement,Scenario-Fit Rate,Logical Conflict Rate,Expected Calibration Error (ECE),Recommendation Latency (ms),P50 Latency (ms),P95 Latency (ms),Actionability Proxy,Trust Alignment Proxy,Explanation Usefulness Proxy,User Acceptance Proxy
 B0: Majority-Class Popularity,0.368421,0.134615,0.631579,1.0,0.105263,0.010889,0.0,0.0,0.0,0.83902,0.53176,0.0,0.521724
-Supervisor Baseline - Intent-Only Deterministic,0.684211,0.59375,0.789474,1.0,0.105263,0.315789,0.002274,0.0013,0.00323,0.963158,0.684211,0.0,0.624737
-Supervisor Baseline - Weighted Deterministic,0.578947,0.507143,0.842105,1.0,0.105263,0.061989,0.015384,0.0107,0.03475,0.86655,0.537922,0.1225,0.565518
-Supervisor Baseline - Unconstrained AI,0.894737,0.886508,1.0,1.0,0.105263,0.613879,2.626484,2.5592,3.1848,0.819329,0.328468,0.35,0.530196
-Proposed Logic-Constrained Method,0.789474,0.783604,0.894737,1.0,0.0,0.483568,3.243411,2.818,4.50269,0.882619,0.441663,1.0,0.75763
+Intent-Only Deterministic Baseline,0.684211,0.59375,0.789474,1.0,0.105263,0.315789,0.002789,0.0017,0.00351,0.963158,0.684211,0.0,0.624737
+Weighted Deterministic Baseline,0.578947,0.507143,0.842105,1.0,0.105263,0.061989,0.0201,0.0162,0.0392,0.86655,0.537922,0.1225,0.565518
+Unconstrained AI Baseline,0.894737,0.886508,1.0,1.0,0.105263,0.613879,5.024747,4.6131,7.30008,0.819329,0.328468,0.35,0.530196
+Proposed Logic-Constrained Method,0.789474,0.783604,0.894737,1.0,0.0,0.483568,4.875695,4.7179,5.97228,0.882619,0.441663,1.0,0.75763
