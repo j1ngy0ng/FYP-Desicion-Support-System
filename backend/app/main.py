@@ -41,6 +41,7 @@ RAW_DATASET = ROOT / "data" / "layers" / "01_raw_dataset_55555x16.csv"
 DATASET = ROOT / "data" / "layers" / "02_processed_model_data.csv"
 AUDITED_BENCHMARK = ROOT / "data" / "benchmark_audited.csv"
 CONFIRMATORY_RESULTS = ROOT / "results" / "R002.json"
+SUPPLEMENTAL_RESULTS = ROOT / "results" / "R_SUP_50.json"
 BENCHMARK_AUDIT = (
     ROOT / "data" / "human_annotations" / "completed" / "benchmark_audit.json"
 )
@@ -1397,6 +1398,11 @@ def evaluation_summary(_: CurrentUser, db: Db) -> dict[str, Any]:
         ]
         ablation_names = [name for name in metrics if name.startswith("Proposed Ablation")]
         runs, blocks = experiment_blocks(metrics, study_rows)
+        supplemental = (
+            json.loads(SUPPLEMENTAL_RESULTS.read_text(encoding="utf-8"))
+            if SUPPLEMENTAL_RESULTS.exists()
+            else None
+        )
         return {
             "status": "confirmatory_technical_complete",
             "message": (
@@ -1455,6 +1461,7 @@ def evaluation_summary(_: CurrentUser, db: Db) -> dict[str, Any]:
             "human_evaluation": human_study_statistics(study_rows),
             "runs": runs,
             "experiment_blocks": blocks,
+            "supplemental_evaluation": supplemental,
         }
     return {
         "status": "pending_human_annotations",
@@ -1500,4 +1507,5 @@ def evaluation_summary(_: CurrentUser, db: Db) -> dict[str, Any]:
         "human_evaluation": human_study_statistics(study_rows),
         "runs": [],
         "experiment_blocks": {},
+        "supplemental_evaluation": None,
     }

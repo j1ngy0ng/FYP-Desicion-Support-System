@@ -268,6 +268,27 @@ class ApiTests(unittest.TestCase):
             len(body["experiment_blocks"]["R004"]["systems"]),
             3,
         )
+        supplemental = body["supplemental_evaluation"]
+        self.assertEqual(supplemental["status"], "complete")
+        self.assertEqual(supplemental["cases"], 50)
+        self.assertEqual(len(supplemental["systems"]), 10)
+        proposed = next(
+            row for row in supplemental["systems"]
+            if row["system"] == "P Full Proposed Method"
+        )
+        self.assertAlmostEqual(proposed["preferred_macro_f1"], 0.333802)
+        self.assertAlmostEqual(proposed["top2_preferred"], 0.706667)
+        self.assertAlmostEqual(proposed["ece_preferred"], 0.135405)
+        self.assertAlmostEqual(proposed["admissible_set"], 0.966667)
+        self.assertAlmostEqual(proposed["top2_admissible"], 1.0)
+        self.assertAlmostEqual(proposed["ece_admissible"], 0.502977)
+        self.assertAlmostEqual(proposed["catalogue_conflict"], 0.0)
+        self.assertGreater(proposed["p95_latency_ms"], 0.0)
+        self.assertEqual(supplemental["selective_policy"]["recommend"], 18)
+        self.assertEqual(
+            supplemental["selective_policy"]["no_safe_recommendation"],
+            8,
+        )
 
     def test_audited_benchmark_cases_are_active_campaigns(self):
         response = self.client.get("/api/campaigns", headers=self.headers)

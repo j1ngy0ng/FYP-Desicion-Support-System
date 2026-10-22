@@ -40,6 +40,25 @@ export type ExperimentBlocks = {
   R006: { participant_status: string; completed_participants: number; target_participants: number; conditions: Record<string, StudyMetrics> };
   participant_count: number;
 }
+export type SupplementalMetricRow = {
+  system: string; preferred_macro_f1: number; preferred_exact: number;
+  top2_preferred: number; scenario_fit: number; catalogue_conflict: number;
+  ece_preferred: number; p95_latency_ms: number;
+  strict_acceptable: number; admissible_set: number;
+  top2_admissible: number; unacceptable_rate: number; ece_admissible: number;
+}
+export type SupplementalEvaluation = {
+  status: string; title: string; run_id: string; cases: number; seeds: number[];
+  source_commit: string; source_tag: string; source_state: string;
+  action_set_sha256: string; boundary: string;
+  systems: SupplementalMetricRow[];
+  selective_policy: {
+    seed: number; recommend: number; check_advised: number;
+    human_review_required: number; no_safe_recommendation: number;
+    automatic_coverage: number; automatic_admissible_accuracy: number;
+    automatic_unacceptable_rate: number; out_of_coverage_cases: number;
+  };
+}
 export type Summary = {
   status: string; message: string; dataset: string; source_records: number;
   processed_records: number; candidate_benchmark_records: number;
@@ -54,4 +73,5 @@ export type Summary = {
   benchmark: { ground_truth_conflict_rate: number };
   human_evaluation: Record<string, unknown>;
   runs: RunStatus[]; experiment_blocks: ExperimentBlocks;
+  supplemental_evaluation: SupplementalEvaluation | null;
 }

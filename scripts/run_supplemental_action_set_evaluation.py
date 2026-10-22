@@ -30,6 +30,7 @@ from baseline_evaluation import (
     logical_conflict_rate,
     macro_f1_score,
     majority_class_predict,
+    percentile,
     scenario_fit_rate,
     weighted_deterministic_predict,
 )
@@ -129,6 +130,9 @@ def set_metrics(result: BaselineResult, rows: list[dict]) -> dict[str, float]:
         "Rule-Catalogue Conflict Rate": logical_conflict_rate(rows, predictions),
         "ECE vs Preferred": expected_calibration_error(result.confidences, preferred_hits, 5),
         "ECE vs Admissible Set": expected_calibration_error(result.confidences, admissible_hits, 5),
+        "P95 Latency (ms)": percentile(
+            result.case_latencies_ms or [result.latency_ms], .95,
+        ),
     }
 
 
@@ -248,7 +252,7 @@ def main() -> None:
             seed_rows.append([name, seed, *[f"{values[metric]:.6f}" for metric in metric_names]])
     write_csv(args.output_dir / "seed_metrics.csv", seed_rows)
 
-    prediction_rows = [["Review_Case_ID", "Campaign_ID", "Intent", "Preferred_Action", "Acceptable_Actions", "Conditional_Actions", "Unacceptable_Actions", "System", "Seed", "Prediction", "Confidence", "Top_2", "Preferred_Correct", "Strict_Acceptable", "Admissible_Correct", "Unacceptable"]]
+    prediction_rows = [["Review_Case_ID", "Campaign_ID", "Intent", "Preferred_Action", "Acceptable_Actions", "Conditional_Actions", "Unacceptable_Actions", "System", "Seed", "Prediction", "Confidence", "Top_2", "Preferred_Correct", "Strict_Acceptable", "Admissible_Correct", "Unacceptable", "Latency_ms"]]
     for name, results in results_by_system.items():
         for index, result in enumerate(results):
             seed = "deterministic" if len(results) == 1 else SEEDS[index]
@@ -258,6 +262,7 @@ def main() -> None:
                     row["Review_Case_ID"], row["Campaign_ID"], row["Intent"], row["label"], "; ".join(row["acceptable"]), "; ".join(row["conditional"]), "; ".join(row["unacceptable"]),
                     name, seed, prediction, f"{result.confidences[position]:.6f}", " | ".join(result.top2_predictions[position]),
                     int(prediction == row["label"]), int(prediction in row["acceptable"]), int(prediction in row["admissible"]), int(prediction in row["unacceptable"]),
+                    f"{result.case_latencies_ms[position]:.6f}",
                 ])
     write_csv(args.output_dir / "predictions.csv", prediction_rows)
 
@@ -297,6 +302,9 @@ def main() -> None:
         "evaluation_timing": "Model outputs were generated only after independent reviews, adjudication and action-set freeze.",
         "source_commit": git_output("rev-parse", "HEAD"),
         "source_tags": git_output("tag", "--points-at", "HEAD").splitlines(),
+        "source_tree_status": "dirty" if git_output(
+            "status", "--porcelain", "--untracked-files=no",
+        ) else "clean",
         "cases": len(supplemental), "seeds": list(SEEDS), "bootstrap_samples": args.bootstrap_samples,
         "case_file": str(args.cases), "case_file_sha256": sha256(args.cases),
         "action_set_file": str(args.action_sets), "action_set_file_sha256": sha256(args.action_sets),
@@ -306,7 +314,7 @@ def main() -> None:
         "preferred_distribution": dict(Counter(row["label"] for row in supplemental)),
         "intent_distribution": dict(Counter(row["Intent"] for row in supplemental)),
         "primary_endpoint": "Admissible Set Accuracy (Acceptable or Conditional)",
-        "secondary_endpoints": ["Strict Acceptable Rate", "Preferred Exact Accuracy", "Unacceptable Recommendation Rate", "Top-2 Admissible Hit"],
+        "secondary_endpoints": ["Preferred Macro F1", "Preferred Exact Accuracy", "Top-2 Preferred Hit", "Strict Acceptable Rate", "Unacceptable Recommendation Rate", "Top-2 Admissible Hit", "P95 Latency (ms)"],
         "software_environment": {"os": platform.platform(), "python": sys.version.split()[0]},
         "selective_policy_seed42": selective,
     }
@@ -317,11 +325,22 @@ def main() -> None:
         "",
         "This is same-source, post-confirmatory robustness evidence. The cases were not used for model fitting, calibration, threshold selection or action-set construction from model outputs.",
         "",
-        "| System | Admissible set accuracy | Strict acceptable | Preferred exact | Unacceptable | Top-2 admissible | ECE (admissible) |",
-        "|---|---:|---:|---:|---:|---:|---:|",
+        "## Preferred-label comparison",
+        "",
+        "| System | Macro F1 | Exact accuracy | Top-2 preferred | Scenario fit | Conflict | ECE (preferred) | P95 latency (ms) |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|",
     ]
     for name, values in metrics.items():
-        summary.append(f"| {name} | {values['Admissible Set Accuracy']:.2%} | {values['Strict Acceptable Rate']:.2%} | {values['Preferred Exact Accuracy']:.2%} | {values['Unacceptable Recommendation Rate']:.2%} | {values['Top-2 Admissible Hit']:.2%} | {values['ECE vs Admissible Set']:.4f} |")
+        summary.append(f"| {name} | {values['Preferred Macro F1']:.4f} | {values['Preferred Exact Accuracy']:.2%} | {values['Top-2 Preferred Hit']:.2%} | {values['Scenario-Fit Rate']:.2%} | {values['Rule-Catalogue Conflict Rate']:.2%} | {values['ECE vs Preferred']:.4f} | {values['P95 Latency (ms)']:.3f} |")
+    summary.extend([
+        "",
+        "## Action-set evaluation",
+        "",
+        "| System | Strict acceptable | Admissible set accuracy | Top-2 admissible | Unacceptable | ECE (admissible) |",
+        "|---|---:|---:|---:|---:|---:|",
+    ])
+    for name, values in metrics.items():
+        summary.append(f"| {name} | {values['Strict Acceptable Rate']:.2%} | {values['Admissible Set Accuracy']:.2%} | {values['Top-2 Admissible Hit']:.2%} | {values['Unacceptable Recommendation Rate']:.2%} | {values['ECE vs Admissible Set']:.4f} |")
     summary.extend(["", f"Seed-42 selective status counts: {dict(status_counts)}.", "", "Do not pool this cohort silently with the original 19-case confirmatory test; report the two protocols separately."])
     (args.output_dir / "SUPPLEMENTAL_EVALUATION_SUMMARY.md").write_text("\n".join(summary) + "\n", encoding="utf-8")
     print(json.dumps({"metadata": metadata, "metrics": metrics}, indent=2))
